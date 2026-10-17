@@ -12,7 +12,7 @@ import numpy as np
 from scipy.io import loadmat
 
 ROOT = Path(__file__).resolve().parents[1]
-CSV_FIELDS = ["operation_index", "discharge_index", "sample_count", "duration_s",
+CSV_FIELDS = ["operation_index", "discharge_index", "sample_count", "recording_duration_s",
               "reported_capacity_Ah", "ambient_temperature_C", "median_current_A",
               "maximum_temperature_C"]
 
@@ -46,7 +46,7 @@ def read_discharge_records(path):
             "operation_index": operation_index,
             "discharge_index": len(records) + 1,
             "sample_count": int(time.size),
-            "duration_s": float(time[-1] - time[0]),
+            "recording_duration_s": float(time[-1] - time[0]),
             "reported_capacity_Ah": capacity,
             "ambient_temperature_C": ambient,
             "median_current_A": float(np.median(arrays["Current_measured"])),

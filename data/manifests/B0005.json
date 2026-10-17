@@ -1,0 +1,20 @@
+{
+  "source_url": "https://phm-datasets.s3.amazonaws.com/NASA/5.+Battery+Data+Set.zip",
+  "nested_package": "5. Battery Data Set/1. BatteryAgingARC-FY08Q4.zip",
+  "nested_package_sha256": "f3a4fcd7c3434e06906f4222778445ce6ad42f49c5c78a785bdd676b7c223a2e",
+  "attribution": "B. Saha and K. Goebel (2007), Battery Data Set, NASA PCoE",
+  "files": [
+    {
+      "path": "data/raw/nasa/package-1/B0005.mat",
+      "archive_member": "B0005.mat",
+      "size_bytes": 15956874,
+      "sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0"
+    },
+    {
+      "path": "data/raw/nasa/package-1/README.txt",
+      "archive_member": "README.txt",
+      "size_bytes": 2834,
+      "sha256": "2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90"
+    }
+  ]
+}

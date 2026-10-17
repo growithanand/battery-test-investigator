@@ -1,0 +1,32 @@
+{
+  "cell_id": "B0005",
+  "source_filename": "B0005.mat",
+  "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+  "operation_counts": {
+    "charge": 170,
+    "discharge": 168,
+    "impedance": 278
+  },
+  "discharge_operations": 168,
+  "first_discharge": {
+    "operation_index": 2,
+    "discharge_index": 1,
+    "sample_count": 197,
+    "recording_duration_s": 3690.234,
+    "reported_capacity_Ah": 1.8564874208181574,
+    "ambient_temperature_C": 24.0,
+    "median_current_A": -2.012427484501588,
+    "maximum_temperature_C": 38.98218133148803
+  },
+  "last_discharge": {
+    "operation_index": 614,
+    "discharge_index": 168,
+    "sample_count": 300,
+    "recording_duration_s": 2820.39,
+    "reported_capacity_Ah": 1.3250793286429356,
+    "ambient_temperature_C": 24.0,
+    "median_current_A": -2.0129799362613565,
+    "maximum_temperature_C": 41.051007697556734
+  },
+  "interpretation": "Reported capacity and measurements only; no physical cause or end-of-life classification inferred."
+}

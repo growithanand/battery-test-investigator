@@ -6,7 +6,7 @@ Example target question: “How has this battery's measured capacity changed, we
 
 ## Status
 
-Project foundation and first data-inspection milestone are in progress. LangChain tool use, document retrieval, LangGraph investigations, and the application interface are planned, not implemented.
+The first data-inspection starter is verified on NASA B0005: 616 recorded operations, including 168 discharge operations, with four passing data-handling tests. See the [reference results](examples/README.md) and [first engineering note](docs/results/01-B0005-inspection.md). Anand's reproduction and review are the next learning step. LangChain tool use, document retrieval, LangGraph investigations, and the application interface are planned, not implemented.
 
 The data source is NASA's Battery Data Set. The documentation audit found nine distinct short readmes describing materially different experimental conditions and endpoints. The eventual retrieval component will be evaluated against supplying this compact document collection directly.
 
