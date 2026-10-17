@@ -33,6 +33,8 @@ The fetch command reads only the first experiment package (approximately 57 MB) 
 
 Git keeps local change history. GitHub will host a private remote repository after account connection. Keep raw data and secrets out of commits; include code, documentation, source manifests, and small reference results. Git identity is configured locally for this repository as Anand Mullasseril Shajahan <anand.mullassheri@gmail.com>.
 
+Use the installed Git Credential Manager to sign in to GitHub; see [the Git workflow](docs/git-workflow.md). No GitHub plugin is required.
+
 ## Source and interpretation
 
 [NASA's official repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/) provides the archive. Dataset attribution: B. Saha and K. Goebel (2007), “Battery Data Set,” NASA Prognostics Data Repository, NASA Ames Research Center, Moffett Field, CA.
