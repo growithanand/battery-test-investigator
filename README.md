@@ -18,14 +18,16 @@ With Python 3.11 or later installed, from PowerShell in this folder:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements-lock.txt
 .\.venv\Scripts\python.exe scripts/fetch_sample.py
 .\.venv\Scripts\python.exe scripts/inspect_sample.py
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The fetch command downloads NASA's approximately 210 MB archive once, retains it locally, and extracts B0005 plus the corresponding README. Downloads and scratch outputs are ignored by Git. The fetch script records source checksums in `data/manifests/`.
+The fetch command reads only the first experiment package (approximately 57 MB) from NASA's larger archive, retains it locally, and extracts B0005 plus the corresponding README. Downloads and scratch outputs are ignored by Git. The fetch script records source checksums in `data/manifests/`.
 
+
+`requirements-lock.txt` records the exact package versions used for the reference run on Windows with Python 3.12.14. `requirements-dev.txt` defines the allowed dependency ranges for future updates.
 
 ## Version control
 
