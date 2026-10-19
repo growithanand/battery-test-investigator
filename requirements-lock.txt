@@ -1,4 +1,4 @@
-# Tested on Windows with Python 3.12.14. Reproduce with: python -m pip install -r requirements-lock.txt
+# Tested on Windows with Python 3.12.14 and 3.15.0. Reproduce with: python -m pip install -r requirements-lock.txt
 colorama==0.4.6
 contourpy==1.4.0
 cycler==0.12.1

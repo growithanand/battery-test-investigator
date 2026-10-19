@@ -18,6 +18,8 @@ The data source is NASA's Battery Data Set. The documentation audit found nine d
 
 ## Run the local automation
 
+For the standalone Python 3.15 setup, use [the Windows and VS Code guide](docs/windows-setup.md). Its verified environment is `.venv-py315`; the earlier `.venv` environment is preserved separately. Both environment folders are excluded from Git. A VS Code run/debug configuration runs the investigation as a module using your selected interpreter.
+
 The environment and source file already exist on Anand's current laptop. From PowerShell in this project folder:
 
 ```powershell
@@ -38,7 +40,7 @@ For a beginner explanation of the command, input file, calculation, output files
 
 Read one real battery file, preserve its original operation order, identify discharge operations, and create a reproducible capacity plot. Start with [the guided exercise](docs/milestones/01-first-battery.md).
 
-With Python 3.11 or later installed, from PowerShell in this folder:
+For a fresh checkout, create an environment with Python (verified versions: 3.12.14 and 3.15.0). From PowerShell in this folder:
 
 ```powershell
 python -m venv .venv
@@ -51,7 +53,7 @@ python -m venv .venv
 The fetch command reads only the first experiment package (approximately 57 MB) from NASA's larger archive, retains it locally, and extracts B0005 plus the corresponding README. Downloads and scratch outputs are ignored by Git. The fetch script records source checksums in `data/manifests/`.
 
 
-`requirements-lock.txt` records the exact package versions used for the reference run on Windows with Python 3.12.14. `requirements-dev.txt` defines the allowed dependency ranges for future updates.
+`requirements-lock.txt` records the exact package versions verified on Windows with Python 3.12.14 and 3.15.0. A standalone Python 3.15 run passed all 12 tests and matched all 168 reference discharge-summary rows and the saved capacity comparison. `requirements-dev.txt` defines the allowed dependency ranges for future updates.
 
 ## Version control
 
