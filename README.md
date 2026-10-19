@@ -52,6 +52,7 @@ python -m venv .venv
 
 The fetch command reads only the first experiment package (approximately 57 MB) from NASA's larger archive, retains it locally, and extracts B0005 plus the corresponding README. Downloads and scratch outputs are ignored by Git. The fetch script records source checksums in `data/manifests/`.
 
+Create the virtual environment from a local Python installation. Subsequent commands use that environment's interpreter, keeping the project's libraries separate from other projects.
 
 `requirements-lock.txt` records the exact package versions verified on Windows with Python 3.12.14 and 3.15.0. A standalone Python 3.15 run passed all 12 tests and matched all 168 reference discharge-summary rows and the saved capacity comparison. `requirements-dev.txt` defines the allowed dependency ranges for future updates.
 
