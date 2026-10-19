@@ -1,66 +1,79 @@
 # Battery Test Investigator
 
-An engineering learning project: investigate battery-test measurements alongside the experiment's documentation, check whether comparisons are defensible, and prepare a traceable technical report.
+Investigate battery-test measurements, compare selected discharge records, and produce a reproducible engineering report with source identity and explicit interpretation limits.
 
 Example target question: “How has this battery's measured capacity changed, were the test conditions comparable, and what evidence supports the conclusion?”
 
-The [release 1 scope](docs/product-scope.md) defines the intended user, inputs, deliverables, exclusions, automation, Jira/Confluence roles, milestones, and evaluation. It is the current product definition.
+The intended user is a battery test or validation engineer. The first application uses NASA B0005 laboratory measurements; it does not connect to live equipment.
 
 ## Status
 
 The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations, with 12 passing tests. One command now produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
 
-The first-to-last reported-capacity change is -0.531408 Ah (-28.624% relative to the first discharge). This does not establish its physical cause, comparable conditions, or an end-of-life label. See the [reference results](examples/README.md) and [automation verification](docs/results/02-reference-investigation.md).
+The first-to-last reported-capacity change is -0.531408 Ah (-28.624% relative to the first discharge). This does not establish its physical cause, comparable conditions, or an end-of-life label. See the [reference artifacts and verification](examples/README.md).
 
-Anand's reproduction and review remain pending. LangChain tool use, document retrieval, LangGraph investigations, a demonstration interface, and Jira/Confluence publishing are planned, not implemented. No external updates occur in the current workflow.
+LangChain tool use, document retrieval with citations, LangGraph investigations, a demonstration interface, and optional Jira/Confluence publishing are planned. The current implementation uses Python calculations and a fixed report template. It makes no model calls or external updates.
 
 The data source is NASA's Battery Data Set. The documentation audit found nine distinct short readmes describing materially different experimental conditions and endpoints. The eventual retrieval component will be evaluated against supplying this compact document collection directly.
 
 ## Run the local automation
 
-For the standalone Python 3.15 setup, use [the Windows and VS Code guide](docs/windows-setup.md). Its verified environment is `.venv-py315`; the earlier `.venv` environment is preserved separately. Both environment folders are excluded from Git. A VS Code run/debug configuration runs the investigation as a module using your selected interpreter.
+The commands below use the Python 3.15 environment `.venv-py315`. To create it on a fresh checkout, run the setup commands first. Environment folders, raw downloads, and investigation outputs are excluded from Git.
 
-The environment and source file already exist on Anand's current laptop. From PowerShell in this project folder:
+From PowerShell in the project folder:
 
 ```powershell
-.\.venv\Scripts\python.exe -m scripts.run_investigation
+.\.venv-py315\Scripts\python.exe -m scripts.run_investigation
 ```
 
 Open the `report.md` path printed by the command. The default compares discharge 1 with the final discharge. To compare discharge 1 with 100:
 
 ```powershell
-.\.venv\Scripts\python.exe -m scripts.run_investigation --early 1 --late 100
+.\.venv-py315\Scripts\python.exe -m scripts.run_investigation --early 1 --late 100
 ```
 
-Read the [guided comparison exercise](docs/milestones/02-reference-investigation.md). Protocol verification is unresolved at this stage; equal ambient-temperature metadata and similar median currents are insufficient to establish comparability. The PNG retains the existing full capacity trend and first source discharge's traces; it is not a selected-pair overlay.
+Protocol verification is unresolved at this stage; equal ambient-temperature metadata and similar median currents are insufficient to establish comparability. The PNG retains the full capacity trend and first source discharge's traces; it is not a selected-pair overlay.
 
-For a beginner explanation of the command, input file, calculation, output files, and execution steps, start with [Lesson 1: follow one local investigation](docs/learning/01-follow-one-investigation.md). We will explain each small implementation step and give Anand one hands-on task at a time.
+The default source is `data/raw/nasa/package-1/B0005.mat`. The workflow retains each selected discharge's original operation position as well as its discharge-only index. For B0005, discharge 1 is original operation 2 and discharge 168 is original operation 614.
 
-## First milestone
+## Setup and verification
 
-Read one real battery file, preserve its original operation order, identify discharge operations, and create a reproducible capacity plot. Start with [the guided exercise](docs/milestones/01-first-battery.md).
-
-For a fresh checkout, create an environment with Python (verified versions: 3.12.14 and 3.15.0). From PowerShell in this folder:
+For a fresh checkout with Python 3.15 installed, run these commands in PowerShell from the project folder. The pinned dependencies were verified on Windows with Python 3.12.14 and 3.15.0.
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements-lock.txt
-.\.venv\Scripts\python.exe scripts/fetch_sample.py
-.\.venv\Scripts\python.exe scripts/inspect_sample.py
-.\.venv\Scripts\python.exe -m pytest -q
+py -3.15 -m venv .venv-py315
+.\.venv-py315\Scripts\python.exe -m pip install -r requirements-lock.txt
+.\.venv-py315\Scripts\python.exe scripts/fetch_sample.py
+.\.venv-py315\Scripts\python.exe -m pytest -q
 ```
 
 The fetch command reads only the first experiment package (approximately 57 MB) from NASA's larger archive, retains it locally, and extracts B0005 plus the corresponding README. Downloads and scratch outputs are ignored by Git. The fetch script records source checksums in `data/manifests/`.
 
-Create the virtual environment from a local Python installation. Subsequent commands use that environment's interpreter, keeping the project's libraries separate from other projects.
+In VS Code, open the project folder, select `.venv-py315\Scripts\python.exe` through **Python: Select Interpreter**, then use the **Run battery investigation** debug configuration. It runs the investigation as a module from the project root.
 
 `requirements-lock.txt` records the exact package versions verified on Windows with Python 3.12.14 and 3.15.0. A standalone Python 3.15 run passed all 12 tests and matched all 168 reference discharge-summary rows and the saved capacity comparison. `requirements-dev.txt` defines the allowed dependency ranges for future updates.
 
-## Version control
+## Outputs and calculation
 
-Git keeps local change history. GitHub will host a private remote repository after account connection. Keep raw data and secrets out of commits; include code, documentation, source manifests, and small reference results. Git identity is configured locally for this repository as Anand Mullasseril Shajahan <anand.mullassheri@gmail.com>.
+Each investigation writes the following files under `outputs/investigations/`:
 
-Use the installed Git Credential Manager to sign in to GitHub; see [the Git workflow](docs/git-workflow.md). No GitHub plugin is required.
+| File | Contents |
+| --- | --- |
+| `report.md` | Selected measurements, calculation, limitations, and evidence links |
+| `comparison.json` | Selected records and unrounded comparison results |
+| `B0005-discharge-summary.csv` | One row per discharge |
+| `B0005-inspection.json` | Source hash, operation counts, and first/last record metadata |
+| `B0005-inspection.png` | Capacity trend and first source discharge's voltage/temperature plots |
+| `complete.json` | Investigation identity and artifact hashes, written after successful output generation |
+
+The source hash, battery ID, selected indices, and workflow version determine the investigation folder. Identical inputs reuse it. A failed rerun removes any previous completion marker; partial files may remain. The CLI supports one run at a time.
+
+```text
+capacity change = later supplied capacity - earlier supplied capacity
+percentage change = capacity change / earlier supplied capacity * 100
+```
+
+Capacity is read from NASA's records rather than independently integrated from current measurements. The denominator is the earlier selected capacity, not the nominal rating. `recording_duration_s` covers the entire source record and is not a segmented active-discharge duration.
 
 ## Source and interpretation
 
