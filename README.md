@@ -32,6 +32,8 @@ Open the `report.md` path printed by the command. The default compares discharge
 
 Read the [guided comparison exercise](docs/milestones/02-reference-investigation.md). Protocol verification is unresolved at this stage; equal ambient-temperature metadata and similar median currents are insufficient to establish comparability. The PNG retains the existing full capacity trend and first source discharge's traces; it is not a selected-pair overlay.
 
+For a beginner explanation of the command, input file, calculation, output files, and execution steps, start with [Lesson 1: follow one local investigation](docs/learning/01-follow-one-investigation.md). We will explain each small implementation step and give Anand one hands-on task at a time.
+
 ## First milestone
 
 Read one real battery file, preserve its original operation order, identify discharge operations, and create a reproducible capacity plot. Start with [the guided exercise](docs/milestones/01-first-battery.md).
