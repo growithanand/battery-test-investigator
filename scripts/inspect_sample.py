@@ -81,31 +81,37 @@ def save_plot(records, destination, cell_id):
     plt.close(figure)
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", type=Path, default=ROOT / "data/raw/nasa/package-1/B0005.mat")
-    parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs")
-    args = parser.parse_args()
-    counts, records = read_discharge_records(args.input)
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    cell_id = args.input.stem
-    csv_path = args.output_dir / f"{cell_id}-discharge-summary.csv"
+def write_inspection_outputs(input_path, output_dir, counts, records):
+    """Write the existing inspection artifacts from already validated records."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    cell_id = input_path.stem
+    csv_path = output_dir / f"{cell_id}-discharge-summary.csv"
     with csv_path.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=CSV_FIELDS, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(records)
     summary = {
         "cell_id": cell_id,
-        "source_filename": args.input.name,
-        "source_sha256": hashlib.sha256(args.input.read_bytes()).hexdigest(),
+        "source_filename": input_path.name,
+        "source_sha256": hashlib.sha256(input_path.read_bytes()).hexdigest(),
         "operation_counts": counts,
         "discharge_operations": len(records),
         "first_discharge": {key: records[0][key] for key in CSV_FIELDS},
         "last_discharge": {key: records[-1][key] for key in CSV_FIELDS},
         "interpretation": "Reported capacity and measurements only; no physical cause or end-of-life classification inferred.",
     }
-    (args.output_dir / f"{cell_id}-inspection.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    save_plot(records, args.output_dir / f"{cell_id}-inspection.png", cell_id)
+    (output_dir / f"{cell_id}-inspection.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+    save_plot(records, output_dir / f"{cell_id}-inspection.png", cell_id)
+    return summary
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--input", type=Path, default=ROOT / "data/raw/nasa/package-1/B0005.mat")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "outputs")
+    args = parser.parse_args()
+    counts, records = read_discharge_records(args.input)
+    summary = write_inspection_outputs(args.input, args.output_dir, counts, records)
     print(json.dumps(summary, indent=2))
     print(f"Inspection outputs: {args.output_dir}")
 

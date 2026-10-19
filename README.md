@@ -4,11 +4,33 @@ An engineering learning project: investigate battery-test measurements alongside
 
 Example target question: “How has this battery's measured capacity changed, were the test conditions comparable, and what evidence supports the conclusion?”
 
+The [release 1 scope](docs/product-scope.md) defines the intended user, inputs, deliverables, exclusions, automation, Jira/Confluence roles, milestones, and evaluation. It is the current product definition.
+
 ## Status
 
-The first data-inspection starter is verified on NASA B0005: 616 recorded operations, including 168 discharge operations, with four passing data-handling tests. See the [reference results](examples/README.md) and [first engineering note](docs/results/01-B0005-inspection.md). Anand's reproduction and review are the next learning step. LangChain tool use, document retrieval, LangGraph investigations, and the application interface are planned, not implemented.
+The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations, with 12 passing tests. One command now produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
+
+The first-to-last reported-capacity change is -0.531408 Ah (-28.624% relative to the first discharge). This does not establish its physical cause, comparable conditions, or an end-of-life label. See the [reference results](examples/README.md) and [automation verification](docs/results/02-reference-investigation.md).
+
+Anand's reproduction and review remain pending. LangChain tool use, document retrieval, LangGraph investigations, a demonstration interface, and Jira/Confluence publishing are planned, not implemented. No external updates occur in the current workflow.
 
 The data source is NASA's Battery Data Set. The documentation audit found nine distinct short readmes describing materially different experimental conditions and endpoints. The eventual retrieval component will be evaluated against supplying this compact document collection directly.
+
+## Run the local automation
+
+The environment and source file already exist on Anand's current laptop. From PowerShell in this project folder:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.run_investigation
+```
+
+Open the `report.md` path printed by the command. The default compares discharge 1 with the final discharge. To compare discharge 1 with 100:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.run_investigation --early 1 --late 100
+```
+
+Read the [guided comparison exercise](docs/milestones/02-reference-investigation.md). Protocol verification is unresolved at this stage; equal ambient-temperature metadata and similar median currents are insufficient to establish comparability. The PNG retains the existing full capacity trend and first source discharge's traces; it is not a selected-pair overlay.
 
 ## First milestone
 
