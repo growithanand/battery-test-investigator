@@ -13,12 +13,22 @@ class ProtocolClaim(BaseModel):
     quote: str = Field(min_length=15, max_length=650, description="Exact contiguous supporting text copied from that passage")
 
 
+class FollowUpDecision(BaseModel):
+    """One evidence-dependent choice; code supplies the unchanged tool arguments."""
+
+    model_config = ConfigDict(strict=True, extra="forbid")
+
+    action: Literal["inspect_discharge_traces", "stop_with_partial"]
+    reason: str = Field(min_length=1, max_length=350, description="Brief evidence-based reason for the action, not private reasoning")
+
+
 class InvestigationFindings(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid")
 
     protocol_claims: list[ProtocolClaim] = Field(max_length=2, description="One or two claims if evidence is available; otherwise an empty list")
     comparability: Literal["not_established"]
     physical_cause: Literal["not_determined"]
+    trace_evidence_id: str | None = Field(description="Exact accepted trace evidence ID if inspection ran; otherwise null")
     limitations: list[str] = Field(min_length=1, max_length=3)
     next_check: str = Field(min_length=1, max_length=350, description="Recommended check, not a claim that it has been executed")
 

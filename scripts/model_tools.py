@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from scripts.investigation_state import InvestigationRequest, resolve_selection
 from scripts.investigation_tools import compare_selection
 from scripts.protocol_evidence import CATALOG_PATH, ROOT, retrieve_protocol_evidence
+from scripts.trace_inspection import inspect_selection_traces
 
 
 class ComparisonArguments(BaseModel):
@@ -64,3 +65,24 @@ def make_protocol_tool(catalog_path: Path = CATALOG_PATH, *, root: Path = ROOT) 
         return retrieve_protocol_evidence(battery_id, catalog_path, root=root)
 
     return get_battery_protocol
+
+
+def make_trace_tool(source_paths: Mapping[str, Path]) -> BaseTool:
+    """Expose read-only trace analysis, not artifact paths or file-writing authority."""
+    sources = {battery_id: Path(path) for battery_id, path in source_paths.items()}
+
+    @tool("inspect_discharge_traces", args_schema=ComparisonArguments)
+    def inspect_discharge_traces(battery_id: str, early: int, late: int) -> dict:
+        """Inspect signed current/voltage/temperature for the explicit discharge pair.
+
+        Return whole-record sample statistics and located extrema/current steps.
+        No active-load segmentation, cutoff classification, integration,
+        comparable-test verdict or physical cause is established. No files are written.
+        """
+        request = InvestigationRequest("Inspect selected traces", battery_id, early, late)
+        if battery_id not in sources:
+            raise ValueError(f"Battery is not registered: {battery_id}")
+        source_path = sources[battery_id]
+        return inspect_selection_traces(resolve_selection(request, source_path), source_path)
+
+    return inspect_discharge_traces

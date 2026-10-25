@@ -9,12 +9,8 @@ from scripts.investigation_state import ValidatedSelection
 from scripts.run_investigation import compare_discharges
 
 
-def compare_selection(selection: ValidatedSelection, source_path: Path) -> dict:
-    """Compare records belonging to an identity produced by resolve_selection.
-
-    The caller supplies the trusted source path. Return compact, serializable
-    evidence for the future agent; do not write reports or completion markers.
-    """
+def read_selection_records(selection: ValidatedSelection, source_path: Path) -> list[dict]:
+    """Recheck source/selection identity before returning full analysis-layer records."""
     source_path = Path(source_path)
     if source_path.stem != selection.battery_id:
         raise ValueError(
@@ -26,14 +22,22 @@ def compare_selection(selection: ValidatedSelection, source_path: Path) -> dict:
 
     _, records = read_discharge_records(source_path)
     if hashlib.sha256(source_path.read_bytes()).hexdigest() != source_sha256:
-        raise ValueError("Source changed while reading comparison measurements; resolve it again")
+        raise ValueError("Source changed while reading selected measurements; resolve it again")
 
-    comparison = compare_discharges(records, selection.early, selection.late)
+    if not 1 <= selection.early < selection.late <= len(records):
+        raise ValueError(f"Selected indices must satisfy 1 <= early < late <= {len(records)}")
     if (
-        comparison["earlier"]["operation_index"] != selection.early_operation_index
-        or comparison["later"]["operation_index"] != selection.late_operation_index
+        records[selection.early - 1]["operation_index"] != selection.early_operation_index
+        or records[selection.late - 1]["operation_index"] != selection.late_operation_index
     ):
         raise ValueError("Operation indices do not match the validated selection; resolve it again")
+    return records
+
+
+def compare_selection(selection: ValidatedSelection, source_path: Path) -> dict:
+    """Return compact numerical evidence without file-writing or model calls."""
+    records = read_selection_records(selection, source_path)
+    comparison = compare_discharges(records, selection.early, selection.late)
 
     return {
         "selection": asdict(selection),

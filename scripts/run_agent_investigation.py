@@ -1,4 +1,4 @@
-"""Run the first local cited graph; selected-trace assessment is still pending."""
+"""Run a bounded local cited investigation with one model-selected trace follow-up."""
 
 import argparse
 from datetime import datetime, timezone
@@ -11,13 +11,14 @@ from uuid import uuid4
 
 import langsmith
 
-from scripts.investigation_findings import InvestigationFindings
+from scripts.investigation_findings import FollowUpDecision, InvestigationFindings
 from scripts.investigation_graph import (
-    FINDINGS_PROMPT, TOOL_PROMPT, WORKFLOW_VERSION, build_investigation_graph,
+    FINDINGS_PROMPT, FOLLOW_UP_PROMPT, TOOL_PROMPT, WORKFLOW_VERSION, build_investigation_graph,
 )
 from scripts.local_model import create_local_model
-from scripts.model_tools import make_comparison_tool, make_protocol_tool
+from scripts.model_tools import make_comparison_tool, make_protocol_tool, make_trace_tool
 from scripts.protocol_evidence import CATALOG_PATH
+from scripts.trace_inspection import ANALYSIS_VERSION
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,9 +50,9 @@ def main():
             runtime.append(create_local_model(args.model, MODEL_SETTINGS))
         return runtime[0][0]
 
-    limits = {"model_limit": 3, "tool_limit": 2}
+    limits = {"model_limit": 4, "tool_limit": 3}
     graph = build_investigation_graph(load_model, make_comparison_tool({"B0005": source}),
-                                     make_protocol_tool(args.protocol_catalog), **limits)
+                                     make_protocol_tool(args.protocol_catalog), make_trace_tool({"B0005": source}), **limits)
     started = perf_counter()
     # Disable hosted tracing for the graph itself as well as the model/tool nodes.
     with langsmith.tracing_context(enabled=False):
@@ -63,9 +64,13 @@ def main():
         "elapsed_seconds": perf_counter() - started,
         "configuration": {
             "workflow_version": WORKFLOW_VERSION, "model_requested": args.model,
+            "trace_analysis_version": ANALYSIS_VERSION,
             "model_used": runtime[0][1] if runtime else None, "limits": limits,
             "prompt_hashes": {name: hashlib.sha256(prompt.encode("utf-8")).hexdigest()
-                              for name, prompt in (("tools", TOOL_PROMPT), ("findings", FINDINGS_PROMPT))},
+                              for name, prompt in (("tools", TOOL_PROMPT), ("follow_up", FOLLOW_UP_PROMPT), ("findings", FINDINGS_PROMPT))},
+            "follow_up_schema_sha256": hashlib.sha256(json.dumps(
+                FollowUpDecision.model_json_schema(), sort_keys=True,
+            ).encode("utf-8")).hexdigest(),
             "findings_schema_sha256": hashlib.sha256(json.dumps(
                 InvestigationFindings.model_json_schema(),
                 sort_keys=True,
@@ -88,6 +93,10 @@ def main():
         comparison = result["comparison"]["comparison"]
         print(f"Capacity change: {comparison['capacity_change_Ah']:.9f} Ah ({comparison['capacity_change_percent']:.6f}%)")
     if result["findings"]:
+        if result["follow_up"]:
+            print(f"Follow-up: {result['follow_up']['action']}: {result['follow_up']['reason']}")
+        if result["trace_evidence"]:
+            print(f"Selected-trace inspection executed: {result['trace_evidence']['evidence_id']}")
         for claim in result["findings"]["protocol_claims"]:
             print(f"Documented claim: {claim['statement']}\nQuote: {claim['quote']}\nEvidence: {claim['evidence_id']}")
         print(f"Next check (not executed): {result['findings']['next_check']}")
