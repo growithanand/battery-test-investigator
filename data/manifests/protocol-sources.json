@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "corpus_id": "nasa-protocol-subset-v1",
+  "source_url": "https://phm-datasets.s3.amazonaws.com/NASA/5.+Battery+Data+Set.zip",
+  "attribution": "B. Saha and K. Goebel (2007), Battery Data Set, NASA PCoE",
+  "documents": [
+    {
+      "document_id": "nasa-b0005-b0018",
+      "applicable_batteries": ["B0005", "B0006", "B0007", "B0018"],
+      "path": "data/raw/nasa/protocols/package-1/README.txt",
+      "nested_package": "5. Battery Data Set/1. BatteryAgingARC-FY08Q4.zip",
+      "archive_member": "README.txt",
+      "cache_member": "package-1/README.txt",
+      "size_bytes": 2834,
+      "sha256": "2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90"
+    },
+    {
+      "document_id": "nasa-b0033-b0036",
+      "applicable_batteries": ["B0033", "B0034", "B0036"],
+      "path": "data/raw/nasa/protocols/package-3/README_33_34_36.txt",
+      "nested_package": "5. Battery Data Set/3. BatteryAgingARC_25-44.zip",
+      "archive_member": "README_33_34_36.txt",
+      "cache_member": "package-3/README_33_34_36.txt",
+      "size_bytes": 2447,
+      "sha256": "4a5e394c8ec0f4bd35bad27ee18183c22736439c979fc0997501c30290035f2c"
+    },
+    {
+      "document_id": "nasa-b0049-b0052",
+      "applicable_batteries": ["B0049", "B0050", "B0051", "B0052"],
+      "path": "data/raw/nasa/protocols/package-5/README_49_50_51_52.txt",
+      "nested_package": "5. Battery Data Set/5. BatteryAgingARC_49_50_51_52.zip",
+      "archive_member": "README_49_50_51_52.txt",
+      "cache_member": "package-5/README_49_50_51_52.txt",
+      "size_bytes": 2586,
+      "sha256": "86e1f8102153708c5df4c568138b652866ee04d030314f3c41ad3b634a9440eb"
+    }
+  ]
+}

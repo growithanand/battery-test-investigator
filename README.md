@@ -8,13 +8,17 @@ The intended user is a battery test or validation engineer. The first applicatio
 
 ## Status
 
-The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 71 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
+The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 137 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
 
 Programmatic investigation helpers preserve incomplete requests for clarification, validate explicit discharge selections, and return comparisons with the source hash, original operation indices, discharge indices, and selection revision. Changed sources and inconsistent operation mappings are rejected before returning comparison evidence. A separate bounded LangChain/local-Ollama connection check exposes the comparison through a strict tool schema; it has completed live B0005 comparisons for discharges 1/168 and 1/100.
 
 The first-to-last reported-capacity change is -0.531408 Ah (-28.624% relative to the first discharge). This does not establish its physical cause, comparable conditions, or an end-of-life label. See the [reference artifacts and verification](examples/README.md).
 
-Document retrieval with citations, LangGraph investigations, evidence-dependent agent decisions, a demonstration interface, and optional Jira/Confluence publishing are planned. The numerical report command still uses Python calculations and a fixed template without model calls. The separate model connection check is not yet a complete investigation agent. Neither command publishes external updates.
+A metadata-based protocol lookup returns applicable original passages with document hashes, archive provenance, and line locators from a registered three-document subset. Missing or invalid sources are labelled; wrong-experiment documents are not substituted. A separate LangGraph entry point now connects this lookup and the comparison through live LangChain tool calls, then generates structured protocol claims with exact quotes and evidence IDs.
+
+The first graph was checked on B0005 pairs 1/168 and 1/100, a labelled missing-document fixture, and missing selections. It returns partial results because selected-trace assessment is not implemented. Citation checks prove source identity, applicability, and literal quote matching, not semantic support; the example claims were reviewed separately. This is an initial metadata-retrieval-plus-generation workflow, not an evaluated complete investigation agent.
+
+Embedding-retrieval comparisons, evidence-dependent follow-up execution, durable resume, a demonstration interface, and optional Jira/Confluence publishing remain planned. The numerical report command still uses Python calculations and a fixed template without model calls. No external publication is implemented.
 
 The data source is NASA's Battery Data Set. The documentation audit found nine distinct short readmes describing materially different experimental conditions and endpoints. The eventual retrieval component will be evaluated against supplying this compact document collection directly.
 
@@ -53,7 +57,24 @@ The fetch command reads only the first experiment package (approximately 57 MB) 
 
 In VS Code, open the project folder, select `.venv\Scripts\python.exe` through **Python: Select Interpreter**, then use the **Run battery investigation** debug configuration. It runs the investigation as a module from the project root.
 
-`requirements-lock.txt` retains the numerical/test package pins. The numerical baseline was previously checked on Python 3.12.14 and 3.15.0; model integration is verified only on 3.12.14. `requirements-dev.txt` defines numerical/development dependency ranges. Without the optional layer below, the 20 model-layer cases are skipped and the other 51 cases run.
+`requirements-lock.txt` retains the numerical/test package pins. The numerical baseline was previously checked on Python 3.12.14 and 3.15.0; model integration is verified only on 3.12.14. `requirements-dev.txt` defines numerical/development dependency ranges. The optional-layer test modules contain 61 cases; without that layer they are skipped and the other 76 cases run.
+
+## Protocol evidence lookup
+
+The initial catalog in `data/manifests/protocol-sources.json` registers three original NASA README files: B0005/B0006/B0007/B0018, B0033/B0034/B0036, and B0049-B0052. They document different protocols and termination criteria. Registration of other batteries' documentation does not imply their numerical measurements have been validated.
+
+Prepare the registered source text, then inspect B0005's evidence:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.fetch_protocols
+.\.venv\Scripts\python.exe -m scripts.protocol_evidence --battery-id B0005
+```
+
+The preparation command reads exact registered text members from NASA's nested experiment packages and verifies their pinned byte hashes, sizes, and listed battery IDs before saving under ignored `data/raw/nasa/protocols/`. A fresh preparation reads the three nested ZIP packages, approximately 160 MB combined; no numerical files are extracted. Existing sources are verified rather than overwritten. An optional `--document-cache <directory>` uses existing package/member text paths without network fallback. Cache-based preparation was verified locally; the archive-reading branch was tested with constructed ZIPs, not a new live download.
+
+The lookup selects documents by explicit battery applicability before reading their contents. It returns the original Data Description and discharge-field sections with one-based inclusive line ranges, stable evidence IDs, source hashes, catalog identity, archive provenance, and explicit issues. It cross-checks registered battery IDs against each README's Files section. The status is `available`, `partial`, or `unavailable`; these describe evidence availability, not an investigation's completion.
+
+No model, embeddings, vector database, or additional dependencies are needed for this lookup. It is a deterministic retrieval baseline, not completed RAG. Protocol descriptions do not prove actual measured conditions or pair comparability. Documented experiment endpoints and the comparison's percentage denominator must not be conflated. The numerical report and live connection check remain unchanged and do not yet consume this evidence.
 
 ## Optional local model connection check
 
@@ -65,7 +86,7 @@ Install the additional pinned dependencies into `.venv`:
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-`requirements-agent.txt` defines the additional allowed dependency ranges. The lock includes the unchanged numerical/test pins. LangGraph is installed with this layer but no investigation graph has been implemented.
+`requirements-agent.txt` defines the additional allowed dependency ranges. The lock includes the unchanged numerical/test pins. This layer supports both the connection check below and the first cited graph workflow.
 
 Run Ollama locally with an already-installed tool-capable model. Pass its exact local tag explicitly; the following tag was verified on the development machine and is not downloaded by the script:
 
@@ -79,6 +100,27 @@ This demonstration fixes the battery to B0005 and defaults to the explicit test 
 The model receives the question and tool schema, requests one comparison, receives compact Python-calculated evidence (not raw arrays), and produces a short answer. Code requires the arguments to match the explicit selection. The budget is two model responses and one comparison, with 384 output tokens per response and a 60-second HTTP inactivity timeout; there is no automatic retry. The timeout is not a total run-time deadline.
 
 A unique JSON trace under `outputs/model-connection/` records the source/selection, tool arguments/result, generated answer, model digest, settings, package versions, timing, and token counts. Private reasoning is not recorded. A failed check exits with an error and writes no success trace. Completion establishes a tool round trip, not general answer accuracy or a completed investigation; the live examples were checked against the numerical references separately.
+
+## First cited graph workflow
+
+Prepare the numerical source and protocol documents as above, install the optional model layer, and start the local Ollama service with an already-installed tool-capable model. Then supply an explicit selection:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.run_agent_investigation --model qwen3.8:27b-q4_K_M --battery-id B0005 --early 1 --late 168
+.\.venv\Scripts\python.exe -m scripts.run_agent_investigation --model qwen3.8:27b-q4_K_M --battery-id B0005 --early 1 --late 100
+```
+
+This entry point does not infer selections from natural-language wording. Missing selection fields return `needs_clarification` before reading battery sources or connecting to the model. A new invocation needs the complete explicit request; it does not resume an earlier run. Only B0005 numerical investigation is currently exposed. `--question` changes the investigation question; `--protocol-catalog` supplies trusted local catalog configuration for evaluation and is never model-controlled.
+
+The graph checks the request, asks the model for the two permitted evidence tools, validates the entire requested batch before execution, runs the tools, and requests structured findings. The model may choose tool order or request both together; the two evidence requirements are fixed by code. This does not yet demonstrate an evidence-dependent additional check. Tool arguments must match the requested selection. Tools and call IDs cannot be repeated, and raw arrays are not sent to the model.
+
+The budget is at most three model attempts (including the final findings attempt) and two tool attempts, with no automatic retries. Failed attempts consume budget; local preflight failure counts as a model attempt even if no inference starts. The local model uses 8192 context tokens, a maximum 1024 output tokens per response, thinking disabled, temperature zero, and a 60-second HTTP inactivity timeout rather than a total runtime deadline. The graph adds a 12-step recursion backstop. Hosted tracing and environment proxies are disabled; there is no model download or cloud fallback.
+
+Generated protocol findings include a short claim, a retrieved evidence ID, and a verbatim supporting quote. Unknown IDs, inapplicable citations, invented quotes, malformed findings, and truncated responses are rejected. Semantic claim support still requires review: a real quote can be misinterpreted. Numerical outputs come directly from Python, not model-written arithmetic. Comparability stays `not_established` and physical cause `not_determined`.
+
+Available documentation yields `partial` / `selected_trace_check_pending`; missing or incomplete documentation yields `partial` / `protocol_evidence_incomplete`. Missing evidence must not produce substitute protocol claims. Invalid selections, model/tool failures or bad findings yield `failed`; exhausted budgets yield `partial` without an invented final answer. No run in this initial graph is marked complete.
+
+Each invocation writes a unique record under `outputs/agent-investigations/` with the request, calculated evidence, retrieved passages, findings if accepted, stopping reason, attempt counts, concise tool trace, timing/usage, source/model identities, prompt/schema hashes, package versions, and an input/configuration fingerprint. Raw model messages and private reasoning are excluded. Failed and clarification runs are retained separately; failed runs exit with code 2. These JSON records are evidence logs, not disk-backed LangGraph checkpoints or a generated engineering report. The existing numerical report remains a separate command.
 
 ## Outputs and calculation
 
