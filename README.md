@@ -8,7 +8,7 @@ The intended user is a battery test or validation engineer. The first applicatio
 
 ## Status
 
-The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 186 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
+The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 228 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
 
 Programmatic investigation helpers preserve incomplete requests for clarification, validate explicit discharge selections, and return comparisons with the source hash, original operation indices, discharge indices, and selection revision. Changed sources and inconsistent operation mappings are rejected before returning comparison evidence. A separate bounded LangChain/local-Ollama connection check exposes the comparison through a strict tool schema; it has completed live B0005 comparisons for discharges 1/168 and 1/100.
 
@@ -18,7 +18,7 @@ A metadata-based protocol lookup returns applicable original passages with docum
 
 After the initial comparison and protocol retrieval, the graph asks the model to choose one follow-up: inspect the selected whole-record traces or stop with partial findings. Python supplies the unchanged selection, verifies returned trace identity against the comparison, and prevents additional follow-up calls. The read-only trace tool and separate selected-pair plotting command describe the full recordings without guessing load boundaries. Citation checks prove source identity, applicability, and literal quote matching, not semantic support; claims still require review. This is an initial metadata-retrieval-plus-generation workflow, not an evaluated complete investigation agent.
 
-Embedding-retrieval comparisons, broader decision/citation evaluation, durable resume, a demonstration interface, and optional Jira/Confluence publishing remain planned. The numerical report command still uses Python calculations and a fixed template without model calls. No external publication is implemented.
+A versioned follow-up case set and saved-run evaluator now check decision/execution contracts separately from human evidence review. Repeated live baseline runs, embedding-retrieval comparisons, broader decision/citation evaluation, durable resume, a demonstration interface, and optional Jira/Confluence publishing remain planned. The numerical report command still uses Python calculations and a fixed template without model calls. No external publication is implemented.
 
 The data source is NASA's Battery Data Set. The documentation audit found nine distinct short readmes describing materially different experimental conditions and endpoints. The eventual retrieval component will be evaluated against supplying this compact document collection directly.
 
@@ -57,7 +57,7 @@ The fetch command reads only the first experiment package (approximately 57 MB) 
 
 In VS Code, open the project folder, select `.venv\Scripts\python.exe` through **Python: Select Interpreter**, then use the **Run battery investigation** debug configuration. It runs the investigation as a module from the project root.
 
-`requirements-lock.txt` retains the numerical/test package pins. The numerical baseline was previously checked on Python 3.12.14 and 3.15.0; model integration is verified only on 3.12.14. `requirements-dev.txt` defines numerical/development dependency ranges. The optional-layer tests contain 94 cases; without that layer they are skipped and the other 92 cases run.
+`requirements-lock.txt` retains the numerical/test package pins. The numerical baseline was previously checked on Python 3.12.14 and 3.15.0; model integration is verified only on 3.12.14. `requirements-dev.txt` defines numerical/development dependency ranges. The optional-layer tests contain 94 cases; without that layer they are skipped and the other 134 numerical/standard-library cases run.
 
 ## Selected whole-record trace inspection
 
@@ -140,6 +140,22 @@ Generated protocol findings include a short claim, a retrieved evidence ID, and 
 With available documentation, executed trace inspection yields `partial` / `comparability_assessment_pending`; stopping without inspection yields `partial` / `selected_trace_check_pending`. Missing or incomplete documentation yields `partial` / `protocol_evidence_incomplete`, whether traces ran or not. Missing evidence must not produce substitute protocol claims. Invalid selections, model/tool failures or bad decisions/findings yield `failed`; exhausted budgets yield `partial` without an invented final answer. No run in this graph is marked complete: active-load assessment, citation semantics and the remaining investigation criteria are unresolved.
 
 Each invocation writes a unique record under `outputs/agent-investigations/` with the request, calculated evidence, retrieved passages, follow-up decision/reason, trace evidence if executed, findings if accepted, stopping reason, attempt counts, concise tool trace, timing/usage, source/model identities, prompt/schema hashes, package versions, and an input/configuration fingerprint. Raw model messages and private reasoning are excluded. Failed and clarification runs are retained separately; failed runs exit with code 2. These JSON records are evidence logs, not disk-backed LangGraph checkpoints or a generated engineering report. The existing numerical report remains a separate command.
+
+## Follow-up decision evaluation
+
+`evaluations/follow-up-cases.json` defines six development cases and three reserved question variants. The policy is explicit: a question about comparable conditions should inspect available selected traces and retain unresolved limits; a reported-capacity-only question should stop without trace inspection. Missing documentation remains a separate limitation. The case set also covers missing and reversed selections. These cases address a subset of the investigation requirements, not the full release evaluation.
+
+After generating a run with the case's exact question, battery and selections, check its saved record:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.evaluate_follow_up --case trace-1-168 --record "outputs/agent-investigations/YOUR-RUN-ID.json"
+```
+
+Replace `YOUR-RUN-ID` with the actual ID printed by the agent command. The evaluator uses Python's standard library, reads existing files and prints JSON; it does not invoke a model, write artifacts or change investigation state. Its output includes case/record byte hashes, run configuration, individual failed checks and review material. Exit 0 means the automatic checks passed and human review is pending; exit 1 means a case expectation failed; exit 2 means the input could not be assessed.
+
+Automatic checks cover exact request identity, the expected action and stopping reason, recorded execution/return-log consistency, selection/source-hash/operation/revision identity, final trace reference, execution limits and unresolved schema fields. They do not recompute capacities or trace measurements, reread original source bytes, establish citation meaning, or validate free-text causal/comparability claims. A real quote or a valid action name alone does not establish a supported answer. Review the decision reason, original applicable passages, generated claims, limitations and proposed next check separately.
+
+The initial acceptance plan requires three fresh runs per case, all automatic checks passing and human review before accepting that case. Reserve the held-out variants until candidate configuration is fixed. Historical saved-record reviews remain retrospective examples and do not satisfy that repeated baseline or establish model reliability. One older conditions run fails the inspect-before-stopping policy; it used an earlier prompt and is not a measurement of the current prompt. No repeated live evaluation, held-out run, overall accuracy score or completed-release claim is provided yet.
 
 ## Outputs and calculation
 

@@ -1,0 +1,162 @@
+{
+  "case_set_version": "follow-up-cases-v1",
+  "defined_on": "2026-10-26",
+  "scope": "Saved-record checks of follow-up choice, execution identity, budgets and stopping; not numerical or semantic answer evaluation.",
+  "policy": "A conditions-comparability question must inspect available selected traces, then retain unresolved limits. A reported-capacity-only question should stop without trace inspection.",
+  "repeat_plan": {
+    "runs_per_case": 3,
+    "gate": "All automatic checks in every planned run and a separate human review are required before accepting a case. This small gate is not a reliability estimate.",
+    "held_out": "Reserve these question variants until the candidate prompts/configuration are fixed; do not use their outcomes for prompt tuning."
+  },
+  "limits": {"model_limit": 4, "tool_limit": 3},
+  "source_identity": {
+    "battery_id": "B0005",
+    "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+    "operation_indices": {"1": 2, "100": 352, "168": 614},
+    "revision": 1,
+    "basis": "Previously verified B0005 source and original operation mapping; this evaluator does not reread the MATLAB file."
+  },
+  "manual_review": [
+    "Does the decision reason describe a useful evidence gap and only capabilities the selected tool actually provides?",
+    "Does each generated protocol claim follow from its applicable original passage, without applying one experiment's endpoint universally?",
+    "Does the prose distinguish whole-record inspection from active-load segmentation and avoid unsupported comparability or physical-cause claims?",
+    "Does the recommended next check address the remaining gap, and does the wording accurately describe which checks actually ran?"
+  ],
+  "cases": [
+    {
+      "case_id": "trace-1-168",
+      "split": "development",
+      "release_cases": ["E01", "E04"],
+      "request": {
+        "question": "Compare reported capacities and inspect the selected current, voltage and temperature traces to describe recorded differences and remaining condition-assessment limits.",
+        "battery_id": "B0005", "early": 1, "late": 168
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {
+        "action": "inspect_discharge_traces", "trace_required": true,
+        "status": "partial", "stop_reason": "comparability_assessment_pending",
+        "protocol_status": "available"
+      }
+    },
+    {
+      "case_id": "capacity-1-100",
+      "split": "development",
+      "release_cases": ["E02"],
+      "request": {
+        "question": "Compare only the reported capacities and their percentage change relative to the earlier record.",
+        "battery_id": "B0005", "early": 1, "late": 100
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {
+        "action": "stop_with_partial", "trace_required": false,
+        "status": "partial", "stop_reason": "selected_trace_check_pending",
+        "protocol_status": "available"
+      }
+    },
+    {
+      "case_id": "conditions-1-168",
+      "split": "development",
+      "release_cases": ["E01", "E06"],
+      "request": {
+        "question": "Compare reported capacities, document the protocol, and assess the conditions.",
+        "battery_id": "B0005", "early": 1, "late": 168
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {
+        "action": "inspect_discharge_traces", "trace_required": true,
+        "status": "partial", "stop_reason": "comparability_assessment_pending",
+        "protocol_status": "available"
+      }
+    },
+    {
+      "case_id": "missing-protocol-1-100",
+      "split": "development",
+      "release_cases": ["E02", "E05"],
+      "request": {
+        "question": "Compare reported capacities and inspect selected current, voltage and temperature trace evidence; retain any missing-protocol limits.",
+        "battery_id": "B0005", "early": 1, "late": 100
+      },
+      "fixture": "deliberately_missing_applicable_protocol",
+      "expected": {
+        "action": "inspect_discharge_traces", "trace_required": true,
+        "status": "partial", "stop_reason": "protocol_evidence_incomplete",
+        "protocol_status": "unavailable"
+      }
+    },
+    {
+      "case_id": "missing-selection",
+      "split": "development",
+      "release_cases": ["E03"],
+      "request": {
+        "question": "Compare reported capacities, document the protocol, and assess the conditions.",
+        "battery_id": null, "early": null, "late": null
+      },
+      "fixture": "no_source_or_model_access_expected",
+      "expected": {
+        "action": null, "trace_required": false,
+        "status": "needs_clarification", "stop_reason": "missing_selection",
+        "protocol_status": null
+      }
+    },
+    {
+      "case_id": "reversed-selection",
+      "split": "development",
+      "release_cases": ["E07"],
+      "request": {
+        "question": "Compare reported capacities, document the protocol, and assess the conditions.",
+        "battery_id": "B0005", "early": 168, "late": 1
+      },
+      "fixture": "no_source_or_model_access_expected",
+      "expected": {
+        "action": null, "trace_required": false,
+        "status": "failed", "stop_reason": "invalid_request",
+        "protocol_status": null
+      }
+    },
+    {
+      "case_id": "reserved-trace-1-100",
+      "split": "held_out",
+      "release_cases": ["E02"],
+      "request": {
+        "question": "Describe the recorded current, voltage and temperature extrema and their source locations for the selected pair. Keep active-load boundaries unresolved.",
+        "battery_id": "B0005", "early": 1, "late": 100
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {
+        "action": "inspect_discharge_traces", "trace_required": true,
+        "status": "partial", "stop_reason": "comparability_assessment_pending",
+        "protocol_status": "available"
+      }
+    },
+    {
+      "case_id": "reserved-capacity-1-168",
+      "split": "held_out",
+      "release_cases": ["E01"],
+      "request": {
+        "question": "Using the supplied capacity fields alone, calculate the difference in Ah and percent relative to the earlier selected discharge.",
+        "battery_id": "B0005", "early": 1, "late": 168
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {
+        "action": "stop_with_partial", "trace_required": false,
+        "status": "partial", "stop_reason": "selected_trace_check_pending",
+        "protocol_status": "available"
+      }
+    },
+    {
+      "case_id": "reserved-conditions-1-100",
+      "split": "held_out",
+      "release_cases": ["E02", "E06"],
+      "request": {
+        "question": "Before judging whether these discharges were tested under comparable conditions, inspect their recorded signals and explain what evidence is still missing.",
+        "battery_id": "B0005", "early": 1, "late": 100
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {
+        "action": "inspect_discharge_traces", "trace_required": true,
+        "status": "partial", "stop_reason": "comparability_assessment_pending",
+        "protocol_status": "available"
+      }
+    }
+  ]
+}
