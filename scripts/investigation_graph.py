@@ -12,7 +12,7 @@ from scripts.investigation_findings import FollowUpDecision, InvestigationFindin
 from scripts.investigation_state import InvestigationRequest
 
 
-WORKFLOW_VERSION = "trace-follow-up-v2"
+WORKFLOW_VERSION = "trace-follow-up-v3"
 TOOL_PROMPT = (
     "Investigate the explicit battery/discharge selection. Request both available "
     "evidence tools exactly once, together or in either order. Never change the "
@@ -25,9 +25,13 @@ FOLLOW_UP_PROMPT = (
     "Trace inspection can supply whole-record signed current/voltage/temperature statistics "
     "and located extrema/current steps for the unchanged pair; it cannot segment active "
     "load, classify cutoff, integrate current, prove comparability or diagnose cause. "
-    "Choose inspection when that measured evidence would help the question. For a "
-    "capacity-only question already answered by the comparison, or a gap this tool "
-    "cannot address, stop with partial findings and explain the limit. Missing protocol "
+    "If the question asks to assess test conditions or comparability, choose "
+    "inspect_discharge_traces to collect the available recorded-condition evidence "
+    "before stopping. Inability to prove comparability is a remaining limit after "
+    "inspection, not a reason to skip it. Also choose inspection for requests to "
+    "describe the recorded current, voltage or temperature traces. For a capacity-only "
+    "question already answered by the comparison, or a question whose evidence gap "
+    "these measured traces cannot address, choose stop_with_partial and explain the limit. Missing protocol "
     "does not prevent useful measured-trace inspection. No raw curves or knee-shape "
     "classification are returned. Give one complete sentence under 180 characters "
     "explaining the evidence gap and chosen action using only these tool capabilities. "

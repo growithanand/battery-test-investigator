@@ -18,7 +18,7 @@ A metadata-based protocol lookup returns applicable original passages with docum
 
 After the initial comparison and protocol retrieval, the graph asks the model to choose one follow-up: inspect the selected whole-record traces or stop with partial findings. Python supplies the unchanged selection, verifies returned trace identity against the comparison, and prevents additional follow-up calls. The read-only trace tool and separate selected-pair plotting command describe the full recordings without guessing load boundaries. Citation checks prove source identity, applicability, and literal quote matching, not semantic support; claims still require review. This is an initial metadata-retrieval-plus-generation workflow, not an evaluated complete investigation agent.
 
-A versioned follow-up case set and saved-run evaluator now check decision/execution contracts separately from human evidence review. Repeated live baseline runs, embedding-retrieval comparisons, broader decision/citation evaluation, durable resume, a demonstration interface, and optional Jira/Confluence publishing remain planned. The numerical report command still uses Python calculations and a fixed template without model calls. No external publication is implemented.
+A versioned follow-up case set and saved-run evaluator check decision/execution contracts separately from human evidence review. In the first three-repeat development baseline, the general conditions case skipped required trace inspection in all three runs. An isolated follow-up-prompt correction now inspects traces in all three development repeats; all five other cases retain their expected behavior. Human semantic review remains pending, including missing-protocol limitations in generated prose. Embedding-retrieval comparisons, broader decision/citation evaluation, durable resume, a demonstration interface, and optional Jira/Confluence publishing remain planned. The numerical report command still uses Python calculations and a fixed template without model calls. No external publication is implemented.
 
 The data source is NASA's Battery Data Set. The documentation audit found nine distinct short readmes describing materially different experimental conditions and endpoints. The eventual retrieval component will be evaluated against supplying this compact document collection directly.
 
@@ -155,7 +155,24 @@ Replace `YOUR-RUN-ID` with the actual ID printed by the agent command. The evalu
 
 Automatic checks cover exact request identity, the expected action and stopping reason, recorded execution/return-log consistency, selection/source-hash/operation/revision identity, final trace reference, execution limits and unresolved schema fields. They do not recompute capacities or trace measurements, reread original source bytes, establish citation meaning, or validate free-text causal/comparability claims. A real quote or a valid action name alone does not establish a supported answer. Review the decision reason, original applicable passages, generated claims, limitations and proposed next check separately.
 
-The initial acceptance plan requires three fresh runs per case, all automatic checks passing and human review before accepting that case. Reserve the held-out variants until candidate configuration is fixed. Historical saved-record reviews remain retrospective examples and do not satisfy that repeated baseline or establish model reliability. One older conditions run fails the inspect-before-stopping policy; it used an earlier prompt and is not a measurement of the current prompt. No repeated live evaluation, held-out run, overall accuracy score or completed-release claim is provided yet.
+The acceptance plan requires three fresh runs per case, all automatic checks passing and human review before accepting that case. Reserve the held-out variants until candidate configuration is fixed. Historical saved-record reviews remain retrospective examples and do not satisfy this repeated baseline or establish model reliability.
+
+The first fresh baseline, collected before prompt changes, is saved in [the baseline reference](evaluations/baselines/follow-up-v1-20261026.json). It contains 18 fresh executions: 12 with local inference and six validation/clarification executions that stop before inference. Every case uses the same code, prompts, model digest and settings; Ollama reports 0.40.11 for this collection. Earlier examples used 0.40.10, so performance comparisons with those examples are uncontrolled.
+
+The [follow-up policy experiment](evaluations/experiments/follow-up-policy-20261027.json), collected on 2026-10-27, changes only the runtime follow-up prompt and workflow version. Conditions questions explicitly request the available trace check before stopping with unresolved limits. The final-findings prompt, schemas, tools, case bytes, model digest, server version and settings remain unchanged. Each candidate run uses a fresh process/graph and frozen working-tree source bytes; no retries or tuning occur during collection.
+
+| Development case | Baseline automatic passes | Candidate automatic passes | Runs per configuration |
+| --- | ---: | ---: | ---: |
+| Explicit trace inspection, 1/168 | 3 | 3 | 3 |
+| Reported-capacity-only question, 1/100 | 3 | 3 | 3 |
+| General conditions assessment, 1/168 | 0 | 3 | 3 |
+| Deliberately missing protocol, 1/100 | 3 | 3 | 3 |
+| Missing selection | 3 | 3 | 3 |
+| Reversed selection | 3 | 3 | 3 |
+
+The baseline conditions runs stop because trace inspection cannot establish comparability; those failures are retained. The candidate collects useful descriptive traces and still leaves comparability unresolved. Capacity-only questions retain the stop branch. A separate prose review found that all three missing-document findings omit the missing-protocol warning from their generated limitations, despite correct run state and no invented protocol claims; this remains unresolved in the candidate. Review experiment-endpoint wording as well: the applicable experiment's 30% rated-capacity endpoint must not become a universal NASA dataset criterion.
+
+Independent checks matched all 12 capacity comparisons, six complete trace results and 18 literal claim quotes in the baseline, and all 12 comparisons, nine trace results and 18 quotes in the candidate. Trace checks include every returned statistic and located sample/current step. Absolute floating-point comparison tolerance was 1e-12, not measurement precision. Both collections contain 12 local-inference and six pre-model validation/clarification runs. The compact references retain configuration and individual record hashes; full local runs and assessments remain ignored. These small development counts are not an overall accuracy score or proof of prompt compliance on other questions. Human semantic review, all three reserved variants, remaining release cases and milestone closure remain outstanding.
 
 ## Outputs and calculation
 

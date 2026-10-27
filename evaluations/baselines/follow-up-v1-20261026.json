@@ -1,0 +1,437 @@
+{
+  "baseline_id": "follow-up-v1-20261026",
+  "collected_on": "2026-10-26",
+  "timezone": "Europe/Berlin",
+  "source_commit": "33f141eb4e006f17b9ef099be0e69d699b248da7",
+  "case_set_version": "follow-up-cases-v1",
+  "case_set_sha256": "e44f381b4ba5eeb9b8e222d8360ef0c7ba80b7d0c716abd0f1c8eb035e49d68d",
+  "execution": {
+    "method": "Fresh process and graph per run; round-robin repeats; no automatic retries or prompt changes",
+    "total_runs": 18,
+    "runs_with_local_inference": 12,
+    "pre_model_validation_runs": 6,
+    "runs_per_case": 3,
+    "held_out_cases_executed": 0,
+    "reserved_case_ids": [
+      "reserved-trace-1-100",
+      "reserved-capacity-1-168",
+      "reserved-conditions-1-100"
+    ]
+  },
+  "configuration": {
+    "workflow_version": "trace-follow-up-v2",
+    "model_requested": "qwen3.8:27b-q4_K_M",
+    "trace_analysis_version": "whole-record-traces-v1",
+    "model_used": {
+      "model": "qwen3.8:27b-q4_K_M",
+      "model_digest": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+      "ollama_version": "0.40.11",
+      "settings": {
+        "temperature": 0,
+        "reasoning": false,
+        "num_ctx": 8192,
+        "num_predict": 1024,
+        "keep_alive": "2m"
+      }
+    },
+    "limits": {
+      "model_limit": 4,
+      "tool_limit": 3
+    },
+    "prompt_hashes": {
+      "tools": "3e47d30aa1492e27db6cc97eac4476f984d39e5142f929cdd99ca45e354434ec",
+      "follow_up": "597eed744d786903565ba1d4b37025fc20566e1d757ed4fdbcb1eb0bba5078e0",
+      "findings": "344929c8ad4dccfbfdcdeeb5084dc6375de8f5550ca19672a1dd8475014aa586"
+    },
+    "follow_up_schema_sha256": "c22212c2786af33b268ea088631691d7de15dd0c1383f3b8a836af1f6b629656",
+    "findings_schema_sha256": "18547abf1d074c285b5c38e27565933360d4153bd184eae2b27d8244b2e35da6",
+    "packages": {
+      "langchain": "1.4.7",
+      "langgraph": "1.2.16",
+      "langchain-ollama": "1.1.0",
+      "pydantic": "2.14.1"
+    }
+  },
+  "python_version": "3.12.14",
+  "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+  "case_summaries": [
+    {
+      "case_id": "trace-1-168",
+      "expected_action": "inspect_discharge_traces",
+      "expected_status": "partial",
+      "automatic_passes": 3,
+      "planned_runs": 3,
+      "human_review_status": "pending"
+    },
+    {
+      "case_id": "capacity-1-100",
+      "expected_action": "stop_with_partial",
+      "expected_status": "partial",
+      "automatic_passes": 3,
+      "planned_runs": 3,
+      "human_review_status": "pending"
+    },
+    {
+      "case_id": "conditions-1-168",
+      "expected_action": "inspect_discharge_traces",
+      "expected_status": "partial",
+      "automatic_passes": 0,
+      "planned_runs": 3,
+      "human_review_status": "pending"
+    },
+    {
+      "case_id": "missing-protocol-1-100",
+      "expected_action": "inspect_discharge_traces",
+      "expected_status": "partial",
+      "automatic_passes": 3,
+      "planned_runs": 3,
+      "human_review_status": "pending"
+    },
+    {
+      "case_id": "missing-selection",
+      "expected_action": null,
+      "expected_status": "needs_clarification",
+      "automatic_passes": 3,
+      "planned_runs": 3,
+      "human_review_status": "pending"
+    },
+    {
+      "case_id": "reversed-selection",
+      "expected_action": null,
+      "expected_status": "failed",
+      "automatic_passes": 3,
+      "planned_runs": 3,
+      "human_review_status": "pending"
+    }
+  ],
+  "records": [
+    {
+      "case_id": "trace-1-168",
+      "repeat": 1,
+      "run_id": "df4c4ad209ba47caa9a01fb1d19e65cf",
+      "record_sha256": "0854a76be30b267d91a7554aae477ad30c9b0c4ffda78eb977c31c563128719e",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "elapsed_seconds": 35.33659510000143
+    },
+    {
+      "case_id": "capacity-1-100",
+      "repeat": 1,
+      "run_id": "5c96b4687c384f5395b47a00d443d6ec",
+      "record_sha256": "7e150f875887ac76d2ea80271110a27e2e42cacf5cbe5140a2bd11dddf07a8de",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "elapsed_seconds": 22.812180000000808
+    },
+    {
+      "case_id": "conditions-1-168",
+      "repeat": 1,
+      "run_id": "341ae1366bff4c5db0be9fc05e7bc662",
+      "record_sha256": "a7dc24ed9355b7bc985dcdd832274c2c31ece4912331b4007e8daa65d49c7dd5",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "automated_status": "failed",
+      "failures": [
+        "stopping_matches",
+        "decision_matches",
+        "trace_presence_matches",
+        "completed_checks_match",
+        "trace_identity_matches"
+      ],
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "elapsed_seconds": 24.445863199998712
+    },
+    {
+      "case_id": "missing-protocol-1-100",
+      "repeat": 1,
+      "run_id": "85cd7fbd6b064e029903991fd1dd0c80",
+      "record_sha256": "e52d9afcd12d86fa37085acc7e906c1f3f617da939a63ef53058196537053289",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "action": "inspect_discharge_traces",
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "elapsed_seconds": 16.060529499998665
+    },
+    {
+      "case_id": "missing-selection",
+      "repeat": 1,
+      "run_id": "f272fb716ec2469896197d80785fa45c",
+      "record_sha256": "a11afcf6557ebd103eccfd26ce83a70848bfa509a69c07caaaf13ba35635b5c0",
+      "process_exit": 0,
+      "status": "needs_clarification",
+      "stop_reason": "missing_selection",
+      "action": null,
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "elapsed_seconds": 1.0672199000000546
+    },
+    {
+      "case_id": "reversed-selection",
+      "repeat": 1,
+      "run_id": "c1b8750a52fb46b4ad8b3b21bb4c29f6",
+      "record_sha256": "fdc645a00b2d8ed63a3c182e481db9435d4a089f9ced5b37cbe3fca2f735efa7",
+      "process_exit": 2,
+      "status": "failed",
+      "stop_reason": "invalid_request",
+      "action": null,
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "elapsed_seconds": 1.181477800000721
+    },
+    {
+      "case_id": "trace-1-168",
+      "repeat": 2,
+      "run_id": "d799a2568bd146fc9bf998c9bedac94e",
+      "record_sha256": "928a836e095426e860e4e35ef0a21eceb7ba4b54944363db0817a1f693f40c8a",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "elapsed_seconds": 97.46713909999926
+    },
+    {
+      "case_id": "capacity-1-100",
+      "repeat": 2,
+      "run_id": "b3c1a5cf4f354845a223a4e05093060c",
+      "record_sha256": "af00658b4eb49861db9110fd8bac3c04800c1921bc26cc375645b7cfa1389366",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "elapsed_seconds": 154.49430120000034
+    },
+    {
+      "case_id": "conditions-1-168",
+      "repeat": 2,
+      "run_id": "6199cbf0c22b4c57877fa95f3293ebd5",
+      "record_sha256": "f1bbd9396c8f8aa8bab411e3bdb421e77e973fecb447397441dcd0a105678c3b",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "automated_status": "failed",
+      "failures": [
+        "stopping_matches",
+        "decision_matches",
+        "trace_presence_matches",
+        "completed_checks_match",
+        "trace_identity_matches"
+      ],
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "elapsed_seconds": 263.04369899999983
+    },
+    {
+      "case_id": "missing-protocol-1-100",
+      "repeat": 2,
+      "run_id": "0516ca9e18d04d99b108e787c6fdf048",
+      "record_sha256": "8124cdc7316ea822639f9478c03bd5702b567eabcc74776751532c2b6500c465",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "action": "inspect_discharge_traces",
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "elapsed_seconds": 12.628838299999188
+    },
+    {
+      "case_id": "missing-selection",
+      "repeat": 2,
+      "run_id": "fa0dcc86f54c428d8c8972d19ff58ce0",
+      "record_sha256": "be76c8ccab4cc2ba9a90c75d41fb02d156dbbaa3d62e7ce70c419b6e1897ed67",
+      "process_exit": 0,
+      "status": "needs_clarification",
+      "stop_reason": "missing_selection",
+      "action": null,
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "elapsed_seconds": 0.9664460000003601
+    },
+    {
+      "case_id": "reversed-selection",
+      "repeat": 2,
+      "run_id": "4b256d3c0a704a85a5fdd2e807a181a1",
+      "record_sha256": "8ee64d5554d60a8641f9003ec29cd4a0ff2ec8e9003617be77bd537b258d2020",
+      "process_exit": 2,
+      "status": "failed",
+      "stop_reason": "invalid_request",
+      "action": null,
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "elapsed_seconds": 0.9393371999994997
+    },
+    {
+      "case_id": "trace-1-168",
+      "repeat": 3,
+      "run_id": "bcc7805940ad47d6a2419b34f7c16eb3",
+      "record_sha256": "fadbbdd6b4b76e83a3fbca8a377661faa74f05ca626a5608af5f4c72f05edd00",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "elapsed_seconds": 21.34616040000037
+    },
+    {
+      "case_id": "capacity-1-100",
+      "repeat": 3,
+      "run_id": "57ca8275125a4e43a61802a1b639fca9",
+      "record_sha256": "f58bfe947ce8ab99d9fe00a51cf5ab83140be7e0c21d44b851783c5e8f026050",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "elapsed_seconds": 22.812579500001448
+    },
+    {
+      "case_id": "conditions-1-168",
+      "repeat": 3,
+      "run_id": "6adb2ad0332d486c8bbf32cb3937fded",
+      "record_sha256": "3c5a22abb5c487b07ebe88a0a996f458f4b4ad20fc4fa4271b4f54d33a565d27",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "automated_status": "failed",
+      "failures": [
+        "stopping_matches",
+        "decision_matches",
+        "trace_presence_matches",
+        "completed_checks_match",
+        "trace_identity_matches"
+      ],
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "elapsed_seconds": 33.27503830000023
+    },
+    {
+      "case_id": "missing-protocol-1-100",
+      "repeat": 3,
+      "run_id": "a7423f489aba4821bc22c7fa3da71da1",
+      "record_sha256": "7b359f5fe5a93bebf36411594aa98b23d254cd24e26eced2470fb9c486df3f0b",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "action": "inspect_discharge_traces",
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "elapsed_seconds": 62.819998200000555
+    },
+    {
+      "case_id": "missing-selection",
+      "repeat": 3,
+      "run_id": "d12e62426f784f458fb8b6fa884a7048",
+      "record_sha256": "0b7224a49ff65f3f6c150caad7863efde856f1332e7cc88317a227de17d24ea6",
+      "process_exit": 0,
+      "status": "needs_clarification",
+      "stop_reason": "missing_selection",
+      "action": null,
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "elapsed_seconds": 0.9626075999985915
+    },
+    {
+      "case_id": "reversed-selection",
+      "repeat": 3,
+      "run_id": "e9dfff4102d14dcc9bc4e5bf0684b75b",
+      "record_sha256": "bc5d505aa1f90bb114edfa7cbaababd47d2b2da65bdb9aa2dc54c4a6214f95d7",
+      "process_exit": 2,
+      "status": "failed",
+      "stop_reason": "invalid_request",
+      "action": null,
+      "automated_status": "passed",
+      "failures": [],
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "elapsed_seconds": 0.9655167000000802
+    }
+  ],
+  "independent_source_checks": {
+    "comparison_records_checked": 12,
+    "trace_records_checked": 6,
+    "literal_claim_quotes_checked": 18,
+    "independent_check_method": "SciPy object-structure reads, Decimal capacity arithmetic, Python list extrema/differences and statistics.median",
+    "absolute_float_tolerance": 1e-12,
+    "measurement_precision_claim": false
+  },
+  "observed_issues": [
+    {
+      "issue": "Conditions assessment skips available trace inspection",
+      "case_id": "conditions-1-168",
+      "observed_repeats": 3,
+      "detail": "The model stops because the tool cannot establish comparability; the agreed policy requires collecting useful descriptive traces and retaining unresolved limits."
+    },
+    {
+      "issue": "Generated limitations omit the missing-protocol warning",
+      "case_id": "missing-protocol-1-100",
+      "observed_repeats": 3,
+      "detail": "Run state correctly records unavailable evidence and no protocol claims; generated limitations mention only trace-analysis limits. This is a prose-review finding outside the automatic checker."
+    }
+  ],
+  "review_cues": {
+    "experiment_endpoint_wording": "Review claims using dataset for a 30% rated-capacity endpoint; keep conclusions scoped to the applicable experiment.",
+    "human_semantic_review": "pending",
+    "case_acceptance": "Not established by automatic checks alone; the conditions case also has unresolved automatic failures."
+  },
+  "limits": [
+    "Small development baseline, not a general accuracy or reliability estimate.",
+    "Three held-out variants remain unexecuted; no release or milestone completion is claimed.",
+    "Literal quote/source checks do not establish semantic entailment.",
+    "No segmentation, comparability verdict, physical cause or end-of-life verdict is established.",
+    "Wall times include process startup and varied across runs; they are not a controlled performance benchmark.",
+    "Ollama reports 0.40.11 here; previous examples used 0.40.10, so timing comparisons with those examples are uncontrolled."
+  ],
+  "local_evidence": {
+    "collection_sha256": "2df820c46aa91fefb2f1e5c70cf9e56379458ced8cb02e48275bb3cd50d548b1",
+    "source_audit_sha256": "1be9c7301acd987ceeabfdc9876708e9776aa485b7b7e9bb54df19bcc8c017ed",
+    "storage": "Full local run/assessment files remain under ignored outputs; record byte hashes are retained here."
+  }
+}
