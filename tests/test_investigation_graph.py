@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 import json
+import sys
 
 import pytest
 
@@ -208,6 +209,81 @@ def test_missing_protocol_produces_no_invented_document_claims(evidence_tools):
     state = invoke(model, evidence_tools)
     assert state["status"] == "partial" and state["stop_reason"] == "protocol_evidence_incomplete"
     assert state["findings"]["protocol_claims"] == [] and state["comparison"] is not None
+
+
+PROTOCOL_LIMIT_CASES = [
+    ("available", None),
+    ("partial", "Protocol evidence is incomplete: some applicable sources could not be retrieved or verified."),
+    ("unavailable", "Applicable protocol evidence is unavailable. Recorded measurements alone cannot verify the intended test conditions."),
+]
+
+
+@pytest.mark.parametrize("status, expected_limit", PROTOCOL_LIMIT_CASES)
+@pytest.mark.parametrize("action", ["stop_with_partial", "inspect_discharge_traces"])
+def test_known_protocol_limit_survives_model_omission(evidence_tools, status, expected_limit, action):
+    protocol = deepcopy(PROTOCOL)
+    protocol.update(status=status, issues=[] if status == "available" else [{"reason": "source_missing"}])
+    if status == "unavailable":
+        protocol["evidence"] = []
+    evidence_tools[2]["protocol"] = protocol
+    limits = ["No active-load segmentation.", "Signed current is retained.", "Statistics are not time-weighted."]
+    trace_id = TRACE_EVIDENCE["evidence_id"] if action == "inspect_discharge_traces" else None
+    response = findings_response(protocol, limitations=limits, trace_evidence_id=trace_id)
+    original = response["parsed"].model_dump()
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response(action), response)
+    state = invoke(model, evidence_tools)
+    assert state["status"] == "partial"
+    assert state["findings"]["protocol_evidence_limitation"] == expected_limit
+    assert {key: value for key, value in state["findings"].items()
+            if key != "protocol_evidence_limitation"} == original
+    assert response["parsed"].model_dump() == original and state["protocol"] == protocol
+    assert state["model_attempts"] == len(model.calls) == 3
+    assert state["stop_reason"] == ("protocol_evidence_incomplete" if status != "available" else
+                                    "comparability_assessment_pending" if trace_id else "selected_trace_check_pending")
+
+
+def test_unknown_protocol_status_cannot_produce_findings(evidence_tools):
+    evidence_tools[2]["protocol"]["status"] = "unexpected"
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response(), findings_response())
+    state = invoke(model, evidence_tools)
+    assert state["status"] == "failed" and state["stop_reason"] == "findings_error"
+    assert state["findings"] is None
+
+
+def test_model_cannot_supply_the_workflow_protocol_limit():
+    fields = findings_response()["parsed"].model_dump()
+    with pytest.raises(ValidationError):
+        InvestigationFindings.model_validate({**fields, "protocol_evidence_limitation": "Invented warning."})
+
+
+@pytest.mark.parametrize("status, expected_limit", PROTOCOL_LIMIT_CASES)
+def test_cli_displays_protocol_and_analytical_limits(evidence_tools, monkeypatch, tmp_path, capsys, status, expected_limit):
+    from scripts import run_agent_investigation as runner
+
+    protocol = deepcopy(PROTOCOL)
+    protocol["catalog_sha256"] = "c" * 64
+    protocol.update(status=status, issues=[] if status == "available" else [{"reason": "source_missing"}])
+    if status == "unavailable":
+        protocol["evidence"] = []
+    evidence_tools[2]["protocol"] = protocol
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response(), findings_response(protocol, limitations=["Constructed analytical limit."]))
+    graph = build_investigation_graph(lambda: model, *evidence_tools[0])
+    monkeypatch.setattr(runner, "ROOT", tmp_path)
+    monkeypatch.setattr(runner, "build_investigation_graph", lambda *args, **kwargs: graph)
+    monkeypatch.setattr(sys, "argv", ["run_agent_investigation", "--model", "constructed-model",
+                                     "--battery-id", "B0005", "--early", "1", "--late", "2"])
+    runner.main()
+    output = capsys.readouterr().out
+    saved = json.loads(next((tmp_path / "outputs/agent-investigations").glob("*.json")).read_bytes())
+    assert saved["findings"]["protocol_evidence_limitation"] == expected_limit
+    assert "Limitation: Constructed analytical limit." in output
+    if expected_limit is None:
+        assert "Protocol limitation:" not in output
+    else:
+        assert f"Protocol limitation: {expected_limit}" in output
 
 
 @pytest.mark.parametrize("limits, responses, reason", [

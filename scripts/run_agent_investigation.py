@@ -99,6 +99,10 @@ def main():
             print(f"Selected-trace inspection executed: {result['trace_evidence']['evidence_id']}")
         for claim in result["findings"]["protocol_claims"]:
             print(f"Documented claim: {claim['statement']}\nQuote: {claim['quote']}\nEvidence: {claim['evidence_id']}")
+        if result["findings"]["protocol_evidence_limitation"] is not None:
+            print(f"Protocol limitation: {result['findings']['protocol_evidence_limitation']}")
+        for limitation in result["findings"]["limitations"]:
+            print(f"Limitation: {limitation}")
         print(f"Next check (not executed): {result['findings']['next_check']}")
     print(f"Local run record: {output}")
     if result["status"] == "failed":

@@ -8,11 +8,11 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, Tool
 from langgraph.graph import END, START, StateGraph
 import langsmith
 
-from scripts.investigation_findings import FollowUpDecision, InvestigationFindings, validate_citations
+from scripts.investigation_findings import FollowUpDecision, InvestigationFindings, finalize_findings, validate_citations
 from scripts.investigation_state import InvestigationRequest
 
 
-WORKFLOW_VERSION = "trace-follow-up-v3"
+WORKFLOW_VERSION = "trace-follow-up-v4"
 TOOL_PROMPT = (
     "Investigate the explicit battery/discharge selection. Request both available "
     "evidence tools exactly once, together or in either order. Never change the "
@@ -271,7 +271,7 @@ def build_investigation_graph(
             else:
                 reason = "comparability_assessment_pending" if state["trace_evidence"] else "selected_trace_check_pending"
             return {
-                "model_attempts": attempts, "findings": findings.model_dump(),
+                "model_attempts": attempts, "findings": finalize_findings(findings, state["protocol"]["status"]),
                 "status": "partial", "stop_reason": reason,
                 "trace": [*state["trace"], {"event": "citation_references_checked", "usage": raw.usage_metadata,
                                            "semantic_support": "requires_review"}],

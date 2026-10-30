@@ -23,6 +23,7 @@ class FollowUpDecision(BaseModel):
 
 
 class InvestigationFindings(BaseModel):
+    # Python adds the protocol availability limitation after validating these fields.
     model_config = ConfigDict(strict=True, extra="forbid")
 
     protocol_claims: list[ProtocolClaim] = Field(max_length=2, description="One or two claims if evidence is available; otherwise an empty list")
@@ -31,6 +32,21 @@ class InvestigationFindings(BaseModel):
     trace_evidence_id: str | None = Field(description="Exact accepted trace evidence ID if inspection ran; otherwise null")
     limitations: list[str] = Field(min_length=1, max_length=3)
     next_check: str = Field(min_length=1, max_length=350, description="Recommended check, not a claim that it has been executed")
+
+
+def finalize_findings(findings: InvestigationFindings, protocol_status: str) -> dict:
+    """Preserve generated findings and add a limitation from known retrieval state."""
+    protocol_limits = {
+        "available": None,
+        "partial": "Protocol evidence is incomplete: some applicable sources could not be retrieved or verified.",
+        "unavailable": (
+            "Applicable protocol evidence is unavailable. Recorded measurements alone "
+            "cannot verify the intended test conditions."
+        ),
+    }
+    if protocol_status not in protocol_limits:
+        raise ValueError("Unknown protocol evidence availability status")
+    return {**findings.model_dump(), "protocol_evidence_limitation": protocol_limits[protocol_status]}
 
 
 def validate_citations(findings: InvestigationFindings, protocol: dict, battery_id: str) -> None:
