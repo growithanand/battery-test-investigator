@@ -12,7 +12,7 @@ from scripts.investigation_findings import FollowUpDecision, InvestigationFindin
 from scripts.investigation_state import InvestigationRequest
 
 
-WORKFLOW_VERSION = "trace-follow-up-v4"
+WORKFLOW_VERSION = "trace-follow-up-v6"
 TOOL_PROMPT = (
     "Investigate the explicit battery/discharge selection. Request both available "
     "evidence tools exactly once, together or in either order. Never change the "
@@ -43,7 +43,16 @@ FINDINGS_PROMPT = (
     "requested structured findings, separating documentation from measurements. "
     "If passages exist, give one or two relevant protocol claims, each with its "
     "exact evidence_id and a short exact supporting quote. If none exist, return "
-    "no protocol claims and explain missing evidence. Do not infer physical cause "
+    "no protocol claims and explain missing evidence. In each endpoint or intended "
+    "operating-condition statement, explicitly name the requested battery. Preserve "
+    "battery-specific mappings in the passage: batteries in the same experiment can "
+    "have different voltage cutoffs or other conditions. State only the requested "
+    "battery's supported values, not one battery's cutoff for an entire group. "
+    "Scope endpoints to that battery's documented experiment, never the whole NASA "
+    "dataset. A citation or matching quote "
+    "does not replace that scope in the statement. Present documented conditions "
+    "as intended protocol, not proof that the selected records followed it. "
+    "Do not label a selected record end of life from this comparison. Do not infer physical cause "
     "or establish comparability. If trace_evidence is supplied, copy its evidence_id "
     "to trace_evidence_id, acknowledge that whole-record inspection ran, and recommend "
     "a further check such as reviewing active-load boundaries; segmentation has not run. "

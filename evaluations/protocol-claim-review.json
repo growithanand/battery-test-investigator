@@ -1,0 +1,66 @@
+{
+  "rubric_version": "protocol-claim-review-v1",
+  "defined_on": "2026-10-31",
+  "purpose": "Review the meaning and experiment scope of generated protocol claims against original evidence before accepting findings.",
+  "method": "Read every claim with its cited original passage and applicable-battery metadata. Record a verdict and reason per criterion; keyword or exact-quote matching alone cannot establish semantic support.",
+  "verdicts": ["pass", "fail", "not_applicable"],
+  "criteria": [
+    {
+      "id": "experiment_scope",
+      "pass": "Endpoint and intended operating-condition statements explicitly identify the applicable battery or experiment group. A citation alone does not supply the missing scope.",
+      "fail": "An endpoint or operating condition is described as universal across NASA data, or its applicable experiment is left ambiguous.",
+      "not_applicable": "A source-field definition that makes no endpoint or operating-condition claim, or no protocol claims because evidence is unavailable."
+    },
+    {
+      "id": "source_support",
+      "pass": "The original passage supports the complete statement, including quantities, units, battery-specific mappings and qualifications. A source-field definition is presented as documentation, not an independently verified measurement.",
+      "fail": "An exact quotation accompanies a statement whose meaning, values, mappings or qualifications are unsupported.",
+      "not_applicable": "No protocol claims are made."
+    },
+    {
+      "id": "capacity_basis",
+      "pass": "An endpoint percentage retains its rated-capacity basis and experiment scope; it is distinct from the measured change relative to the earlier selected discharge. No selected record is labelled end of life from the comparison alone.",
+      "fail": "The two percentage bases are conflated, or the supplied capacity comparison is used to label a record end of life.",
+      "not_applicable": "The claim contains no endpoint, capacity-change interpretation or end-of-life conclusion."
+    },
+    {
+      "id": "evidence_boundaries",
+      "pass": "Documentation is kept distinct from proof of actual record conditions. Findings preserve unavailable/partial evidence warnings and do not claim comparability, physical cause or unexecuted analysis.",
+      "fail": "Intended conditions are asserted as verified record behavior, missing evidence is contradicted, or an unsupported investigation conclusion is presented as established.",
+      "not_applicable": "The run stops before findings for clarification or invalid input."
+    }
+  ],
+  "acceptance": "All applicable criteria must pass. Keep automatic execution/citation checks, source-based semantic review and project-owner review as separate results. An unresolved or unreviewed result is not accepted.",
+  "examples": [
+    {
+      "statement": "The dataset's end-of-life criterion was a 30% fade from 2 Ah to 1.4 Ah.",
+      "experiment_scope": "fail",
+      "reason": "The B0005/B0006/B0007/B0018 passage cannot establish an endpoint for all NASA experiment groups."
+    },
+    {
+      "statement": "The end-of-life criterion was a 30% fade in rated capacity, from 2 Ah to 1.4 Ah.",
+      "experiment_scope": "fail",
+      "reason": "The numbers and rated-capacity basis match, but the statement leaves the experiment scope ambiguous."
+    },
+    {
+      "statement": "For the B0005/B0006/B0007/B0018 experiment, the documented endpoint was a 30% fade in rated capacity, from 2 Ah to 1.4 Ah.",
+      "experiment_scope": "pass",
+      "source_support": "pass",
+      "capacity_basis": "pass",
+      "reason": "The statement preserves the applicable experiment and original rated-capacity basis without labelling an individual record."
+    },
+    {
+      "statement": "B0005 reached end of life because the selected comparison shows a 28.624% capacity decrease.",
+      "source_support": "fail",
+      "capacity_basis": "fail",
+      "reason": "The comparison uses the earlier selected discharge as its denominator; it cannot establish the experiment's rated-capacity endpoint or an individual end-of-life label."
+    }
+  ],
+  "evaluation_plan": {
+    "previous_collection": "outputs/follow-up-evaluations/protocol-limits-20261030-a1/collection.json",
+    "candidate": "Repeat the same six development cases plus the existing supplemental partial-source case three times each, with unchanged model, settings, schemas, tools and budgets. Change only the findings prompt and workflow version.",
+    "review_unit": "Every emitted protocol claim plus the complete finding's evidence boundaries; preserve run IDs, record hashes, criterion verdicts and reasons.",
+    "reserved_variants": "Keep all three reserved question variants unexecuted during this development correction.",
+    "limits": "Small repeated development cases measure this correction only. They do not establish broad accuracy, an automated semantic validator or project-owner acceptance. Recommended-next-check completeness is a separate review."
+  }
+}

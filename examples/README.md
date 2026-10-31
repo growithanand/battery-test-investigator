@@ -11,9 +11,9 @@ These small reference artifacts summarize NASA B0005 using `scripts/inspect_samp
 The source manifest is in `data/manifests/B0005.json`. Raw downloads are excluded from Git. Reproduce the files with:
 
 ```powershell
-.\.venv-py315\Scripts\python.exe scripts/fetch_sample.py
-.\.venv-py315\Scripts\python.exe scripts/inspect_sample.py
-.\.venv-py315\Scripts\python.exe -m scripts.run_investigation
+.\.venv\Scripts\python.exe scripts/fetch_sample.py
+.\.venv\Scripts\python.exe scripts/inspect_sample.py
+.\.venv\Scripts\python.exe -m scripts.run_investigation
 ```
 
 New runs write to ignored `outputs/`, leaving this reviewed reference snapshot unchanged. Setup instructions are in the [project README](../README.md).
