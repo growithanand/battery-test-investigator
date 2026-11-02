@@ -1,0 +1,46 @@
+{
+  "rubric_version": "recommendation-review-v2",
+  "defined_on": "2026-11-02",
+  "purpose": "Review whether next_check gives the engineer a justified next step rather than a workflow control label.",
+  "method": "Read the recommendation with the request, evidence availability, executed checks and limitations. Record explicit judgments and reasons; sentence length or keyword matching cannot establish usefulness.",
+  "criteria": [
+    {
+      "id": "engineering_meaning",
+      "pass": "Plain language describes an engineering check, or explains that no further check is needed for the narrowly answered request.",
+      "fail": "Empty text, a bare control/tool label or text without an interpretable engineering next step."
+    },
+    {
+      "id": "request_relevance",
+      "pass": "The recommendation addresses a remaining gap in the question. A reported-capacity-only calculation may need no further check within that request, while broader limits remain explicit.",
+      "fail": "A narrow answered question is treated as requiring unrelated analysis, or an unresolved conditions question is described as requiring no further assessment."
+    },
+    {
+      "id": "missing_evidence",
+      "pass": "When the question needs protocol context and applicable evidence is unavailable or incomplete, the recommendation explicitly addresses recovering or verifying unavailable sources. Other trace checks may be proposed afterward.",
+      "fail": "Missing documentation is ignored, or records alone are treated as sufficient to verify the unavailable intended protocol.",
+      "not_applicable": "All applicable protocol evidence is available, or the already answered question asks only for reported capacities and their change. The latter retains missing-evidence warnings without requiring a broader investigation."
+    },
+    {
+      "id": "execution_and_limits",
+      "pass": "Proposed checks are distinguished from executed checks. No completed segmentation, established comparability, physical cause, individual end-of-life verdict or globally complete investigation is invented.",
+      "fail": "The recommendation repeats an already executed check without a new purpose, claims proposed work has run, or removes unresolved engineering limits."
+    }
+  ],
+  "automatic_guard": "Reject empty/formatting-only text and either bare permitted follow-up action, ignoring case, surrounding whitespace, quotation marks, backticks and terminal periods. Reject findings without retry or replacement; this is not semantic validation of longer prose.",
+  "acceptance": "Every applicable criterion must pass for each reviewed finding. Keep execution checks, the narrow code guard, source-based claim review, recommendation review and project-owner acceptance separate.",
+  "examples": [
+    {"next_check": "stop_with_partial", "engineering_meaning": "fail", "reason": "A workflow action does not tell the engineer what remains to investigate."},
+    {"next_check": "No further check is needed for the requested reported-capacity comparison; condition comparability remains unresolved.", "request_relevance": "pass", "reason": "The calculation answers the narrow request without claiming the broader investigation is complete."},
+    {"next_check": "Retrieve and verify the applicable protocol documentation before assessing whether the recorded conditions followed it.", "missing_evidence": "pass", "reason": "The proposed check addresses unavailable documentation without claiming it has been recovered."}
+  ],
+  "evaluation_plan": {
+    "previous_collection": "outputs/follow-up-evaluations/claim-scope-20261031-a2/collection.json",
+    "candidate": "Repeat the same six development cases, existing supplemental partial-source case and the two separately registered capacity-only documentation-gap cases three times each, with frozen source/configuration and no retries or tuning within collection.",
+    "additional_cases": "evaluations/recommendation-cases.json",
+    "revision": "Version 2 qualifies documentation recovery by request relevance before the two capacity-only documentation-gap cases are executed. Previous v1 reviews and rubric bytes are preserved in the experiment reference.",
+    "unchanged": "Model/digest/server/settings, model-output schemas, tool and follow-up prompts, numerical tools, protocol retrieval, case/fixture bytes and execution budgets.",
+    "changed": "Findings prompt, workflow version and a narrow recommendation guard after structured-output validation.",
+    "reserved_variants": "Keep the three reserved variants unused during this development correction.",
+    "limits": "Small development observations are not a reliability estimate. Claim support and recommendation usefulness need explicit review; the code guard cannot establish either. Project-owner review remains pending."
+  }
+}

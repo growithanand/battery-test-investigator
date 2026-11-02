@@ -49,6 +49,40 @@ def finalize_findings(findings: InvestigationFindings, protocol_status: str) -> 
     return {**findings.model_dump(), "protocol_evidence_limitation": protocol_limits[protocol_status]}
 
 
+RECOMMENDATION_GUIDANCE = {
+    "recover_protocol_evidence": (
+        "Recover and verify the unavailable applicable protocol documentation before assessing compliance."
+    ),
+    "review_remaining_conditions": (
+        "Review active-load boundaries to distinguish active discharge from startup and post-load readings."
+    ),
+    "answer_stopped_request": (
+        "No further check is needed for the reported-capacity comparison; "
+        "broader comparability and physical cause remain unresolved."
+    ),
+}
+
+
+def select_recommendation_guidance(protocol_status: str, action: str) -> dict:
+    """Choose a recommendation focus from known evidence state and accepted action."""
+    if protocol_status not in {"available", "partial", "unavailable"}:
+        raise ValueError("Unknown protocol evidence availability status")
+    if action == "stop_with_partial":
+        focus = "answer_stopped_request"
+    elif action == "inspect_discharge_traces":
+        focus = "review_remaining_conditions" if protocol_status == "available" else "recover_protocol_evidence"
+    else:
+        raise ValueError("Unknown accepted follow-up action")
+    return {"focus": focus, "next_check_hint": RECOMMENDATION_GUIDANCE[focus]}
+
+
+def validate_next_check(next_check: str) -> None:
+    """Reject empty text and bare workflow actions, not assess prose usefulness."""
+    normalized = next_check.strip().strip(" \t\r\n\v\f`'\".").casefold()
+    if not normalized or normalized in {"inspect_discharge_traces", "stop_with_partial", *RECOMMENDATION_GUIDANCE}:
+        raise ValueError("Next check must explain an engineering recommendation, not a bare workflow action")
+
+
 def validate_citations(findings: InvestigationFindings, protocol: dict, battery_id: str) -> None:
     """Check source identity/applicability and literal quotes, not semantic entailment."""
     passages = {item["evidence_id"]: item for item in protocol["evidence"]}

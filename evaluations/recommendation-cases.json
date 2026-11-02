@@ -1,0 +1,25 @@
+{
+  "case_set_version": "recommendation-cases-v1",
+  "defined_on": "2026-11-02",
+  "scope": "Supplemental development cases for an answered reported-capacity question with unavailable or partial protocol evidence. These reuse the original development question/pair, not a reserved variant.",
+  "runs_per_case": 3,
+  "cases": [
+    {
+      "case_id": "capacity-missing-protocol-1-100",
+      "split": "supplemental_development",
+      "release_cases": ["E02", "E05"],
+      "request": {"question": "Compare only the reported capacities and their percentage change relative to the earlier record.", "battery_id": "B0005", "early": 1, "late": 100},
+      "fixture": "deliberately_missing_applicable_protocol",
+      "expected": {"action": "stop_with_partial", "trace_required": false, "status": "partial", "stop_reason": "protocol_evidence_incomplete", "protocol_status": "unavailable"}
+    },
+    {
+      "case_id": "capacity-partial-protocol-1-100",
+      "split": "supplemental_development",
+      "release_cases": ["E02", "E05"],
+      "request": {"question": "Compare only the reported capacities and their percentage change relative to the earlier record.", "battery_id": "B0005", "early": 1, "late": 100},
+      "fixture": "deliberately_missing_protocol_supplement",
+      "expected": {"action": "stop_with_partial", "trace_required": false, "status": "partial", "stop_reason": "protocol_evidence_incomplete", "protocol_status": "partial"}
+    }
+  ],
+  "manual_review": "No further check is needed within the answered capacity-only question. Retain the code-owned missing/partial protocol warning, unresolved broader conclusions and the partial workflow status; do not claim full investigation completion."
+}

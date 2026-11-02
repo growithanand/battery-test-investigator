@@ -316,6 +316,73 @@ def test_schema_refuses_established_comparability_or_cause():
             findings_response(**fields)
 
 
+@pytest.mark.parametrize("action", ["stop_with_partial", "inspect_discharge_traces"])
+@pytest.mark.parametrize("next_check", [
+    "stop_with_partial", "inspect_discharge_traces", " \n\t ", "```", " `STOP_WITH_PARTIAL`. ", "` . `",
+    "recover_protocol_evidence", "review_remaining_conditions", "answer_stopped_request",
+])
+def test_empty_or_bare_action_recommendation_fails_without_retry(evidence_tools, action, next_check):
+    inspected = action == "inspect_discharge_traces"
+    response = findings_response(next_check=next_check,
+                                 trace_evidence_id=TRACE_EVIDENCE["evidence_id"] if inspected else None)
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response(action), response)
+    state = invoke(model, evidence_tools)
+    assert state["status"] == "failed" and state["stop_reason"] == "findings_error"
+    assert state["findings"] is None and state["comparison"] == COMPARISON
+    assert len(model.calls) == state["model_attempts"] == 3 and not model.responses
+    assert state["tool_attempts"] == (3 if inspected else 2)
+    assert evidence_tools[1] == (["comparison", "protocol", "trace"] if inspected else ["comparison", "protocol"])
+    assert state["trace"][-1]["error_type"] == "ValueError"
+
+
+@pytest.mark.parametrize("protocol_status", ["available", "partial", "unavailable"])
+def test_bounded_no_further_check_is_preserved_without_marking_investigation_complete(evidence_tools, protocol_status):
+    protocol = evidence_tools[2]["protocol"]
+    protocol["status"] = protocol_status
+    if protocol_status != "available":
+        protocol["issues"] = [{"reason": "source_missing"}]
+    if protocol_status == "unavailable":
+        protocol["evidence"] = []
+    recommendation = (
+        "No further check is needed for the reported-capacity comparison; "
+        "condition comparability remains unresolved."
+    )
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response(), findings_response(protocol, next_check=recommendation))
+    state = invoke(model, evidence_tools, {**REQUEST, "question": "Compare only reported capacities and their change."})
+    assert state["findings"]["next_check"] == recommendation
+    assert state["status"] == "partial"
+    assert state["stop_reason"] == ("selected_trace_check_pending" if protocol_status == "available" else "protocol_evidence_incomplete")
+    assert (state["findings"]["protocol_evidence_limitation"] is None) == (protocol_status == "available")
+    assert state["findings"]["comparability"] == "not_established" and state["trace_evidence"] is None
+    assert state["model_attempts"] == 3 and state["tool_attempts"] == 2
+
+
+@pytest.mark.parametrize("protocol_status", ["available", "partial", "unavailable"])
+@pytest.mark.parametrize("action", ["stop_with_partial", "inspect_discharge_traces"])
+def test_final_model_receives_code_selected_guidance_from_accepted_state(evidence_tools, protocol_status, action):
+    protocol = evidence_tools[2]["protocol"]
+    protocol["status"] = protocol_status
+    if protocol_status != "available":
+        protocol["issues"] = [{"reason": "source_missing"}]
+    if protocol_status == "unavailable":
+        protocol["evidence"] = []
+    inspected = action == "inspect_discharge_traces"
+    response = findings_response(protocol, trace_evidence_id=TRACE_EVIDENCE["evidence_id"] if inspected else None)
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]), decision_response(action), response)
+    state = invoke(model, evidence_tools)
+    payload = json.loads(model.calls[-1]["messages"][1].content)
+    expected = ("answer_stopped_request" if not inspected else
+                "review_remaining_conditions" if protocol_status == "available" else "recover_protocol_evidence")
+    assert payload["recommendation_guidance"]["focus"] == expected
+    assert payload["recommendation_guidance"] == state["recommendation_guidance"]
+    assert payload["request"] == REQUEST and payload["protocol"] == protocol
+    assert payload["trace_evidence"] == (TRACE_EVIDENCE if inspected else None)
+    assert state["findings"]["next_check"] == response["parsed"].next_check
+    assert state["model_attempts"] == 3 and state["tool_attempts"] == (3 if inspected else 2)
+
+
 def test_quote_reference_check_is_not_a_semantic_entailment_test():
     findings = findings_response()["parsed"]
     findings.protocol_claims[0].statement = "Synthetic deliberately unsupported interpretation."
@@ -335,8 +402,10 @@ def test_new_invocation_cannot_inherit_injected_old_results(evidence_tools):
     graph = build_investigation_graph(lambda: pytest.fail("Missing request must stop"), *tools)
     state = graph.invoke({"request": {"question": "Compare"}, "comparison": COMPARISON,
                           "protocol": PROTOCOL, "findings": {"old": "result"},
-                          "trace_evidence": TRACE_EVIDENCE, "follow_up": {"action": "inspect_discharge_traces"}})
+                          "trace_evidence": TRACE_EVIDENCE, "follow_up": {"action": "inspect_discharge_traces"},
+                          "recommendation_guidance": {"focus": "injected", "instruction": "Use stale guidance."}})
     assert state["comparison"] is state["protocol"] is state["findings"] is state["trace_evidence"] is state["follow_up"] is None and not calls
+    assert state["recommendation_guidance"] is None
 
 
 @pytest.mark.parametrize("failure", ["schema", "truncated", "extra_tool"])
