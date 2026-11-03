@@ -1,0 +1,859 @@
+{
+  "evaluation_id": "reserved-follow-up-v12-20261102",
+  "collected_on": "2026-11-02",
+  "timezone": "Europe/Berlin",
+  "fixed_candidate_commit": "4d9057fbcd6508f6b1a0626e94ac146028f46de7",
+  "candidate_worktree_clean_during_collection": true,
+  "no_runtime_changes_tuning_or_retries": true,
+  "purpose": "First recorded evaluation of the three original reserved wording/pair variants, against the already committed workflow. Preserve coverage and semantic gaps separately from successful execution.",
+  "case_set_version": "follow-up-cases-v1",
+  "case_set_sha256": "e44f381b4ba5eeb9b8e222d8360ef0c7ba80b7d0c716abd0f1c8eb035e49d68d",
+  "pre_execution_plan": {
+    "collection_type": "first_reserved_question_evaluation",
+    "planned_at": "2026-11-02T09:39:02.766188+00:00",
+    "client_date": "2026-11-02",
+    "timezone": "Europe/Berlin",
+    "frozen_commit": "4d9057fbcd6508f6b1a0626e94ac146028f46de7",
+    "case_set_sha256": "e44f381b4ba5eeb9b8e222d8360ef0c7ba80b7d0c716abd0f1c8eb035e49d68d",
+    "cases": [
+      {
+        "case_id": "reserved-trace-1-100",
+        "split": "held_out",
+        "release_cases": [
+          "E02"
+        ],
+        "request": {
+          "question": "Describe the recorded current, voltage and temperature extrema and their source locations for the selected pair. Keep active-load boundaries unresolved.",
+          "battery_id": "B0005",
+          "early": 1,
+          "late": 100
+        },
+        "fixture": "registered_protocol_catalog",
+        "expected": {
+          "action": "inspect_discharge_traces",
+          "trace_required": true,
+          "status": "partial",
+          "stop_reason": "comparability_assessment_pending",
+          "protocol_status": "available"
+        }
+      },
+      {
+        "case_id": "reserved-capacity-1-168",
+        "split": "held_out",
+        "release_cases": [
+          "E01"
+        ],
+        "request": {
+          "question": "Using the supplied capacity fields alone, calculate the difference in Ah and percent relative to the earlier selected discharge.",
+          "battery_id": "B0005",
+          "early": 1,
+          "late": 168
+        },
+        "fixture": "registered_protocol_catalog",
+        "expected": {
+          "action": "stop_with_partial",
+          "trace_required": false,
+          "status": "partial",
+          "stop_reason": "selected_trace_check_pending",
+          "protocol_status": "available"
+        }
+      },
+      {
+        "case_id": "reserved-conditions-1-100",
+        "split": "held_out",
+        "release_cases": [
+          "E02",
+          "E06"
+        ],
+        "request": {
+          "question": "Before judging whether these discharges were tested under comparable conditions, inspect their recorded signals and explain what evidence is still missing.",
+          "battery_id": "B0005",
+          "early": 1,
+          "late": 100
+        },
+        "fixture": "registered_protocol_catalog",
+        "expected": {
+          "action": "inspect_discharge_traces",
+          "trace_required": true,
+          "status": "partial",
+          "stop_reason": "comparability_assessment_pending",
+          "protocol_status": "available"
+        }
+      }
+    ],
+    "runs_per_case": 3,
+    "total_runs": 9,
+    "execution": "Fresh process/graph per run; round-robin repeats; unchanged prompts/model/settings/tools/source/case bytes. No retries or tuning on reserved results.",
+    "prior_retained_records_checked": 263,
+    "prior_exact_request_matches": [],
+    "review_dimensions": [
+      "Original execution expectations",
+      "Independent capacity arithmetic, trace payload/source positions and literal quotations",
+      "Decision-reason capability/relevance",
+      "Applicable claim support and capacity basis",
+      "Recommendation relevance and executed/proposed distinction",
+      "Requested evidence coverage in structured records and CLI"
+    ],
+    "coverage_rule": "A successful tool call does not establish a complete answer. Inventory supported extrema and source locations; do not infer missing locations. Keep missing evidence and partial report presentation explicit.",
+    "after_execution": "These three variants cease to be unused reserves. Preserve the results; future tuning needs separately defined fresh evaluation questions.",
+    "limits": [
+      "Same B0005 source and familiar pair selections; wording/pair robustness check, not new-battery generalization.",
+      "Small three-repeat counts are not accuracy/reliability estimates.",
+      "Project-owner review and milestone acceptance remain pending."
+    ]
+  },
+  "collection_started_at": "2026-11-02T09:41:39.304072+00:00",
+  "collection_completed_at": "2026-11-02T09:45:12.611249+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "configuration": {
+    "workflow_version": "trace-follow-up-v12",
+    "model_requested": "qwen3.8:27b-q4_K_M",
+    "trace_analysis_version": "whole-record-traces-v1",
+    "model_used": {
+      "model": "qwen3.8:27b-q4_K_M",
+      "model_digest": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+      "ollama_version": "0.40.11",
+      "settings": {
+        "temperature": 0,
+        "reasoning": false,
+        "num_ctx": 8192,
+        "num_predict": 1024,
+        "keep_alive": "2m"
+      }
+    },
+    "limits": {
+      "model_limit": 4,
+      "tool_limit": 3
+    },
+    "prompt_hashes": {
+      "tools": "3e47d30aa1492e27db6cc97eac4476f984d39e5142f929cdd99ca45e354434ec",
+      "follow_up": "43d8e9debc39733e997099e55be25de2dc5c12a15b554bca35d0f7df1457862c",
+      "findings": "cd7f3608d13dfecd18e311f33e3fca6907e88ccb367788f68ca9022c0111cc2f"
+    },
+    "follow_up_schema_sha256": "c22212c2786af33b268ea088631691d7de15dd0c1383f3b8a836af1f6b629656",
+    "findings_schema_sha256": "18547abf1d074c285b5c38e27565933360d4153bd184eae2b27d8244b2e35da6",
+    "packages": {
+      "langchain": "1.4.7",
+      "langgraph": "1.2.16",
+      "langchain-ollama": "1.1.0",
+      "pydantic": "2.14.1"
+    }
+  },
+  "tracked_candidate_file_hashes": {
+    ".gitattributes": "cb48d0dfceb8776fd2a3f8c2294afc525f4f4c2bcaaa394618d6ee496a7c9937",
+    ".gitignore": "62d9a514026fa4636127118371d7f24d3204e90a335d5fd354950bd61f6df61d",
+    ".vscode/launch.json": "ccc865b428e43f7cb9cafe5e027113e241e706193fbb7cfb44b06404829e5188",
+    "README.md": "26575db935de4ce27a520c915fd20d03f8cfa6fd878d48d0e4377885244f0ee4",
+    "data/manifests/B0005.json": "56735681d7699475aaeb7294bc7959ba36f9987a4f609976e576ca77f84aec2d",
+    "data/manifests/protocol-sources.json": "08e0b028aa4291253706517a5a76d6c9bde70d4b216fdb46be7ef79b09474804",
+    "evaluations/baselines/follow-up-v1-20261026.json": "1cd5dac3aebbdd86f18f65d9c0a7b3bfb5af0910bbe96f968144e6cc30ddb893",
+    "evaluations/experiments/claim-scope-20261031.json": "abd2213cb3783cf3d5c79cbef7c2a3983ce00471e0e9cbb2dc0378610a11216f",
+    "evaluations/experiments/follow-up-policy-20261027.json": "f56daf82e249bd520d95755908574767f67247133bb28dee572fdf2b04be9cc9",
+    "evaluations/experiments/protocol-limits-20261030.json": "e2b285e6ba798ed12fbf7dfa6936ac8605263deee8d4af2ce78d6fc518f5962b",
+    "evaluations/experiments/recommendations-20261102.json": "65ab0c8b56ff1ceb375129035ddb414ec7d9e7251ad7c44b3af5461bb4dd915e",
+    "evaluations/follow-up-cases.json": "e44f381b4ba5eeb9b8e222d8360ef0c7ba80b7d0c716abd0f1c8eb035e49d68d",
+    "evaluations/protocol-claim-review.json": "a91372f2260c9d9202637bee73b2ae7271a0480f91457827a96560167a9755f7",
+    "evaluations/recommendation-cases.json": "50b3e865f1ea82bced28941b915e7959edf8c4fd6e77f23b7dae0715df0531ce",
+    "evaluations/recommendation-review.json": "5535cd62b86a09b86ef4b111eb57adef362769579e15004a02c7a8888de1d3de",
+    "examples/B0005-comparison.json": "deb64dc4e1cc77839c22b6db98d85b7cb196cb86f4840168a9ac9bb8f618eea5",
+    "examples/B0005-discharge-summary.csv": "1372bde88fc28f2490597271b059d4c28e2aae008a4ea111412c8ec30a7f28f4",
+    "examples/B0005-inspection.json": "b491d4cbc85cca5f1d254cbfbafef2548b12bc0e63431cbc7534badff43e8fe4",
+    "examples/B0005-inspection.png": "5fb8f99923facab1c8110b94e2c47305822b162a930ccd8e54878e7ba3a2e700",
+    "examples/README.md": "6360b6c35244c1b83464a3697396516b9abf611f58c8a5ce6f3958d9e21ade67",
+    "pytest.ini": "d4b5e17ffc651774ea8296eebaca6cf9720c7d4eb225d2c1282e19c075ac7224",
+    "requirements-agent-lock.txt": "102bfb55f9a80c13d53488d3f068a1177371fa770b3d14052133654d36c0c1dc",
+    "requirements-agent.txt": "5d25fea51305074c9f71e35ac8a34cfe9b277c3f4c983dcaf98b34a4c51db885",
+    "requirements-dev.txt": "8636f9ab1a075be9f3039e2a6471837259c4f36b625bcaf7a3d9a1edd2419c6d",
+    "requirements-lock.txt": "73c0eaa78a058b20c7584bf4931f583668d0cf6494fd36b760f2bd3fa280dd17",
+    "requirements.txt": "76d69c9e6d52e5cce035699ac97aba5b53a9a72f1f645f522535235161ec1dd2",
+    "scripts/__init__.py": "7c2828b14562698ce32d9af0a7c68665376362b870acae7bfa5857e29c2f5509",
+    "scripts/check_model_connection.py": "a1ff78d3a9c7d1bf7faee4aac92633168519cf1ce0df2ef86d44e54dc977585f",
+    "scripts/evaluate_follow_up.py": "7bb760fc4be78bc1986366f647a7527284ffb32cb3a9b00f9b2cede6918dc70f",
+    "scripts/fetch_protocols.py": "eca06841fdc70343206ef8690ee30950ca92b7fba2c534dea9277369f282470c",
+    "scripts/fetch_sample.py": "2cdf90fb9419cf3ef499262bdbd28526f563d8aefab193054214e54c3a54ed6f",
+    "scripts/inspect_sample.py": "2cc2df0b52f1d1c9c2dd21b9173213c0098220981a4ae3991868941eeab3f135",
+    "scripts/inspect_selected_traces.py": "c2f51751f294ae7f1db280bcae4fa8f8ee92829e2d2bde990ff6dbd0e7897fa6",
+    "scripts/investigation_findings.py": "b7af7b573216d10cfdc180d3b9b6dbe1cb45755cb3d583b0c230b9642cdf3bfb",
+    "scripts/investigation_graph.py": "cf86f9d1b003465dfb115149b50095f1b35bdc717b16f204e8856d6d1fbfcca1",
+    "scripts/investigation_state.py": "d402389f600a5c9554155f232da09af1f049171301603153d9f1edbd9c6e20ac",
+    "scripts/investigation_tools.py": "c32c77b177b56c85a0153bdbb247b4ec4d4dac9c81ee2a1967d2ca006b779514",
+    "scripts/local_model.py": "41f3a807fe23be62b65d4e41651cde343fbec66b4ca3987ead5f8fc01a490af2",
+    "scripts/model_tools.py": "1e7835ca08528a60327bd28652696a3d5626c405c67c94b0794b65dffc83c127",
+    "scripts/protocol_evidence.py": "ef5bbff15c37e9e891094f80ebda90342517a6642784ac18ba74747427c65629",
+    "scripts/run_agent_investigation.py": "c5f51142f37bf8a55a94e6650f1d0323c0c4aaa94eea2746b6fe6726e9ad7d82",
+    "scripts/run_investigation.py": "f619a0b6b4a02e67fdb56a697163c0a0be9a938783166e243ed39191f9edc5e3",
+    "scripts/trace_inspection.py": "712f9c371318df34a033f4d900d9d2aaa66578678d1161d4c3bcba6cc777fc61",
+    "tests/test_follow_up_evaluation.py": "8158a0aec26b1d9f4b549313d056df66fb40e5bc0586f1561e9825ab2cbbdc68",
+    "tests/test_inspection.py": "70508c6a449586cd4bc403a8ea84610218ec2228915203e214bf4dc3d435f197",
+    "tests/test_investigation.py": "a74797f90b50196d9fe8164a4d86b3c6ed67d54d94360467c2837bb5527413cd",
+    "tests/test_investigation_graph.py": "81af1027ee4e40e080584217fe99ea7d61567788ae82579efcfbe559a11afe9a",
+    "tests/test_investigation_state.py": "a3126bd6213fbff09ec13752a2d4417761208669f732528effc470a5133787c3",
+    "tests/test_investigation_tools.py": "9ac6d7b120e020de07fb333a999b3c82bc06a956a8e66dbe06722087dacc7f38",
+    "tests/test_local_model.py": "628b282c49c85b687904d1236d33cd4b4eff8eef59f409f42627209ddbbb77a8",
+    "tests/test_model_connection.py": "3aa508c9a2d8135c1b2339d141d15bcdddea115b34693bd673f0e3fa278562ef",
+    "tests/test_protocol_evidence.py": "56f8385d65eb51a0c42cb272a3eb285fe1200aba5692f748d8faa266e043d1dd",
+    "tests/test_trace_inspection.py": "f3d3ddf6a631ea0714c1517fa04fbe3772e02533e9a7937f7c551658fe7bbf3b"
+  },
+  "prior_development_reference": "evaluations/experiments/recommendations-20261102.json",
+  "prior_development_reference_sha256": "65ab0c8b56ff1ceb375129035ddb414ec7d9e7251ad7c44b3af5461bb4dd915e",
+  "automatic_results": {
+    "executions": 9,
+    "passed": 9,
+    "failed": 0,
+    "scope": "Original saved-run action/execution/identity/budget/status/reference checks plus available-protocol warning field and CLI preservation checks. These do not establish prose support, recommendation relevance or requested-response completeness."
+  },
+  "independent_source_audit": {
+    "collection_sha256": "375c27e9de2744e17328a9b4c2b40e9019aaad453f3ef337754d577eab0c1fe5",
+    "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+    "record_count": 9,
+    "comparison_records_checked": 9,
+    "trace_records_checked": 6,
+    "literal_claim_quotes_checked": 18,
+    "protocol_limit_records_checked": 9,
+    "guidance_records_checked": 9,
+    "cli_outputs_checked": 9,
+    "execution_expectation_failures": 0,
+    "findings_rejections": [],
+    "independent_check_method": "SciPy object reads, Decimal capacity arithmetic, Python list extrema/differences and statistics.median; evaluator expectations retain failures.",
+    "absolute_float_tolerance": 1e-12,
+    "measurement_precision_claim": false,
+    "human_semantic_review": "pending"
+  },
+  "source_based_review": {
+    "review_type": "explicit_source_based_judgments",
+    "method": "Read every emitted decision reason, complete findings and next_check with its original request, applicable source passages, independent trace-location inventory and terminal output. Verify identical grouped content for all three repeats; record judgments and reasons by criterion. This is a recorded review, not an automatic semantic validator or project-owner acceptance.",
+    "collection_sha256": "375c27e9de2744e17328a9b4c2b40e9019aaad453f3ef337754d577eab0c1fe5",
+    "claim_rubric": "evaluations/protocol-claim-review.json",
+    "claim_rubric_sha256": "a91372f2260c9d9202637bee73b2ae7271a0480f91457827a96560167a9755f7",
+    "recommendation_rubric": "evaluations/recommendation-review.json",
+    "recommendation_rubric_sha256": "5535cd62b86a09b86ef4b111eb57adef362769579e15004a02c7a8888de1d3de",
+    "review_plan_sha256": "6f8b524dce09bbdafd3f47e627fd9a123066bd72b3d1ce14759e2f738bec5426",
+    "criteria_unchanged_after_execution": true,
+    "summary": {
+      "protocol_claims_reviewed": 18,
+      "protocol_claims_with_failed_criteria": 0,
+      "recommendations_reviewed": 9,
+      "recommendations_with_failed_criteria": 3,
+      "decision_reasons_reviewed": 9,
+      "decision_reasons_with_failed_criteria": 3,
+      "requested_response_reviews": 9,
+      "requested_response_failures": 3,
+      "recommendations_reusing_code_hints": 9,
+      "overall_acceptance": "not_established",
+      "project_owner_review": "pending"
+    },
+    "groups": [
+      {
+        "case_id": "reserved-trace-1-100",
+        "request": {
+          "question": "Describe the recorded current, voltage and temperature extrema and their source locations for the selected pair. Keep active-load boundaries unresolved.",
+          "battery_id": "B0005",
+          "early": 1,
+          "late": 100
+        },
+        "reviewed_run_ids": [
+          "1eb411a39612406a8d72b70017ac2878",
+          "83762e23b4de4fd3bb6176c874a75d43",
+          "b4251be50be248768f08393f12454d1d"
+        ],
+        "identical_review_content_sha256": "9b54e6b306926f099be092f185bd91770a275704d37bf2a2e70773f60d73d92b",
+        "follow_up": {
+          "action": "inspect_discharge_traces",
+          "reason": "The question requests recorded current, voltage, and temperature extrema and their source locations, which trace inspection can supply for the unchanged pair."
+        },
+        "decision_reason_review": {
+          "verdict": "fail",
+          "reason": "Choosing trace inspection is relevant, but the reason says it can supply the requested extrema and their locations without qualification. The actual returned evidence supports only 8 of 12 extrema locations, so this overstates tool capability."
+        },
+        "claim_review": [
+          {
+            "claim_index": 1,
+            "statement": "For battery B0005, discharge was intended to be carried out at a constant current (CC) level of 2A until the battery voltage fell to 2.7V.",
+            "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+            "quote": "Discharge was carried out at a constant current (CC) level of 2A until the battery voltage fell to 2.7V, 2.5V, 2.2V and 2.5V for batteries 5 6 7 and 18 respectively.",
+            "criteria": {
+              "experiment_scope": {
+                "verdict": "pass",
+                "reason": "The statement explicitly names B0005 and retains its intended 2 A / 2.7 V mapping; it does not assign this cutoff to the other batteries."
+              },
+              "source_support": {
+                "verdict": "pass",
+                "reason": "The applicable original description maps battery 5 to 2.7 V at a constant-current magnitude of 2 A. Intended conditions are distinguished from observed compliance."
+              },
+              "capacity_basis": {
+                "verdict": "not_applicable",
+                "reason": "No rated-capacity endpoint, end-of-life conclusion or interpretation of the measured percentage change is asserted by this claim."
+              },
+              "evidence_boundaries": {
+                "verdict": "pass",
+                "reason": "The complete findings retain comparability not_established and physical_cause not_determined. Intended protocol or field definitions are not used to establish actual record compliance; no unavailable-source warning is required for this available-document fixture."
+              }
+            }
+          },
+          {
+            "claim_index": 2,
+            "statement": "The recorded fields for discharge include Voltage_measured, Current_measured, and Temperature_measured.",
+            "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L23-L30",
+            "quote": "Voltage_measured: \tBattery terminal voltage (Volts)\n\t\tCurrent_measured:\tBattery output current (Amps)\n\t\tTemperature_measured: \tBattery temperature (degree C)",
+            "criteria": {
+              "experiment_scope": {
+                "verdict": "not_applicable",
+                "reason": "This is a documented discharge-field definition without an operating-condition or endpoint assertion."
+              },
+              "source_support": {
+                "verdict": "pass",
+                "reason": "The original discharge-field passage lists all three named measured signals, with the same field names."
+              },
+              "capacity_basis": {
+                "verdict": "not_applicable",
+                "reason": "No rated-capacity endpoint, end-of-life conclusion or interpretation of the measured percentage change is asserted by this claim."
+              },
+              "evidence_boundaries": {
+                "verdict": "pass",
+                "reason": "The complete findings retain comparability not_established and physical_cause not_determined. Intended protocol or field definitions are not used to establish actual record compliance; no unavailable-source warning is required for this available-document fixture."
+              }
+            }
+          }
+        ],
+        "recommendation": "Review active-load boundaries to distinguish active discharge from startup and post-load readings.",
+        "recommendation_review": {
+          "engineering_meaning": {
+            "verdict": "pass",
+            "reason": "The text gives an interpretable engineering check or a scoped explanation that the capacity calculation needs no further check."
+          },
+          "request_relevance": {
+            "verdict": "fail",
+            "reason": "The unanswered part of this question is the requested extrema/source locations. The recommendation instead proposes active-load boundary review, which the question explicitly leaves unresolved; it does not address the missing locations or their presentation."
+          },
+          "missing_evidence": {
+            "verdict": "not_applicable",
+            "reason": "All applicable registered protocol evidence is available in these three fixtures."
+          },
+          "execution_and_limits": {
+            "verdict": "pass",
+            "reason": "A suggested check is kept separate from executed inspection. No segmentation, established comparability, physical cause, end-of-life verdict or complete investigation is invented."
+          }
+        },
+        "requested_response_review": {
+          "verdict": "fail",
+          "reason": "All 12 extrema scalar values are in the saved trace evidence, but only 8 have matching returned source points. Four locations are absent, and the terminal findings show no extrema/location table. The requested description is incomplete."
+        },
+        "trace_coverage": {
+          "extrema_values_per_pair": 12,
+          "locations_supported_by_returned_points_per_pair": 8,
+          "dedicated_extremum_location_field": "minimum_voltage_sample only, once for each record",
+          "missing_locations": [
+            {
+              "side": "earlier",
+              "discharge_index": 1,
+              "signal": "current_A",
+              "extremum": "minimum"
+            },
+            {
+              "side": "earlier",
+              "discharge_index": 1,
+              "signal": "current_A",
+              "extremum": "maximum"
+            },
+            {
+              "side": "later",
+              "discharge_index": 100,
+              "signal": "current_A",
+              "extremum": "minimum"
+            },
+            {
+              "side": "later",
+              "discharge_index": 100,
+              "signal": "temperature_C",
+              "extremum": "maximum"
+            }
+          ],
+          "cli_extrema_location_table": "absent",
+          "method": "Eight locations are supported by matching existing point fields; only two minimum-voltage locations have dedicated extremum fields. Coincident point matches are specific to this pair and do not supply a general locator contract. Independent audit-only coordinates were not added to the answer."
+        },
+        "project_owner_review": "pending"
+      },
+      {
+        "case_id": "reserved-capacity-1-168",
+        "request": {
+          "question": "Using the supplied capacity fields alone, calculate the difference in Ah and percent relative to the earlier selected discharge.",
+          "battery_id": "B0005",
+          "early": 1,
+          "late": 168
+        },
+        "reviewed_run_ids": [
+          "903eb613c7294103a77df82fdfd3f097",
+          "bd59084ec69e4a7ab55648fb4b599c28",
+          "27ff75964d36417fafa7fc5104140d5d"
+        ],
+        "identical_review_content_sha256": "6a9df255c596a79fa997b6a5709ad750335e1dc3e80c49d2a0abfd0a8dadf257",
+        "follow_up": {
+          "action": "stop_with_partial",
+          "reason": "The capacity difference is calculated from the supplied fields, but trace inspection cannot prove the pair's comparability or diagnose the cause of the change."
+        },
+        "decision_reason_review": {
+          "verdict": "pass",
+          "reason": "The reason identifies the supplied-field calculation as available and preserves broader comparability/cause limits. Trace inspection is unnecessary for the requested arithmetic; mentioning broader limits does not change the denominator."
+        },
+        "claim_review": [
+          {
+            "claim_index": 1,
+            "statement": "For battery B0005, the intended discharge protocol specifies a constant current of 2A until the battery voltage falls to 2.7V.",
+            "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+            "quote": "Discharge was carried out at a constant current (CC) level of 2A until the battery voltage fell to 2.7V, 2.5V, 2.2V and 2.5V for batteries 5 6 7 and 18 respectively.",
+            "criteria": {
+              "experiment_scope": {
+                "verdict": "pass",
+                "reason": "The statement explicitly names B0005 and retains its intended 2 A / 2.7 V mapping; it does not assign this cutoff to the other batteries."
+              },
+              "source_support": {
+                "verdict": "pass",
+                "reason": "The applicable original description maps battery 5 to 2.7 V at a constant-current magnitude of 2 A. Intended conditions are distinguished from observed compliance."
+              },
+              "capacity_basis": {
+                "verdict": "not_applicable",
+                "reason": "No rated-capacity endpoint, end-of-life conclusion or interpretation of the measured percentage change is asserted by this claim."
+              },
+              "evidence_boundaries": {
+                "verdict": "pass",
+                "reason": "The complete findings retain comparability not_established and physical_cause not_determined. Intended protocol or field definitions are not used to establish actual record compliance; no unavailable-source warning is required for this available-document fixture."
+              }
+            }
+          },
+          {
+            "claim_index": 2,
+            "statement": "The documented capacity field for battery B0005 represents the battery capacity in Ahr for discharge until 2.7V.",
+            "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L23-L30",
+            "quote": "Capacity:\t\tBattery capacity (Ahr) for discharge till 2.7V ",
+            "criteria": {
+              "experiment_scope": {
+                "verdict": "pass",
+                "reason": "The capacity-field definition is explicitly presented as documentation applicable to B0005."
+              },
+              "source_support": {
+                "verdict": "pass",
+                "reason": "The cited discharge-field passage defines Capacity as battery capacity in Ahr for discharge till 2.7 V. The statement does not claim independent integration or verified record cutoff behavior."
+              },
+              "capacity_basis": {
+                "verdict": "not_applicable",
+                "reason": "No rated-capacity endpoint, end-of-life conclusion or interpretation of the measured percentage change is asserted by this claim."
+              },
+              "evidence_boundaries": {
+                "verdict": "pass",
+                "reason": "The complete findings retain comparability not_established and physical_cause not_determined. Intended protocol or field definitions are not used to establish actual record compliance; no unavailable-source warning is required for this available-document fixture."
+              }
+            }
+          }
+        ],
+        "recommendation": "No further check is needed for the reported-capacity comparison; broader comparability and physical cause remain unresolved.",
+        "recommendation_review": {
+          "engineering_meaning": {
+            "verdict": "pass",
+            "reason": "The text gives an interpretable engineering check or a scoped explanation that the capacity calculation needs no further check."
+          },
+          "request_relevance": {
+            "verdict": "pass",
+            "reason": "The reported-capacity difference answers this narrow question; saying no further check is needed within that scope retains broader limits without requiring unrelated analysis."
+          },
+          "missing_evidence": {
+            "verdict": "not_applicable",
+            "reason": "All applicable registered protocol evidence is available in these three fixtures."
+          },
+          "execution_and_limits": {
+            "verdict": "pass",
+            "reason": "A suggested check is kept separate from executed inspection. No segmentation, established comparability, physical cause, end-of-life verdict or complete investigation is invented."
+          }
+        },
+        "requested_response_review": {
+          "verdict": "pass",
+          "reason": "The structured comparison and rounded CLI answer give later minus earlier capacity in Ah and percent divided by the earlier reported capacity. Independent Decimal arithmetic matches. The graph still labels the wider workflow partial; that label is not request-specific completion."
+        },
+        "trace_coverage": null,
+        "project_owner_review": "pending"
+      },
+      {
+        "case_id": "reserved-conditions-1-100",
+        "request": {
+          "question": "Before judging whether these discharges were tested under comparable conditions, inspect their recorded signals and explain what evidence is still missing.",
+          "battery_id": "B0005",
+          "early": 1,
+          "late": 100
+        },
+        "reviewed_run_ids": [
+          "59c94a5c239e4c8eafda88934cb0f794",
+          "33e110fe001741ec8ceb57edaed7acd0",
+          "ea203291181943c2a544d84bb4d1fc4c"
+        ],
+        "identical_review_content_sha256": "e6bd67726b4c91e09aecb4230e2e28ea9ba2ad102f1dcb1ff22f0ff44d82386b",
+        "follow_up": {
+          "action": "inspect_discharge_traces",
+          "reason": "Inspecting recorded current, voltage, and temperature traces will reveal load-profile and cutoff evidence still missing to judge comparability."
+        },
+        "decision_reason_review": {
+          "verdict": "pass",
+          "reason": "Inspection can add recorded signal and cutoff-related observations before a comparability judgment. The reason does not claim that inspection alone establishes compliance; source extrema are not treated as a classified cutoff or active-load interval."
+        },
+        "claim_review": [
+          {
+            "claim_index": 1,
+            "statement": "For battery B0005, the intended discharge protocol specifies a constant current of 2A until the voltage falls to 2.7V.",
+            "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+            "quote": "Discharge was carried out at a constant current (CC) level of 2A until the battery voltage fell to 2.7V, 2.5V, 2.2V and 2.5V for batteries 5 6 7 and 18 respectively.",
+            "criteria": {
+              "experiment_scope": {
+                "verdict": "pass",
+                "reason": "The statement explicitly names B0005 and retains its intended 2 A / 2.7 V mapping; it does not assign this cutoff to the other batteries."
+              },
+              "source_support": {
+                "verdict": "pass",
+                "reason": "The applicable original description maps battery 5 to 2.7 V at a constant-current magnitude of 2 A. Intended conditions are distinguished from observed compliance."
+              },
+              "capacity_basis": {
+                "verdict": "not_applicable",
+                "reason": "No rated-capacity endpoint, end-of-life conclusion or interpretation of the measured percentage change is asserted by this claim."
+              },
+              "evidence_boundaries": {
+                "verdict": "pass",
+                "reason": "The complete findings retain comparability not_established and physical_cause not_determined. Intended protocol or field definitions are not used to establish actual record compliance; no unavailable-source warning is required for this available-document fixture."
+              }
+            }
+          },
+          {
+            "claim_index": 2,
+            "statement": "The recorded discharge fields for battery B0005 include voltage, current, temperature, and capacity calculated until 2.7V.",
+            "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L23-L30",
+            "quote": "Capacity:\t\tBattery capacity (Ahr) for discharge till 2.7V ",
+            "criteria": {
+              "experiment_scope": {
+                "verdict": "pass",
+                "reason": "The combined discharge-field statement explicitly names B0005; its 2.7 V wording is a documented capacity-field definition."
+              },
+              "source_support": {
+                "verdict": "pass",
+                "reason": "Read with the complete cited L23-L30 passage, the field names and documented capacity-until-2.7-V definition are supported. The quoted substring covers only Capacity; the surrounding cited passage supplies the other fields. 'Calculated' is treated as a paraphrase of the supplied field, not evidence of a particular integration method or a new calculation by this workflow."
+              },
+              "capacity_basis": {
+                "verdict": "not_applicable",
+                "reason": "No rated-capacity endpoint, end-of-life conclusion or interpretation of the measured percentage change is asserted by this claim."
+              },
+              "evidence_boundaries": {
+                "verdict": "pass",
+                "reason": "The complete findings retain comparability not_established and physical_cause not_determined. Intended protocol or field definitions are not used to establish actual record compliance; no unavailable-source warning is required for this available-document fixture."
+              }
+            }
+          }
+        ],
+        "recommendation": "Review active-load boundaries to distinguish active discharge from startup and post-load readings.",
+        "recommendation_review": {
+          "engineering_meaning": {
+            "verdict": "pass",
+            "reason": "The text gives an interpretable engineering check or a scoped explanation that the capacity calculation needs no further check."
+          },
+          "request_relevance": {
+            "verdict": "pass",
+            "reason": "Active-load boundary review addresses the stated remaining comparability gap after whole-record inspection. The findings explain why whole-record summaries do not establish comparable conditions."
+          },
+          "missing_evidence": {
+            "verdict": "not_applicable",
+            "reason": "All applicable registered protocol evidence is available in these three fixtures."
+          },
+          "execution_and_limits": {
+            "verdict": "pass",
+            "reason": "A suggested check is kept separate from executed inspection. No segmentation, established comparability, physical cause, end-of-life verdict or complete investigation is invented."
+          }
+        },
+        "requested_response_review": {
+          "verdict": "pass",
+          "reason": "Trace inspection executed for the unchanged pair; saved evidence contains the recorded summaries and source points. The CLI explains unresolved segmentation, signed-current interpretation and startup/post-load inclusion, and proposes boundary review. This meets the requested bounded inspection-and-missing-evidence response without deciding comparability."
+        },
+        "trace_coverage": {
+          "extrema_values_per_pair": 12,
+          "locations_supported_by_returned_points_per_pair": 8,
+          "dedicated_extremum_location_field": "minimum_voltage_sample only, once for each record",
+          "missing_locations": [
+            {
+              "side": "earlier",
+              "discharge_index": 1,
+              "signal": "current_A",
+              "extremum": "minimum"
+            },
+            {
+              "side": "earlier",
+              "discharge_index": 1,
+              "signal": "current_A",
+              "extremum": "maximum"
+            },
+            {
+              "side": "later",
+              "discharge_index": 100,
+              "signal": "current_A",
+              "extremum": "minimum"
+            },
+            {
+              "side": "later",
+              "discharge_index": 100,
+              "signal": "temperature_C",
+              "extremum": "maximum"
+            }
+          ],
+          "cli_extrema_location_table": "absent",
+          "method": "Eight locations are supported by matching existing point fields; only two minimum-voltage locations have dedicated extremum fields. Coincident point matches are specific to this pair and do not supply a general locator contract. Independent audit-only coordinates were not added to the answer."
+        },
+        "project_owner_review": "pending"
+      }
+    ]
+  },
+  "records": [
+    {
+      "case_id": "reserved-trace-1-100",
+      "repeat": 1,
+      "run_id": "1eb411a39612406a8d72b70017ac2878",
+      "record_path": "outputs/agent-investigations/1eb411a39612406a8d72b70017ac2878.json",
+      "record_sha256": "c0a0055164ac97465dbaa7255d6e211f85b518e71d2e84efd8f47c79f70843d7",
+      "stdout_sha256": "162392811ff791e3ed08dcf1cf925746e5524351a995f633da31f49ad5b5b1c4",
+      "assessment": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-trace-1-100-repeat-1.json",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "automated_status": "passed",
+      "failures": [],
+      "protocol_limit_check": true,
+      "cli_check": true,
+      "assessment_sha256": "556d4e95bc47cf177f559b140cb3acfe53549e997d1d2a0f3f2bdeb1fe97f27a",
+      "stdout_path": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-trace-1-100-repeat-1.stdout.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration_sha256": "2ce2aa3a122dbc29fcaee81e757771316bf7d4dc74d42ed212ee38a725cbecca",
+      "input_configuration_sha256": "9cea06c78501a8092bcbe4c43a33ef1e39e1bb799fc4570c591b36a3b25a24b7"
+    },
+    {
+      "case_id": "reserved-capacity-1-168",
+      "repeat": 1,
+      "run_id": "903eb613c7294103a77df82fdfd3f097",
+      "record_path": "outputs/agent-investigations/903eb613c7294103a77df82fdfd3f097.json",
+      "record_sha256": "e8b24b1f56d66ad8ccaf24fbd05141759e7f1d1037e214a01073354e2106be25",
+      "stdout_sha256": "1bfe77f7abcdf7eb8587f4ee2cb390c749da310f49609ad4429480324bb242b0",
+      "assessment": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-capacity-1-168-repeat-1.json",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "automated_status": "passed",
+      "failures": [],
+      "protocol_limit_check": true,
+      "cli_check": true,
+      "assessment_sha256": "7343e3884498c0a00475436f0542f67824f75c264efb1836e6e492fd3394c6ae",
+      "stdout_path": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-capacity-1-168-repeat-1.stdout.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration_sha256": "2ce2aa3a122dbc29fcaee81e757771316bf7d4dc74d42ed212ee38a725cbecca",
+      "input_configuration_sha256": "2933a3167c5738a49b022a49af6989f5b39f508c8c23aa46b9d77cfc2c7ad185"
+    },
+    {
+      "case_id": "reserved-conditions-1-100",
+      "repeat": 1,
+      "run_id": "59c94a5c239e4c8eafda88934cb0f794",
+      "record_path": "outputs/agent-investigations/59c94a5c239e4c8eafda88934cb0f794.json",
+      "record_sha256": "ba03dd3ff479a05db6aad89febffacf5d6b0e509dcf70b03511d8bf89448c392",
+      "stdout_sha256": "8ad6a57e9ab8aff3909278abe31a8df5b63db5d63204a73dfce4253987c07f2d",
+      "assessment": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-conditions-1-100-repeat-1.json",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "automated_status": "passed",
+      "failures": [],
+      "protocol_limit_check": true,
+      "cli_check": true,
+      "assessment_sha256": "68440fb6b9fb2522915ee06bc430a418a8075578cc31e66eafa4e41eefb6faa1",
+      "stdout_path": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-conditions-1-100-repeat-1.stdout.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration_sha256": "2ce2aa3a122dbc29fcaee81e757771316bf7d4dc74d42ed212ee38a725cbecca",
+      "input_configuration_sha256": "98009f513aa17bc68af264e337bac0471ba7b8ecae4f445a261039eea3947eb2"
+    },
+    {
+      "case_id": "reserved-trace-1-100",
+      "repeat": 2,
+      "run_id": "83762e23b4de4fd3bb6176c874a75d43",
+      "record_path": "outputs/agent-investigations/83762e23b4de4fd3bb6176c874a75d43.json",
+      "record_sha256": "e81b3d138bcdd1b37639d6534be9d0a7a4b88591343663866b8881f692ef9548",
+      "stdout_sha256": "86bffcd27d2580b4334216443b281ccf4ba5958a0663b64a69b2f847445461c3",
+      "assessment": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-trace-1-100-repeat-2.json",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "automated_status": "passed",
+      "failures": [],
+      "protocol_limit_check": true,
+      "cli_check": true,
+      "assessment_sha256": "bb475da77f85fdb94728a4907f857a71957c814163deaea5b93494bdf99a3c20",
+      "stdout_path": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-trace-1-100-repeat-2.stdout.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration_sha256": "2ce2aa3a122dbc29fcaee81e757771316bf7d4dc74d42ed212ee38a725cbecca",
+      "input_configuration_sha256": "9cea06c78501a8092bcbe4c43a33ef1e39e1bb799fc4570c591b36a3b25a24b7"
+    },
+    {
+      "case_id": "reserved-capacity-1-168",
+      "repeat": 2,
+      "run_id": "bd59084ec69e4a7ab55648fb4b599c28",
+      "record_path": "outputs/agent-investigations/bd59084ec69e4a7ab55648fb4b599c28.json",
+      "record_sha256": "f17b986c0b9bf4f01ce915d58396bdadfb9b1ac96bfa51f5c773575d89db9b58",
+      "stdout_sha256": "24e6c255eab57df9eec09d14a89bfdec80db6799e0e814c90e9e7e4b4ab96947",
+      "assessment": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-capacity-1-168-repeat-2.json",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "automated_status": "passed",
+      "failures": [],
+      "protocol_limit_check": true,
+      "cli_check": true,
+      "assessment_sha256": "90f03338b233123388a2c975a84187f232e5278cf81b2fcad6886702faeddba7",
+      "stdout_path": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-capacity-1-168-repeat-2.stdout.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration_sha256": "2ce2aa3a122dbc29fcaee81e757771316bf7d4dc74d42ed212ee38a725cbecca",
+      "input_configuration_sha256": "2933a3167c5738a49b022a49af6989f5b39f508c8c23aa46b9d77cfc2c7ad185"
+    },
+    {
+      "case_id": "reserved-conditions-1-100",
+      "repeat": 2,
+      "run_id": "33e110fe001741ec8ceb57edaed7acd0",
+      "record_path": "outputs/agent-investigations/33e110fe001741ec8ceb57edaed7acd0.json",
+      "record_sha256": "2913cbfd80e308fbc3dc5b0e4024467d36a63ce9abc7d027969dabcaaa65780c",
+      "stdout_sha256": "be5717801861a35d633b6a7c5d9c3bb8231c9dac8b44ed633aea2b8804ed7d53",
+      "assessment": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-conditions-1-100-repeat-2.json",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "automated_status": "passed",
+      "failures": [],
+      "protocol_limit_check": true,
+      "cli_check": true,
+      "assessment_sha256": "9b73f368fc0d895a84753e78a9b31882cb8446d2f13e1d422f781f0d1bab4103",
+      "stdout_path": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-conditions-1-100-repeat-2.stdout.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration_sha256": "2ce2aa3a122dbc29fcaee81e757771316bf7d4dc74d42ed212ee38a725cbecca",
+      "input_configuration_sha256": "98009f513aa17bc68af264e337bac0471ba7b8ecae4f445a261039eea3947eb2"
+    },
+    {
+      "case_id": "reserved-trace-1-100",
+      "repeat": 3,
+      "run_id": "b4251be50be248768f08393f12454d1d",
+      "record_path": "outputs/agent-investigations/b4251be50be248768f08393f12454d1d.json",
+      "record_sha256": "0a73e63cdf964f21a7f9385197962c703fa61ffb9633b3bf48762d8a9fccfd60",
+      "stdout_sha256": "0d25478efe88ef3f700210db30d82762126d29dfa4471d95a83b9577abf864ad",
+      "assessment": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-trace-1-100-repeat-3.json",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "automated_status": "passed",
+      "failures": [],
+      "protocol_limit_check": true,
+      "cli_check": true,
+      "assessment_sha256": "33ff7270ba97819035fdeff53a041e6afb5c8874465a89931b9cb8aaeb83763f",
+      "stdout_path": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-trace-1-100-repeat-3.stdout.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration_sha256": "2ce2aa3a122dbc29fcaee81e757771316bf7d4dc74d42ed212ee38a725cbecca",
+      "input_configuration_sha256": "9cea06c78501a8092bcbe4c43a33ef1e39e1bb799fc4570c591b36a3b25a24b7"
+    },
+    {
+      "case_id": "reserved-capacity-1-168",
+      "repeat": 3,
+      "run_id": "27ff75964d36417fafa7fc5104140d5d",
+      "record_path": "outputs/agent-investigations/27ff75964d36417fafa7fc5104140d5d.json",
+      "record_sha256": "de42583ba717815d812b996c19465f680388de4520c8bf71ee8bb34ea2683016",
+      "stdout_sha256": "c446bcbc0501cabfb92259ef46131783ef1b5f0092f0d3e74cbc2fa1ce74c280",
+      "assessment": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-capacity-1-168-repeat-3.json",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "automated_status": "passed",
+      "failures": [],
+      "protocol_limit_check": true,
+      "cli_check": true,
+      "assessment_sha256": "efa91973c8f47f2ce5ab1b16a9751810ad6abab61bf693d1a6f44be972f4dbb8",
+      "stdout_path": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-capacity-1-168-repeat-3.stdout.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration_sha256": "2ce2aa3a122dbc29fcaee81e757771316bf7d4dc74d42ed212ee38a725cbecca",
+      "input_configuration_sha256": "2933a3167c5738a49b022a49af6989f5b39f508c8c23aa46b9d77cfc2c7ad185"
+    },
+    {
+      "case_id": "reserved-conditions-1-100",
+      "repeat": 3,
+      "run_id": "ea203291181943c2a544d84bb4d1fc4c",
+      "record_path": "outputs/agent-investigations/ea203291181943c2a544d84bb4d1fc4c.json",
+      "record_sha256": "c1f3df7c726ea15dfce83ae6e2ff3c590661135308ceb73788dd76eacc95c1ef",
+      "stdout_sha256": "43d3e79f53c2b3ce813a15c96cb1f0b6b12a3f3f09683ca258ce8e5c3724fc57",
+      "assessment": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-conditions-1-100-repeat-3.json",
+      "process_exit": 0,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "automated_status": "passed",
+      "failures": [],
+      "protocol_limit_check": true,
+      "cli_check": true,
+      "assessment_sha256": "f28bcf0f645d9ef08074aa8f0acf257d6de42273b0b08b689d3c5fe5f3690683",
+      "stdout_path": "outputs/follow-up-evaluations/reserved-20261102-a1/reserved-conditions-1-100-repeat-3.stdout.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "configuration_sha256": "2ce2aa3a122dbc29fcaee81e757771316bf7d4dc74d42ed212ee38a725cbecca",
+      "input_configuration_sha256": "98009f513aa17bc68af264e337bac0471ba7b8ecae4f445a261039eea3947eb2"
+    }
+  ],
+  "local_artifact_hashes": {
+    "outputs/follow-up-evaluations/reserved-20261102-a1/plan.json": "6f8b524dce09bbdafd3f47e627fd9a123066bd72b3d1ce14759e2f738bec5426",
+    "outputs/follow-up-evaluations/reserved-20261102-a1/collection.json": "375c27e9de2744e17328a9b4c2b40e9019aaad453f3ef337754d577eab0c1fe5",
+    "outputs/follow-up-evaluations/reserved-20261102-a1/source-audit.json": "3e0e94c281990dda99c370f47cd0eb009aea5ab07396004ad49b733e7f0bc1fc",
+    "outputs/follow-up-evaluations/reserved-20261102-a1/coverage-audit.json": "804001baf852824f486e24c48d623f1fdb953b0ae12e3bed34b236d49fd4aabb",
+    "outputs/follow-up-evaluations/reserved-20261102-a1/semantic-review.json": "ef5279fd65523eba0d12bbf8dafe5af9f35b2134c8f5b8864dd638650ae4fa85",
+    "outputs/follow-up-evaluations/reserved-20261102-a1/collect_reserved.py": "09c195058deb71610b2fe598d40e14aa304b845bed755efc411f83934bc20a9e",
+    "outputs/follow-up-evaluations/reserved-20261102-a1/audit_sources.py": "879cb293080eca852dc152ef90725ad733856d1c5d95b0cc6788ebfdeb14f38a",
+    "outputs/follow-up-evaluations/reserved-20261102-a1/audit_coverage.py": "9e5204452c38aa0f43af1df72fb67b7522d3ec41fcedec95d2e767a2cfe45b21",
+    "outputs/follow-up-evaluations/reserved-20261102-a1/record_review.py": "338ee24b1499b71a31d5e8e35726f3939182d872afa8b8c0dbccd3581bfacc00",
+    "outputs/follow-up-evaluations/protocol-limits-20261030-a1/audit_candidate.py": "311dcebeca00e01cb54057d0e2fe163d794f5bd1bc39dd15f6b85b17a08a1d40"
+  },
+  "private_reasoning_recorded": false,
+  "reserved_variants_status": "used; no longer untouched reserves for future tuning",
+  "tests": {
+    "latest_verified_count": 266,
+    "latest_verified_seconds": 4.23,
+    "rerun_for_this_evaluation": false,
+    "reason": "Runtime, tests, dependencies, schemas, prompts and original case bytes remain unchanged from the verified committed checkpoint. This step evaluates the fixed candidate and changes only evidence documentation."
+  },
+  "tracking": {
+    "jira": "https://anandms.atlassian.net/browse/SCRUM-7",
+    "project_owner_review": "pending",
+    "evidence_commit": "pending explicit approval"
+  },
+  "next_development_slice": "Provide deterministic source locators for every current, voltage and temperature minimum/maximum and render them with values for the selected pair. Address tool-capability explanations and request-relevant recommendations without treating these now-used cases as fresh evaluation data.",
+  "limits": [
+    "Three original variants repeated three times on the same B0005 source and familiar pair selections; these are wording/pair observations, not new-battery generalization or an accuracy estimate.",
+    "All nine execution checks pass, but the extrema response is incomplete in all three repeats. Preserve these failures; do not promote execution success to overall acceptance.",
+    "All nine recommendations reuse Python-selected hints. This does not demonstrate independent model reasoning about the next engineering check.",
+    "The conditions response is a bounded partial assessment. Whole-record extrema are not classified load phases or proof of cutoff compliance, comparability or physical cause.",
+    "The graph remains partial even when the narrow capacity request is answered. Request-specific completion, coherent report integration and remaining release criteria are still pending.",
+    "The original case-set split labels are historical and unchanged. These three variants are now consumed; future tuning requires separately defined fresh evaluation questions.",
+    "Source-based review and project-owner acceptance remain distinct; the latter is pending. No existing quality task or release is closed by this evaluation."
+  ]
+}
