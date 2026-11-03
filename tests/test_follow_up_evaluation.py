@@ -151,6 +151,24 @@ def test_clarification_cannot_hide_execution(change):
     assert assess(record, "missing-selection")["automated_status"] == "failed"
 
 
+@pytest.mark.parametrize("scope", [False, "unsupported_scope", []])
+def test_unknown_declared_scope_cannot_pass_when_trace_and_record_agree(scope):
+    record = make_record()
+    record["follow_up"]["question_scope"] = scope
+    next(e for e in record["trace"] if e["event"] == "follow_up_selected")["question_scope"] = scope
+    assert "declared_question_scope_is_known" in assess(record)["failures"]
+
+
+def test_saved_scope_must_match_the_selected_decision_event():
+    record = make_record()
+    record["follow_up"]["question_scope"] = "recorded_extrema"
+    event = next(e for e in record["trace"] if e["event"] == "follow_up_selected")
+    event["question_scope"] = "recorded_extrema"
+    assert assess(record)["automated_status"] == "passed"
+    event["question_scope"] = "test_conditions"
+    assert "tool_trace_matches_execution" in assess(record)["failures"]
+
+
 def test_numeric_accuracy_and_free_text_meaning_are_not_claimed_by_this_checker():
     record = make_record()
     record["comparison"]["comparison"] = {"capacity_change_Ah": 999}

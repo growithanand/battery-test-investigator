@@ -19,6 +19,7 @@ class FollowUpDecision(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid")
 
     action: Literal["inspect_discharge_traces", "stop_with_partial"]
+    question_scope: Literal["reported_capacity", "recorded_extrema", "test_conditions", "other"]
     reason: str = Field(min_length=1, max_length=350, description="Brief evidence-based reason for the action, not private reasoning")
 
 
@@ -56,6 +57,11 @@ RECOMMENDATION_GUIDANCE = {
     "review_remaining_conditions": (
         "Review active-load boundaries to distinguish active discharge from startup and post-load readings."
     ),
+    "answer_extrema_request": (
+        "No further check is needed for the requested extrema and source locations; "
+        "broader comparability and physical cause remain unresolved."
+    ),
+    "answer_request": None,
     "answer_stopped_request": (
         "No further check is needed for the reported-capacity comparison; "
         "broader comparability and physical cause remain unresolved."
@@ -63,23 +69,30 @@ RECOMMENDATION_GUIDANCE = {
 }
 
 
-def select_recommendation_guidance(protocol_status: str, action: str) -> dict:
-    """Choose a recommendation focus from known evidence state and accepted action."""
+def select_recommendation_guidance(protocol_status: str, action: str, question_scope: str) -> dict:
+    """Use the accepted scope and executed evidence; do not infer scope from tool use."""
     if protocol_status not in {"available", "partial", "unavailable"}:
         raise ValueError("Unknown protocol evidence availability status")
-    if action == "stop_with_partial":
+    if action not in {"stop_with_partial", "inspect_discharge_traces"}:
+        raise ValueError("Unknown accepted follow-up action")
+    if question_scope not in {"reported_capacity", "recorded_extrema", "test_conditions", "other"}:
+        raise ValueError("Unknown accepted question scope")
+    if question_scope == "reported_capacity":
         focus = "answer_stopped_request"
-    elif action == "inspect_discharge_traces":
+    elif question_scope == "recorded_extrema" and action == "inspect_discharge_traces":
+        focus = "answer_extrema_request"
+    elif question_scope == "test_conditions" and action == "inspect_discharge_traces":
         focus = "review_remaining_conditions" if protocol_status == "available" else "recover_protocol_evidence"
     else:
-        raise ValueError("Unknown accepted follow-up action")
+        focus = "answer_request"
     return {"focus": focus, "next_check_hint": RECOMMENDATION_GUIDANCE[focus]}
 
 
 def validate_next_check(next_check: str) -> None:
     """Reject empty text and bare workflow actions, not assess prose usefulness."""
     normalized = next_check.strip().strip(" \t\r\n\v\f`'\".").casefold()
-    if not normalized or normalized in {"inspect_discharge_traces", "stop_with_partial", *RECOMMENDATION_GUIDANCE}:
+    if not normalized or normalized in {"inspect_discharge_traces", "stop_with_partial",
+                                        "answer_inspected_request", *RECOMMENDATION_GUIDANCE}:
         raise ValueError("Next check must explain an engineering recommendation, not a bare workflow action")
 
 

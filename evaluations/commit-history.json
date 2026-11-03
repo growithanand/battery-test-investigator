@@ -1,0 +1,111 @@
+{
+  "purpose": "Map original local development commit IDs in frozen evaluation references to the published development history.",
+  "history_note": "Local development guidance is excluded. Original author and committer identities, timestamps and commit messages are preserved; historical code is unchanged.",
+  "commits": [
+    {
+      "original_commit": "1b314f19714b2fe66b2fe6c824e8ffcabffcb045",
+      "published_commit": "1ff9c425fad65592b82e36916338b77f602d920a",
+      "subject": "Initialize battery investigation learning project"
+    },
+    {
+      "original_commit": "d51d63d1370d15b7bfe12f6b8581f17bddb7d20a",
+      "published_commit": "3d65772a23fdb3b75582db7aee33edde311d2127",
+      "subject": "Add tested first-battery inspection exercise"
+    },
+    {
+      "original_commit": "348d4a361a81a0b396a98baa6ca93829c0d4d5f6",
+      "published_commit": "f05ecd41cf36db5514ab1a79bcc48b7efd6d6a43",
+      "subject": "Record verified NASA B0005 reference inspection"
+    },
+    {
+      "original_commit": "c6ecbea45f57a9c897a7b9354e64b5285464d041",
+      "published_commit": "340f1e9ff0e9ee251279ee2bdcccf009e92df324",
+      "subject": "Document standard GitHub authentication workflow"
+    },
+    {
+      "original_commit": "da57a70e9b9a6958115249523aa73b87d4d090c6",
+      "published_commit": "d0914a1fc8d2598929b36b47b655adfb64a77854",
+      "subject": "Add scoped local battery investigation automation"
+    },
+    {
+      "original_commit": "d5c9b430e85b6df2e07707d8202b2de71163d030",
+      "published_commit": "0ea8af1ebc1f4fc9fb7327e824d4462020d02c79",
+      "subject": "Document guided learning workflow and first investigation lesson"
+    },
+    {
+      "original_commit": "434d6fd80a74817b6c3bcb0ebcdacf2341bc06c3",
+      "published_commit": "f59a999b08f04773130084ebceadcbabbc82e1ba",
+      "subject": "Keep local development guidance outside tracked project"
+    },
+    {
+      "original_commit": "4a23fac4cdde838ecd150c69c92533f493757b5a",
+      "published_commit": "9e96e0c6f8fcaba49b68adc84cd8a40862ab9e1c",
+      "subject": "Verify standalone Python 3.15 and add VS Code run configuration"
+    },
+    {
+      "original_commit": "e04dd4a85b2db6b0305b775fcd5e4e3575a71f4d",
+      "published_commit": "e2f5da45f88645f13e661cf8cb0dcba42c1244bb",
+      "subject": "Use neutral branch names and project documentation"
+    },
+    {
+      "original_commit": "44a0b5c57aecde82b4a7ba86ddd08e58e67a7926",
+      "published_commit": "cfd73b1e3f8e27b78e8f000e3631b7893a9dddf9",
+      "subject": "Keep project notes local and consolidate essential documentation"
+    },
+    {
+      "original_commit": "7cf7b898a88964e896844720ac133feac107128b",
+      "published_commit": "a88f60f1502059be0637506fda8a8ff72b2f1dad",
+      "subject": "Add validated requests and traceable discharge comparisons"
+    },
+    {
+      "original_commit": "88418a7ffff3314d688566ae2981f27c61e32e38",
+      "published_commit": "84a992f0bcdbb6b6c8482418d7587b37a06cedad",
+      "subject": "Add bounded local model tool calling"
+    },
+    {
+      "original_commit": "8c312e048a55b36ffb9e75fd2aed84ed861a67fd",
+      "published_commit": "e2d5d79f8e3fbfd1843e7ee40a95a2ce3c488bc3",
+      "subject": "Add protocol evidence and bounded investigation workflow"
+    },
+    {
+      "original_commit": "edd740aa3a1214264c5b40dfc8b0f6f3f45c896d",
+      "published_commit": "1cd544794437e04c3d57dc446aee1a0e17ebc1ee",
+      "subject": "Add selected trace inspection and bounded follow-up"
+    },
+    {
+      "original_commit": "33f141eb4e006f17b9ef099be0e69d699b248da7",
+      "published_commit": "bbb298ba8ae890aeb1c2605957d8f4fd80e838e8",
+      "subject": "Add follow-up evaluation cases and saved-run checks"
+    },
+    {
+      "original_commit": "0f5eeb435f1c0c29bfadc06ab8c42afc14a793e6",
+      "published_commit": "f603baed12d1361112a0267a13829f2c89839b80",
+      "subject": "Clarify trace follow-up policy and record evaluation results"
+    },
+    {
+      "original_commit": "1683e3c02a1f4aec53c839b4238e5e3e0ef5b299",
+      "published_commit": "d289b6b2f69fe82d7b1f52330b69d4f75bea35cf",
+      "subject": "Preserve protocol availability limits in final findings"
+    },
+    {
+      "original_commit": "2c7d64daca8f4cf0d667c5c07d92924b639079e3",
+      "published_commit": "31683f79e88428772e4c31712ede9e312f1f5950",
+      "subject": "Scope protocol claims to the requested battery"
+    },
+    {
+      "original_commit": "4d9057fbcd6508f6b1a0626e94ac146028f46de7",
+      "published_commit": "ea890438f892eda73e58f63d1bff253a894e727d",
+      "subject": "Separate engineering recommendations from workflow actions"
+    },
+    {
+      "original_commit": "e74d1f5ab5974108326b6d7716e0a12c5143ca85",
+      "published_commit": "3348ceff4f45c3752d47efad8cbeb297f41c7320",
+      "subject": "Record reserved investigation evaluation results"
+    },
+    {
+      "original_commit": "01b807c493cf959e7e1211444f7a3443467dd323",
+      "published_commit": "8bc27253fca15c999f211102e9ec0f4e96e72531",
+      "subject": "Locate and display all recorded signal extrema"
+    }
+  ]
+}

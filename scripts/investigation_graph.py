@@ -15,7 +15,7 @@ from scripts.investigation_findings import (
 from scripts.investigation_state import InvestigationRequest
 
 
-WORKFLOW_VERSION = "trace-follow-up-v12"
+WORKFLOW_VERSION = "trace-follow-up-v16"
 TOOL_PROMPT = (
     "Investigate the explicit battery/discharge selection. Request both available "
     "evidence tools exactly once, together or in either order. Never change the "
@@ -25,6 +25,9 @@ TOOL_PROMPT = (
 FOLLOW_UP_PROMPT = (
     "Review the explicit question, completed capacity comparison and protocol evidence. "
     "Choose exactly one permitted action: inspect_discharge_traces or stop_with_partial. "
+    "Set question_scope to reported_capacity for capacity-only arithmetic, recorded_extrema "
+    "for raw signal extrema and source locations only, test_conditions for conditions or "
+    "comparability questions, or other for requests outside those scopes. "
     "Trace inspection can supply whole-record signed current/voltage/temperature statistics "
     "and located extrema/current steps for the unchanged pair; it cannot segment active "
     "load, classify cutoff, integrate current, prove comparability or diagnose cause. "
@@ -66,10 +69,12 @@ FINDINGS_PROMPT = (
     "next_check is an engineering recommendation for the reader, distinct from "
     "follow_up.action. Never copy a bare workflow action or tool name into it. "
     "Use one complete plain-language sentence under 180 characters. The workflow "
-    "supplies recommendation_guidance.next_check_hint as an engineer-facing sentence "
-    "for the accepted action and known evidence state; you may reuse it verbatim when "
-    "relevant to the question. For trace-inspection decisions use its remaining-gap "
-    "focus. For stopped capacity-only questions it explains the bounded answer even "
+    "supplies recommendation_guidance.next_check_hint as a suggested sentence or null. "
+    "Reuse a sentence only when relevant to the question. If null, choose from the "
+    "accepted follow_up.question_scope, the question and executed evidence. The guidance "
+    "uses that scope and known evidence state; a trace inspection alone does not mean "
+    "the question asks about comparable conditions. Retain broader limits. "
+    "For stopped capacity-only questions it explains the bounded answer even "
     "with missing documentation; for other stopped questions propose a justified "
     "unexecuted check addressing their gap. Do not output metadata, internal focus "
     "labels or instructions about how to write an answer. Retain missing-evidence limitations. "
@@ -277,7 +282,9 @@ def build_investigation_graph(
         attempts = state["model_attempts"] + 1
         guidance = None
         try:
-            guidance = select_recommendation_guidance(state["protocol"]["status"], state["follow_up"]["action"])
+            guidance = select_recommendation_guidance(
+                state["protocol"]["status"], state["follow_up"]["action"], state["follow_up"]["question_scope"],
+            )
             payload = {key: state[key] for key in ("request", "comparison", "protocol", "follow_up", "trace_evidence")}
             payload["recommendation_guidance"] = guidance
             messages = [

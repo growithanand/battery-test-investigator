@@ -6,9 +6,40 @@ Example target question: “How has this battery's measured capacity changed, we
 
 The intended user is a battery test or validation engineer. The first application uses NASA B0005 laboratory measurements; it does not connect to live equipment.
 
+**Working local prototype, under active development.** The numerical report workflow runs without an LLM. The separate investigation workflow uses a local model to call tools and choose a bounded follow-up; a unified investigation report and demonstration interface are still planned.
+
+Local inference is the current development baseline. A hosted model connection and deployed demonstration are planned; the model provider and hosting platform have not yet been selected.
+
+## What this project demonstrates
+
+| Engineering concern | Current implementation |
+| --- | --- |
+| Reliable calculations | Python validates MATLAB measurements and calculates capacity differences and whole-record trace statistics. |
+| Agent decisions | LangChain tools and a LangGraph workflow support model-selected trace inspection or stopping with partial findings. |
+| Evidence-grounded generation | Battery-specific protocol retrieval supplies original passages, source hashes and line references for structured claims. |
+| Controlled execution | Strict schemas, source/selection checks, citation validation and model/tool attempt limits bound each run. |
+| Evaluation and maintenance | Automated tests and saved live-model experiments retain successful outcomes and observed failures separately. |
+
+## Investigation flow
+
+```mermaid
+flowchart TD
+    A[Explicit battery, discharge pair and question] --> B[Python validates source and selection]
+    B --> C[Local model requests comparison and protocol tools]
+    C --> D[Python calculates and retrieves applicable evidence]
+    D --> E{Model selects a follow-up}
+    E -->|Inspect traces| F[Python describes the selected recordings]
+    E -->|Stop with partial findings| G[Structured findings, citations and unresolved limits]
+    F --> G
+```
+
+Start with the [verified numerical reference and plots](examples/README.md), the [tests](tests/), and the [saved evaluation references](evaluations/). The evaluation references describe their scope and retained failures; they are not a general accuracy claim. The [live workflow instructions](#first-cited-graph-workflow) explain how to reproduce a local investigation.
+
+The development history is preserved with local development notes excluded. Removing those notes changed historical commit IDs; the [commit map](evaluations/commit-history.json) links the original IDs retained in frozen evaluation references to the published commits. Original run evidence and outcomes remain unchanged.
+
 ## Status
 
-The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 281 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
+The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 301 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
 
 Programmatic investigation helpers preserve incomplete requests for clarification, validate explicit discharge selections, and return comparisons with the source hash, original operation indices, discharge indices, and selection revision. Changed sources and inconsistent operation mappings are rejected before returning comparison evidence. A separate bounded LangChain/local-Ollama connection check exposes the comparison through a strict tool schema; it has completed live B0005 comparisons for discharges 1/168 and 1/100.
 
@@ -18,7 +49,7 @@ A metadata-based protocol lookup returns applicable original passages with docum
 
 After the initial comparison and protocol retrieval, the graph asks the model to choose one follow-up: inspect the selected whole-record traces or stop with partial findings. Python supplies the unchanged selection, verifies returned trace identity against the comparison, and prevents additional follow-up calls. The read-only trace tool and separate selected-pair plotting command describe the full recordings without guessing load boundaries. Citation checks prove source identity, applicability, and literal quote matching, not semantic support; claims still require review. This is an initial metadata-retrieval-plus-generation workflow, not an evaluated complete investigation agent.
 
-A versioned follow-up case set and saved-run evaluator check decision/execution contracts separately from human evidence review. In the first three-repeat development baseline, the general conditions case skipped required trace inspection in all three runs. An isolated follow-up-prompt correction now inspects traces in all three development repeats; all five other cases retain their expected behavior. Python now adds a known protocol-availability limitation to validated findings and displays it alongside the generated analytical limits. Source-based review covers claim scope and recommendation relevance in the development cases. Python supplies recommendation hints from accepted workflow state; generated wording still requires review. The first reserved-question evaluation passes all nine execution checks but exposes incomplete extrema/source-location answers in three repeats; see the separate coverage results below. Project-owner acceptance and broader decision-quality evaluation remain pending. Embedding-retrieval comparisons, broader decision/citation evaluation, durable resume, a demonstration interface, and optional Jira/Confluence publishing remain planned. The numerical report command still uses Python calculations and a fixed template without model calls. Publishing investigation results from the application is not implemented.
+A versioned follow-up case set and saved-run evaluator check decision/execution contracts separately from human evidence review. In the first three-repeat development baseline, the general conditions case skipped required trace inspection in all three runs. An isolated follow-up-prompt correction now inspects traces in all three development repeats; all five other cases retain their expected behavior. Python now adds a known protocol-availability limitation to validated findings and displays it alongside the generated analytical limits. Source-based review covers claim scope and recommendation relevance in the development cases. Python supplies recommendation hints from the accepted question scope and executed evidence; generated wording and scope interpretation still require review. The first reserved-question evaluation passes all nine execution checks but exposes incomplete extrema/source-location answers in three repeats; see the separate coverage results below. Project-owner acceptance and broader decision-quality evaluation remain pending. Embedding-retrieval comparisons, broader decision/citation evaluation, durable resume, a demonstration interface, and optional Jira/Confluence publishing remain planned. The numerical report command still uses Python calculations and a fixed template without model calls. Publishing investigation results from the application is not implemented.
 
 The data source is NASA's Battery Data Set. The documentation audit found nine distinct short readmes describing materially different experimental conditions and endpoints. The eventual retrieval component will be evaluated against supplying this compact document collection directly.
 
@@ -57,7 +88,7 @@ The fetch command reads only the first experiment package (approximately 57 MB) 
 
 In VS Code, open the project folder, select `.venv\Scripts\python.exe` through **Python: Select Interpreter**, then use the **Run battery investigation** debug configuration. It runs the investigation as a module from the project root.
 
-`requirements-lock.txt` retains the numerical/test package pins. The numerical baseline was previously checked on Python 3.12.14 and 3.15.0; model integration is verified only on 3.12.14. `requirements-dev.txt` defines numerical/development dependency ranges. The optional-layer tests contain 134 cases; without that layer they are skipped and the other 147 numerical/standard-library cases run.
+`requirements-lock.txt` retains the numerical/test package pins. The numerical baseline was previously checked on Python 3.12.14 and 3.15.0; model integration is verified only on 3.12.14. `requirements-dev.txt` defines numerical/development dependency ranges. The optional-layer tests contain 150 cases; without that layer they are skipped and the other 151 numerical/standard-library cases run.
 
 ## Selected whole-record trace inspection
 
@@ -216,7 +247,15 @@ The candidate was kept unchanged, and the gaps are retained as evaluation findin
 
 The [v2 trace verification](evaluations/experiments/trace-extrema-20261103.json), checked on 2026-11-03, records dedicated minimum/maximum source points for all three signals and a shared formatter for both CLIs. First-occurrence ties, constant signals, nonzero/irregular source times, signed current and the original whole-record limits are preserved. Fifteen additional test cases cover the locators, evidence identity and presentation. A scripted graph passes the complete v2 evidence to final findings input; a separate rejection case confirms that executed evidence remains visible without fabricating findings. All 281 tests pass; dependency checks are clean.
 
-Independent SciPy MATLAB object reads and Python list operations verify both known B0005 pairs, 1/100 and 1/168: 24 extrema values, 24 dedicated source locations and 24 formatted rows, plus the existing statistics and located current events. These four selected-record occurrences include discharge 1 twice; they are regression checks, not new-battery or untouched-question evaluation. The original frozen reserved results remain unchanged. No fresh live-model execution was performed for this correction. The tool payload supplied to final findings is larger, so live context behavior, capability explanations and recommendation relevance still need evaluated review. Prompts, model settings, tool argument schemas, routing policy, recommendation guidance, numerical comparisons and retrieval are unchanged. Whole-record extrema do not classify active load or establish cutoff compliance, comparability or physical cause. Owner acceptance and commit approval remain pending; development tracking is in [SCRUM-8](https://anandms.atlassian.net/browse/SCRUM-8).
+Independent SciPy MATLAB object reads and Python list operations verify both known B0005 pairs, 1/100 and 1/168: 24 extrema values, 24 dedicated source locations and 24 formatted rows, plus the existing statistics and located current events. These four selected-record occurrences include discharge 1 twice; they are regression checks, not new-battery or untouched-question evaluation. The original frozen reserved results remain unchanged. No fresh live-model execution was performed in that deterministic correction. The following request-scope check evaluates the larger payload and recommendation relevance on a small live set; broader evaluation remains pending. Prompts, model settings, tool argument schemas, routing policy, recommendation guidance, numerical comparisons and retrieval are unchanged. Whole-record extrema do not classify active load or establish cutoff compliance, comparability or physical cause. Owner acceptance and commit approval remain pending; development tracking is in [SCRUM-8](https://anandms.atlassian.net/browse/SCRUM-8).
+
+### Recommendations that follow the question scope
+
+The [request-scope check](evaluations/experiments/request-scope-20261103.json) uses [three focused questions and one reserved variant](evaluations/request-scope-cases.json). Workflow v16 adds `question_scope` to the existing model-selected follow-up: `reported_capacity`, `recorded_extrema`, `test_conditions` or `other`. That decision is saved in state/events and passed into recommendation selection, with no additional model call or keyword router. An answered capacity or raw-extrema question gets a bounded no-further-check hint; conditions questions retain a remaining conditions check or documentation-recovery step. Other scopes and unexecuted requested checks get no automatic completion hint. A valid label alone does not establish that the model interpreted the question correctly.
+
+Instruction-only and neutral-hint candidates were inconsistent; twelve earlier executions retain four recommendation-relevance failures. The final three development questions and previously unexecuted variant each ran once against the fixed candidate. Their actions, declared scopes and recommendations match the reviewed expectations. Independent checks cover the final four capacity comparisons, three complete trace pairs, eight quotations and 36 extrema values/locations/CLI rows. Across all sixteen preserved executions, checks cover sixteen comparisons, eleven trace pairs, 32 quotations and 132 extrema rows. Explicit claim review finds no failed criteria; these small B0005 observations are not an accuracy or reliability estimate. All four final recommendations reuse code-selected hints, rather than demonstrating independent open-ended recommendation reasoning.
+
+All 301 tests pass; dependencies remain clean. Model/server/settings, findings and tool-argument schemas, calculations, retrieval and four-model/three-tool budgets are unchanged; the follow-up schema intentionally adds the scope field. The saved-record checker accepts legacy records and checks declared scope values/event consistency, with semantic scope review separate. Maximum observed final input was 6550 tokens with an 8192-token context setting; server usage alone cannot prove absence of truncation. The reserved decision reason was 294 characters, exceeding the prompt's 180-character target while staying within its 350-character schema limit. The new reserved variant is now used, and earlier reserved outcomes remain frozen. All graph findings remain partial; report integration and broader evaluation remain planned. This follow-up is tracked in [SCRUM-6](https://anandms.atlassian.net/browse/SCRUM-6).
 
 ## Outputs and calculation
 

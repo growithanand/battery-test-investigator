@@ -40,8 +40,9 @@ TRACE_EVIDENCE = {
 }
 
 
-def decision_response(action="stop_with_partial"):
-    fields = {"action": action, "reason": "Synthetic evidence-based decision for a graph test."}
+def decision_response(action="stop_with_partial", question_scope=None):
+    scope = question_scope or ("test_conditions" if action == "inspect_discharge_traces" else "reported_capacity")
+    fields = {"action": action, "question_scope": scope, "reason": "Synthetic evidence-based decision for a graph test."}
     return {"raw": AIMessage(content=json.dumps(fields)), "parsed": FollowUpDecision(**fields), "parsing_error": None}
 
 
@@ -375,7 +376,8 @@ def test_schema_refuses_established_comparability_or_cause():
 @pytest.mark.parametrize("action", ["stop_with_partial", "inspect_discharge_traces"])
 @pytest.mark.parametrize("next_check", [
     "stop_with_partial", "inspect_discharge_traces", " \n\t ", "```", " `STOP_WITH_PARTIAL`. ", "` . `",
-    "recover_protocol_evidence", "review_remaining_conditions", "answer_stopped_request",
+    "recover_protocol_evidence", "review_remaining_conditions", "answer_inspected_request", "answer_stopped_request",
+    "answer_extrema_request", "answer_request",
 ])
 def test_empty_or_bare_action_recommendation_fails_without_retry(evidence_tools, action, next_check):
     inspected = action == "inspect_discharge_traces"
@@ -432,11 +434,54 @@ def test_final_model_receives_code_selected_guidance_from_accepted_state(evidenc
     expected = ("answer_stopped_request" if not inspected else
                 "review_remaining_conditions" if protocol_status == "available" else "recover_protocol_evidence")
     assert payload["recommendation_guidance"]["focus"] == expected
+    if inspected and protocol_status == "available":
+        assert payload["recommendation_guidance"]["next_check_hint"].startswith("Review active-load boundaries")
     assert payload["recommendation_guidance"] == state["recommendation_guidance"]
     assert payload["request"] == REQUEST and payload["protocol"] == protocol
     assert payload["trace_evidence"] == (TRACE_EVIDENCE if inspected else None)
     assert state["findings"]["next_check"] == response["parsed"].next_check
     assert state["model_attempts"] == 3 and state["tool_attempts"] == (3 if inspected else 2)
+
+
+@pytest.mark.parametrize("scope,action,status,focus", [
+    ("recorded_extrema", "inspect_discharge_traces", "available", "answer_extrema_request"),
+    ("recorded_extrema", "inspect_discharge_traces", "unavailable", "answer_extrema_request"),
+    ("recorded_extrema", "stop_with_partial", "available", "answer_request"),
+    ("other", "inspect_discharge_traces", "available", "answer_request"),
+    ("other", "stop_with_partial", "available", "answer_request"),
+    ("test_conditions", "stop_with_partial", "available", "answer_request"),
+    ("reported_capacity", "inspect_discharge_traces", "available", "answer_stopped_request"),
+])
+def test_accepted_scope_and_executed_evidence_choose_guidance(evidence_tools, scope, action, status, focus):
+    protocol = evidence_tools[2]["protocol"]
+    protocol["status"] = status
+    if status == "unavailable":
+        protocol.update(evidence=[], issues=[{"reason": "source_missing"}])
+    inspected = action == "inspect_discharge_traces"
+    response = findings_response(protocol, trace_evidence_id=TRACE_EVIDENCE["evidence_id"] if inspected else None)
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response(action, scope), response)
+    state = invoke(model, evidence_tools)
+    assert state["follow_up"]["question_scope"] == scope
+    assert state["recommendation_guidance"]["focus"] == focus
+    hint = state["recommendation_guidance"]["next_check_hint"]
+    if focus == "answer_request":
+        assert hint is None
+    elif focus == "answer_extrema_request":
+        assert "No further check" in hint and "extrema and source locations" in hint
+    else:
+        assert "reported-capacity comparison" in hint
+    payload = json.loads(model.calls[-1]["messages"][-1].content)
+    assert payload["follow_up"]["question_scope"] == scope
+    assert payload["recommendation_guidance"] == state["recommendation_guidance"]
+    assert next(e for e in state["trace"] if e["event"] == "follow_up_selected")["question_scope"] == scope
+    assert state["model_attempts"] == 3 and state["tool_attempts"] == (3 if inspected else 2)
+
+
+@pytest.mark.parametrize("scope", [None, False, "segment_active_load"])
+def test_follow_up_scope_rejects_missing_or_unsupported_values(scope):
+    with pytest.raises(ValidationError):
+        FollowUpDecision(action="inspect_discharge_traces", question_scope=scope, reason="Constructed scope test.")
 
 
 def test_quote_reference_check_is_not_a_semantic_entailment_test():

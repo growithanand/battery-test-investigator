@@ -1,0 +1,77 @@
+{
+  "case_set_version": "request-scope-cases-v1",
+  "defined_on": "2026-11-03",
+  "scope": "Focused live checks of the expanded v2 trace input and request-relevant recommendations; not a reliability or new-battery evaluation.",
+  "policy": "Answer the selected question. Once supplied-capacity arithmetic or requested raw extrema/source locations are present, no further check is needed within that narrow scope. Questions about comparable conditions still inspect available traces and explain a remaining engineering check. Broader comparability and physical-cause limits stay explicit.",
+  "repeat_plan": {
+    "runs_per_case": 1,
+    "gate": "Execution and independent source checks plus explicit claim/reason/recommendation/coverage review are separate. A single run is a smoke check, not a repeatability estimate.",
+    "held_out": "Keep the one new raw-extrema variant unexecuted until the candidate is fixed. Do not tune on its result or reclassify the original used reserves as untouched."
+  },
+  "limits": {"model_limit": 4, "tool_limit": 3},
+  "source_identity": {
+    "battery_id": "B0005",
+    "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+    "operation_indices": {"2": 4, "120": 431, "7": 14, "150": 545, "12": 25, "160": 584, "9": 18, "143": 517},
+    "revision": 1,
+    "basis": "Independent SciPy MATLAB object reads before live execution; source hash and discharge-to-operation mapping checked separately from the saved-run evaluator."
+  },
+  "manual_review": [
+    "Read the decision reason against the question and the actual trace tool capabilities.",
+    "Apply evaluations/protocol-claim-review.json to every claim with its applicable original passage.",
+    "Apply evaluations/recommendation-review.json to next_check with the request, executed checks and known evidence.",
+    "Verify capacity arithmetic, all returned trace points/statistics and CLI rows independently; do not treat execution success as complete answer coverage.",
+    "For a supplied-capacity-only or fully supplied raw-extrema question, retain broader limits without requiring unrelated active-load analysis.",
+    "Record usage and input/output sizes when supplied by the server; successful execution alone cannot prove that no input was truncated."
+  ],
+  "cases": [
+    {
+      "case_id": "scope-extrema-2-120",
+      "split": "development",
+      "release_cases": ["E02"],
+      "request": {
+        "question": "List the whole-record current, voltage and temperature minima and maxima for these two discharges, with each source sample number and time. My question is limited to those recorded values.",
+        "battery_id": "B0005", "early": 2, "late": 120
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {"action": "inspect_discharge_traces", "trace_required": true, "status": "partial", "stop_reason": "comparability_assessment_pending", "protocol_status": "available"},
+      "review_expectation": "All twelve extrema values/locations are supplied in the v2 record and CLI. No additional check is required for this descriptive question; broader comparability and cause remain unresolved."
+    },
+    {
+      "case_id": "scope-capacity-7-150",
+      "split": "development",
+      "release_cases": ["E01"],
+      "request": {
+        "question": "How many ampere-hours did the reported capacity change between these selected discharges, and what percentage change uses the earlier reported value as its reference? Use the supplied capacity fields.",
+        "battery_id": "B0005", "early": 7, "late": 150
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {"action": "stop_with_partial", "trace_required": false, "status": "partial", "stop_reason": "selected_trace_check_pending", "protocol_status": "available"},
+      "review_expectation": "Later minus earlier reported capacity, divided by the earlier value for percent. No trace inspection or further engineering check is needed within this arithmetic question; broader limits stay explicit."
+    },
+    {
+      "case_id": "scope-conditions-12-160",
+      "split": "development",
+      "release_cases": ["E06"],
+      "request": {
+        "question": "Check the recorded current, voltage and temperature before considering whether the selected tests are comparable. Explain the evidence limits and the most useful remaining check.",
+        "battery_id": "B0005", "early": 12, "late": 160
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {"action": "inspect_discharge_traces", "trace_required": true, "status": "partial", "stop_reason": "comparability_assessment_pending", "protocol_status": "available"},
+      "review_expectation": "Inspect the recorded signals, retain unresolved comparability/cause and propose a remaining conditions check, such as active-load boundary review, without claiming it ran."
+    },
+    {
+      "case_id": "reserved-scope-extrema-9-143",
+      "split": "held_out",
+      "release_cases": ["E02"],
+      "request": {
+        "question": "For this pair, show the minimum and maximum of each recorded signal and locate each in the original samples. Keep the answer within this descriptive comparison and state what it cannot establish.",
+        "battery_id": "B0005", "early": 9, "late": 143
+      },
+      "fixture": "registered_protocol_catalog",
+      "expected": {"action": "inspect_discharge_traces", "trace_required": true, "status": "partial", "stop_reason": "comparability_assessment_pending", "protocol_status": "available"},
+      "review_expectation": "Supply all twelve raw extrema and source locations, explain whole-record limits and avoid treating unrelated load-boundary analysis as necessary for the answered descriptive request."
+    }
+  ]
+}

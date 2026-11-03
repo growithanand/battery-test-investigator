@@ -34,6 +34,10 @@ def evaluate_follow_up(record: dict, case: dict, case_set: dict) -> dict:
         "no_pending_calls_or_raw_messages": record["pending_calls"] == [] and "messages" not in record,
         "tool_trace_matches_execution": tool_trace_matches(record, request),
     }
+    if isinstance(decision, dict) and "question_scope" in decision:
+        checks["declared_question_scope_is_known"] = type(decision["question_scope"]) is str and decision["question_scope"] in {
+            "reported_capacity", "recorded_extrema", "test_conditions", "other",
+        }
     limits = case_set["limits"]
     checks["attempts_within_limits"] = all(
         type(record[field]) is int and 0 <= record[field] <= limits[limit]
@@ -124,7 +128,8 @@ def tool_trace_matches(record, request):
                 ids.append(call["id"])
                 call_ids[call["name"]] = call["id"]
         elif event["event"] == "follow_up_selected":
-            decisions.append({key: event[key] for key in ("action", "reason")})
+            keys = ("action", "reason", "question_scope") if "question_scope" in event else ("action", "reason")
+            decisions.append({key: event[key] for key in keys})
         elif event["event"] == "follow_up_tool_requested":
             if event["name"] != TRACE_TOOL or not same_json(event["args"], {key: request[key] for key in ("battery_id", "early", "late")}):
                 return False
