@@ -286,6 +286,62 @@ def test_cli_displays_protocol_and_analytical_limits(evidence_tools, monkeypatch
         assert f"Protocol limitation: {expected_limit}" in output
 
 
+@pytest.mark.parametrize("reject_findings", [False, True])
+def test_cli_shows_executed_extrema_even_when_later_findings_fail(
+        evidence_tools, monkeypatch, tmp_path, capsys, reject_findings):
+    import numpy as np
+    from scipy.io import savemat
+    from scripts import run_agent_investigation as runner
+    from scripts.model_tools import make_comparison_tool, make_trace_tool
+    from scripts.trace_inspection import format_trace_extrema
+
+    source = tmp_path / "B0005.mat"
+    cycles = [{"type": "discharge", "ambient_temperature": 24,
+               "data": {"Time": np.array([10, 11, 15, 21, 24]) + offset,
+                        "Current_measured": np.array([0, -2, -1, 0, 0]),
+                        "Voltage_measured": np.array([4.1, 3.8, 2.6, 3.4, 3.5]),
+                        "Temperature_measured": np.array([24, 25, 28, 27, 26]),
+                        "Capacity": capacity}}
+              for offset, capacity in ((0, 2.0), (100, 1.5))]
+    savemat(source, {"B0005": {"cycle": cycles}})
+    trace_tool = make_trace_tool({"B0005": source})
+    expected = trace_tool.invoke({"battery_id": "B0005", "early": 1, "late": 2})
+    protocol = deepcopy(PROTOCOL)
+    protocol["catalog_sha256"] = "c" * 64
+    evidence_tools[2]["protocol"] = protocol
+    response = findings_response(
+        trace_evidence_id="wrong-trace-id" if reject_findings else expected["evidence_id"],
+        limitations=["Whole-record inspection ran; active-load boundaries remain unresolved."],
+        next_check="Review active-load boundaries before assessing comparable conditions.",
+    )
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response("inspect_discharge_traces"), response)
+    graph = build_investigation_graph(lambda: model, make_comparison_tool({"B0005": source}),
+                                     evidence_tools[0][1], trace_tool)
+    monkeypatch.setattr(runner, "ROOT", tmp_path)
+    monkeypatch.setattr(runner, "build_investigation_graph", lambda *args, **kwargs: graph)
+    monkeypatch.setattr(sys, "argv", ["run_agent_investigation", "--model", "constructed-model",
+                                     "--battery-id", "B0005", "--early", "1", "--late", "2"])
+    if reject_findings:
+        with pytest.raises(SystemExit) as error:
+            runner.main()
+        assert error.value.code == 2
+    else:
+        runner.main()
+    output = capsys.readouterr().out
+    saved = json.loads(next((tmp_path / "outputs/agent-investigations").glob("*.json")).read_bytes())
+    assert saved["trace_evidence"] == expected
+    assert saved["configuration"]["trace_analysis_version"] == "whole-record-traces-v2"
+    assert format_trace_extrema(expected) in output
+    assert output.count("| minimum |") == output.count("| maximum |") == 6
+    assert json.loads(model.calls[-1]["messages"][-1].content)["trace_evidence"] == expected
+    if reject_findings:
+        assert saved["status"] == "failed" and saved["stop_reason"] == "findings_error"
+        assert saved["findings"] is None and "Documented claim:" not in output
+    else:
+        assert saved["status"] == "partial" and saved["findings"]["trace_evidence_id"] == expected["evidence_id"]
+
+
 @pytest.mark.parametrize("limits, responses, reason", [
     ({"model_limit": 1}, [], "model_budget_exhausted"),
     ({"model_limit": 2}, [AIMessage(content="", tool_calls=[COMPARISON_CALL])], "model_budget_exhausted"),

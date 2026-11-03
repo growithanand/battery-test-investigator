@@ -1,11 +1,12 @@
 """Inspect an explicit discharge pair without choosing an active-load boundary."""
 
 import argparse
+import json
 from pathlib import Path
 
 from scripts.inspect_sample import ROOT
 from scripts.investigation_state import InvestigationRequest, resolve_selection
-from scripts.trace_inspection import write_trace_inspection
+from scripts.trace_inspection import format_trace_extrema, write_trace_inspection
 
 
 def main():
@@ -19,10 +20,12 @@ def main():
         request = InvestigationRequest("Inspect selected whole-record traces", args.input.stem, args.early, args.late)
         selection = resolve_selection(request, args.input)
         destination = write_trace_inspection(selection, args.input, args.output_dir)
+        extrema = format_trace_extrema(json.loads((destination / "trace-inspection.json").read_text(encoding="utf-8")))
     except (OSError, ValueError, KeyError, TypeError) as error:
         parser.exit(2, f"Trace inspection failed: {error}\n")
     print(f"Trace evidence: {destination / 'trace-inspection.json'}")
     print(f"Selected-pair plot: {destination / 'selected-traces.png'}")
+    print(extrema)
     print("Whole recordings only; comparability remains not established.")
 
 

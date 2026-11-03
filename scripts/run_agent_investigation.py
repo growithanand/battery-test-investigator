@@ -18,7 +18,7 @@ from scripts.investigation_graph import (
 from scripts.local_model import create_local_model
 from scripts.model_tools import make_comparison_tool, make_protocol_tool, make_trace_tool
 from scripts.protocol_evidence import CATALOG_PATH
-from scripts.trace_inspection import ANALYSIS_VERSION
+from scripts.trace_inspection import ANALYSIS_VERSION, format_trace_extrema
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -92,11 +92,12 @@ def main():
     if result["comparison"]:
         comparison = result["comparison"]["comparison"]
         print(f"Capacity change: {comparison['capacity_change_Ah']:.9f} Ah ({comparison['capacity_change_percent']:.6f}%)")
+    if result["follow_up"]:
+        print(f"Follow-up: {result['follow_up']['action']}: {result['follow_up']['reason']}")
+    if result["trace_evidence"]:
+        print(f"Selected-trace inspection executed: {result['trace_evidence']['evidence_id']}")
+        print(format_trace_extrema(result["trace_evidence"]))
     if result["findings"]:
-        if result["follow_up"]:
-            print(f"Follow-up: {result['follow_up']['action']}: {result['follow_up']['reason']}")
-        if result["trace_evidence"]:
-            print(f"Selected-trace inspection executed: {result['trace_evidence']['evidence_id']}")
         for claim in result["findings"]["protocol_claims"]:
             print(f"Documented claim: {claim['statement']}\nQuote: {claim['quote']}\nEvidence: {claim['evidence_id']}")
         if result["findings"]["protocol_evidence_limitation"] is not None:

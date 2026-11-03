@@ -3,6 +3,7 @@
 from dataclasses import asdict, replace
 import hashlib
 import json
+import sys
 
 import numpy as np
 import pytest
@@ -77,10 +78,114 @@ def test_tied_extrema_and_steps_choose_first_source_occurrence(source):
     record = records[0]
     record["measurements"]["Current_measured"] = np.array([0, -2, 0, -2, 0], dtype=float)
     record["measurements"]["Voltage_measured"] = np.array([4.2, 2.6, 3.0, 2.6, 3.3])
+    record["measurements"]["Temperature_measured"] = np.array([24, 24, 26, 26, 25], dtype=float)
     summary = traces.summarize_trace(record)
     assert summary["minimum_voltage_sample"]["sample_index"] == 2
     assert summary["largest_current_decrease"]["before"]["sample_index"] == 1
     assert summary["largest_current_increase"]["before"]["sample_index"] == 2
+    assert {label: {kind: point["sample_index"] for kind, point in extrema.items()}
+            for label, extrema in summary["extrema_samples"].items()} == {
+                "current_A": {"minimum": 2, "maximum": 1},
+                "voltage_V": {"minimum": 2, "maximum": 1},
+                "temperature_C": {"minimum": 1, "maximum": 3},
+            }
+
+
+@pytest.mark.parametrize("label,kind,index", [
+    ("current_A", "minimum", 1), ("current_A", "maximum", 2),
+    ("voltage_V", "minimum", 3), ("voltage_V", "maximum", 4),
+    ("temperature_C", "minimum", 5), ("temperature_C", "maximum", 6),
+])
+def test_every_signal_extremum_has_its_own_source_point(source, label, kind, index):
+    _, records = read_discharge_records(source)
+    record = records[0]
+    record["sample_count"] = 7
+    record["measurements"] = {
+        "Time": np.array([12, 12.5, 15, 21, 23, 30, 31]),
+        "Current_measured": np.array([-1, -4, 3, -2, 0, -3, 2]),
+        "Voltage_measured": np.array([3.7, 3.8, 3.6, 2.5, 4.4, 3.9, 3.2]),
+        "Temperature_measured": np.array([25, 26, 24, 27, 28, 19, 39]),
+    }
+    summary = traces.summarize_trace(record)
+    point = summary["extrema_samples"][label][kind]
+    assert point == {
+        "sample_index": index + 1,
+        "source_time_s": [12, 12.5, 15, 21, 23, 30, 31][index],
+        "elapsed_s": [0, 0.5, 3, 9, 11, 18, 19][index],
+        "current_A": [-1, -4, 3, -2, 0, -3, 2][index],
+        "voltage_V": [3.7, 3.8, 3.6, 2.5, 4.4, 3.9, 3.2][index],
+        "temperature_C": [25, 26, 24, 27, 28, 19, 39][index],
+    }
+    assert point[label] == summary["sample_statistics"][label][kind]
+    assert summary["minimum_voltage_sample"] == summary["extrema_samples"]["voltage_V"]["minimum"]
+
+
+@pytest.mark.parametrize("field,label,value", [
+    ("Current_measured", "current_A", -2), ("Voltage_measured", "voltage_V", 3.5),
+    ("Temperature_measured", "temperature_C", 24),
+])
+def test_constant_signal_extrema_both_locate_first_sample(source, field, label, value):
+    _, records = read_discharge_records(source)
+    records[0]["measurements"][field] = np.full(5, value, dtype=float)
+    extrema = traces.summarize_trace(records[0])["extrema_samples"][label]
+    for point in extrema.values():
+        assert point["sample_index"] == 1 and point["source_time_s"] == 10 and point["elapsed_s"] == 0
+        assert point[label] == value
+
+
+def test_extended_evidence_has_a_new_analysis_identity(source):
+    chosen = selection(source)
+    result = traces.inspect_selection_traces(chosen, source)
+    old_identity = {"analysis_version": "whole-record-traces-v1", "selection": asdict(chosen)}
+    old_digest = hashlib.sha256(json.dumps(old_identity, sort_keys=True).encode()).hexdigest()[:16]
+    assert result["analysis_version"] == "whole-record-traces-v2"
+    assert result["evidence_id"] != f"traces-{old_digest}"
+
+
+def test_extrema_display_includes_values_units_and_both_source_time_bases(source):
+    evidence = traces.inspect_selection_traces(selection(source), source)
+    text = traces.format_trace_extrema(evidence)
+    assert evidence["evidence_id"] in text and evidence["selection"]["source_sha256"] in text
+    assert "Earlier: discharge 1, operation 2" in text and "Later: discharge 2, operation 4" in text
+    assert "first occurrence" in text and "12 significant digits" in text
+    assert "active-load boundaries unresolved" in text and "comparability not established" in text
+    rows = [[cell.strip() for cell in line.split("|")] for line in text.splitlines()
+            if "| minimum |" in line or "| maximum |" in line]
+    assert rows == [
+        ["current (A)", "minimum", "-2", "2", "11", "1"],
+        ["current (A)", "maximum", "0", "1", "10", "0"],
+        ["voltage (V)", "minimum", "2.6", "3", "15", "5"],
+        ["voltage (V)", "maximum", "4.2", "1", "10", "0"],
+        ["temperature (degC)", "minimum", "24", "1", "10", "0"],
+        ["temperature (degC)", "maximum", "26", "3", "15", "5"],
+        ["current (A)", "minimum", "-1", "2", "102", "2"],
+        ["current (A)", "maximum", "0", "1", "100", "0"],
+        ["voltage (V)", "minimum", "2.7", "3", "106", "6"],
+        ["voltage (V)", "maximum", "4.2", "1", "100", "0"],
+        ["temperature (degC)", "minimum", "24", "1", "100", "0"],
+        ["temperature (degC)", "maximum", "27", "3", "106", "6"],
+    ]
+
+
+def test_extrema_display_rejects_an_older_evidence_format(source):
+    evidence = traces.inspect_selection_traces(selection(source), source)
+    evidence["analysis_version"] = "whole-record-traces-v1"
+    evidence["earlier"].pop("extrema_samples")
+    with pytest.raises(ValueError, match="analysis version"):
+        traces.format_trace_extrema(evidence)
+
+
+def test_standalone_cli_displays_the_saved_extrema_table(source, tmp_path, monkeypatch, capsys):
+    from scripts import inspect_selected_traces as runner
+
+    root = tmp_path / "inspection"
+    monkeypatch.setattr(sys, "argv", ["inspect_selected_traces", "--input", str(source),
+                                     "--early", "1", "--late", "2", "--output-dir", str(root)])
+    runner.main()
+    output = capsys.readouterr().out
+    saved = json.loads(next(root.glob("*/trace-inspection.json")).read_bytes())
+    assert traces.format_trace_extrema(saved) in output
+    assert output.count("| minimum |") == output.count("| maximum |") == 6
 
 
 def test_analysis_does_not_change_source_arrays(source):

@@ -13,7 +13,7 @@ from scripts.investigation_state import ValidatedSelection
 from scripts.investigation_tools import read_selection_records
 
 
-ANALYSIS_VERSION = "whole-record-traces-v1"
+ANALYSIS_VERSION = "whole-record-traces-v2"
 
 
 def summarize_trace(record: dict) -> dict:
@@ -45,7 +45,7 @@ def summarize_trace(record: dict) -> dict:
         }
 
     increase, decrease = int(np.argmax(current_steps)), int(np.argmin(current_steps))
-    statistics = {}
+    statistics, extrema_samples = {}, {}
     for field, label in (("Current_measured", "current_A"), ("Voltage_measured", "voltage_V"),
                          ("Temperature_measured", "temperature_C")):
         values = measurements[field]
@@ -54,13 +54,18 @@ def summarize_trace(record: dict) -> dict:
                                  "maximum": float(np.max(values))}
         if not all(np.isfinite(value) for value in statistics[label].values()):
             raise ValueError("Trace sample statistics must be finite")
+        extrema_samples[label] = {
+            "minimum": point(int(np.argmin(values))),
+            "maximum": point(int(np.argmax(values))),
+        }
     return {
         "operation_index": record["operation_index"], "discharge_index": record["discharge_index"],
         "sample_count": record["sample_count"], "recording_duration_s": float(elapsed[-1]),
         "reported_capacity_Ah": record["reported_capacity_Ah"],
         "sample_statistics": statistics,
+        "extrema_samples": extrema_samples,
         "first_sample": point(0), "last_sample": point(len(time) - 1),
-        "minimum_voltage_sample": point(int(np.argmin(measurements["Voltage_measured"]))),
+        "minimum_voltage_sample": extrema_samples["voltage_V"]["minimum"].copy(),
         "largest_current_increase": step(increase) if current_steps[increase] > 0 else None,
         "largest_current_decrease": step(decrease) if current_steps[decrease] < 0 else None,
     }
@@ -89,6 +94,33 @@ def _build_evidence(selection, records):
 def inspect_selection_traces(selection: ValidatedSelection, source_path: Path) -> dict:
     """Return compact selection-bound trace evidence; keep raw arrays outside model context."""
     return _build_evidence(selection, read_selection_records(selection, source_path))
+
+
+def format_trace_extrema(evidence: dict) -> str:
+    """Render the located extrema returned by the current analysis, without inference."""
+    if evidence["analysis_version"] != ANALYSIS_VERSION:
+        raise ValueError("Extrema display requires the current trace analysis version")
+    selection = evidence["selection"]
+    lines = [
+        f"Trace extrema: {evidence['evidence_id']} ({evidence['analysis_version']})",
+        f"Battery: {selection['battery_id']}; source SHA256: {selection['source_sha256']}",
+        "Scope: whole recording; active-load boundaries unresolved; comparability not established.",
+        "Ties use the first occurrence. Display rounded to 12 significant digits; JSON retains stored floats.",
+    ]
+    for side in ("earlier", "later"):
+        record = evidence[side]
+        lines.extend([
+            f"{side.capitalize()}: discharge {record['discharge_index']}, operation {record['operation_index']}",
+            f"{'Signal (unit)':<18} | Extremum | {'Value':>20} | {'Sample':>6} | "
+            f"{'Source time (s)':>20} | {'Elapsed (s)':>20}",
+        ])
+        for label, name in (("current_A", "current (A)"), ("voltage_V", "voltage (V)"),
+                            ("temperature_C", "temperature (degC)")):
+            for kind in ("minimum", "maximum"):
+                point = record["extrema_samples"][label][kind]
+                lines.append(f"{name:<18} | {kind} | {point[label]:>20.12g} | {point['sample_index']:>6} | "
+                             f"{point['source_time_s']:>20.12g} | {point['elapsed_s']:>20.12g}")
+    return "\n".join(lines)
 
 
 def save_selected_trace_plot(records: list[dict], selection: ValidatedSelection, destination: Path):
