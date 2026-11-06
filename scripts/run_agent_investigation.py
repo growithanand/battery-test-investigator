@@ -15,6 +15,7 @@ from scripts.investigation_findings import FollowUpDecision, InvestigationFindin
 from scripts.investigation_graph import (
     FINDINGS_PROMPT, FOLLOW_UP_PROMPT, TOOL_PROMPT, WORKFLOW_VERSION, build_investigation_graph,
 )
+from scripts.investigation_report import render_investigation_report
 from scripts.local_model import create_local_model
 from scripts.model_tools import make_comparison_tool, make_protocol_tool, make_trace_tool
 from scripts.protocol_evidence import CATALOG_PATH
@@ -106,6 +107,14 @@ def main():
             print(f"Limitation: {limitation}")
         print(f"Next check (not executed): {result['findings']['next_check']}")
     print(f"Local run record: {output}")
+    report = output.with_suffix(".md")
+    pending_report = report.with_suffix(".md.tmp")
+    try:
+        pending_report.write_text(render_investigation_report(result), encoding="utf-8", newline="\n")
+        pending_report.replace(report)
+    finally:
+        pending_report.unlink(missing_ok=True)
+    print(f"Investigation report: {report}")
     if result["status"] == "failed":
         raise SystemExit(2)
 

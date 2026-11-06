@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 import json
+from pathlib import Path
 import sys
 
 import pytest
@@ -278,13 +279,22 @@ def test_cli_displays_protocol_and_analytical_limits(evidence_tools, monkeypatch
                                      "--battery-id", "B0005", "--early", "1", "--late", "2"])
     runner.main()
     output = capsys.readouterr().out
-    saved = json.loads(next((tmp_path / "outputs/agent-investigations").glob("*.json")).read_bytes())
+    record = next((tmp_path / "outputs/agent-investigations").glob("*.json"))
+    saved = json.loads(record.read_bytes())
+    report = record.with_suffix(".md").read_text(encoding="utf-8")
     assert saved["findings"]["protocol_evidence_limitation"] == expected_limit
     assert "Limitation: Constructed analytical limit." in output
+    assert f"Investigation report: {record.with_suffix('.md')}" in output
+    assert f"]({record.name})" in report
+    assert f"Retrieval status: `{status}`." in report
+    assert "-0.500000000 Ah (-25.000000%)" in report
+    assert "Constructed analytical limit." in report
+    assert (f"    {QUOTE}" in report) == (status != "unavailable")
     if expected_limit is None:
         assert "Protocol limitation:" not in output
     else:
         assert f"Protocol limitation: {expected_limit}" in output
+        assert expected_limit in report
 
 
 @pytest.mark.parametrize("reject_findings", [False, True])
@@ -330,17 +340,62 @@ def test_cli_shows_executed_extrema_even_when_later_findings_fail(
     else:
         runner.main()
     output = capsys.readouterr().out
-    saved = json.loads(next((tmp_path / "outputs/agent-investigations").glob("*.json")).read_bytes())
+    record = next((tmp_path / "outputs/agent-investigations").glob("*.json"))
+    saved = json.loads(record.read_bytes())
+    report = record.with_suffix(".md").read_text(encoding="utf-8")
     assert saved["trace_evidence"] == expected
     assert saved["configuration"]["trace_analysis_version"] == "whole-record-traces-v2"
     assert format_trace_extrema(expected) in output
     assert output.count("| minimum |") == output.count("| maximum |") == 6
+    assert f"```text\n{format_trace_extrema(expected)}\n```" in report
+    assert report.count("| minimum |") == report.count("| maximum |") == 6
     assert json.loads(model.calls[-1]["messages"][-1].content)["trace_evidence"] == expected
     if reject_findings:
         assert saved["status"] == "failed" and saved["stop_reason"] == "findings_error"
         assert saved["findings"] is None and "Documented claim:" not in output
+        assert "Status: `failed`" in report and "Stop reason: `findings_error`" in report
+        assert "no accepted final findings or recommendation" in report
+        assert "**Documented claim:**" not in report and "**Recommended next check" not in report
     else:
         assert saved["status"] == "partial" and saved["findings"]["trace_evidence_id"] == expected["evidence_id"]
+        assert "Status: `partial`" in report
+        assert "Review active-load boundaries before assessing comparable conditions." in report
+
+
+@pytest.mark.parametrize("report_write_fails", [False, True])
+def test_cli_clarification_report_preserves_saved_record(tmp_path, monkeypatch, capsys, report_write_fails):
+    from scripts import run_agent_investigation as runner
+
+    question = "Compare the discharges.\n## Fake heading <script>"
+    monkeypatch.setattr(runner, "ROOT", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["run_agent_investigation", "--model", "unused-model", "--question", question])
+
+    if report_write_fails:
+        def fail_replace(self, target):
+            raise OSError("Constructed report publication failure")
+
+        monkeypatch.setattr(Path, "replace", fail_replace)
+        with pytest.raises(OSError, match="Constructed report publication failure"):
+            runner.main()
+    else:
+        runner.main()
+
+    directory = tmp_path / "outputs/agent-investigations"
+    record = next(directory.glob("*.json"))
+    saved = json.loads(record.read_bytes())
+    assert saved["request"]["question"] == question
+    assert saved["status"] == "needs_clarification"
+    assert saved["model_attempts"] == saved["tool_attempts"] == 0
+    assert f"Local run record: {record}" in capsys.readouterr().out
+    report = record.with_suffix(".md")
+    if report_write_fails:
+        assert sorted(directory.iterdir()) == [record]
+    else:
+        content = report.read_text(encoding="utf-8")
+        assert "Status: `needs_clarification`" in content
+        assert r"Please specify: battery\_id, early, late." in content
+        assert r"\#\# Fake heading &lt;script&gt;" in content
+        assert "**Documented claim:**" not in content and "**Recommended next check" not in content
 
 
 @pytest.mark.parametrize("limits, responses, reason", [
