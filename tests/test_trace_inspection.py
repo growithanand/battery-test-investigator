@@ -7,7 +7,7 @@ import sys
 
 import numpy as np
 import pytest
-from scipy.io import savemat
+from scipy.io import loadmat, savemat
 
 from scripts import investigation_tools
 from scripts import trace_inspection as traces
@@ -186,6 +186,79 @@ def test_standalone_cli_displays_the_saved_extrema_table(source, tmp_path, monke
     saved = json.loads(next(root.glob("*/trace-inspection.json")).read_bytes())
     assert traces.format_trace_extrema(saved) in output
     assert output.count("| minimum |") == output.count("| maximum |") == 6
+
+
+@pytest.mark.parametrize("current,reason,missing", [
+    ([0, 2, 2, 0], "no_on_load_samples", None),
+    ([0, -2, 0], "single_on_load_sample", None),
+    ([0, -2, -2, 0, -2, -2, 0], "split_on_load_blocks", None),
+    ([-2, -2, 0], "missing_transition_brackets", ["load_on"]),
+    ([0, -2, -2], "missing_transition_brackets", ["load_off"]),
+    ([-2, -2], "missing_transition_brackets", ["load_on", "load_off"]),
+])
+def test_active_load_leaves_ambiguous_windows_unresolved(current, reason, missing):
+    result = traces.find_b0005_active_load_window(np.arange(len(current)), np.array(current))
+    assert result["status"] == "unresolved" and result["reason"] == reason
+    assert result.get("missing_brackets") == missing
+    assert "observed_span_s" not in result and "load_on_bracket" not in result
+
+
+@pytest.mark.parametrize("times,current,message", [
+    ([0, 1], [0, -2, 0], "aligned"),
+    ([0, 1, 1], [0, -2, 0], "strictly increasing"),
+    ([0, 1, 2], [0, np.nan, 0], "samples must be finite"),
+    ([-1e308, 0, 1e308], [0, -2, 0], "Elapsed sample times must be finite"),
+])
+def test_active_load_rejects_invalid_samples(times, current, message):
+    with pytest.raises(ValueError, match=message):
+        traces.find_b0005_active_load_window(np.array(times), np.array(current))
+
+
+@pytest.mark.parametrize("registered", [True, False])
+def test_active_load_cli_preserves_source_and_both_brackets(source, tmp_path, monkeypatch, capsys, registered):
+    from scripts import inspect_selected_traces as runner
+
+    b0005 = tmp_path / "B0005.mat"
+    savemat(b0005, {"B0005": loadmat(source)["BTEST"]})
+    digest = hashlib.sha256(b0005.read_bytes()).hexdigest()
+    manifest = tmp_path / "data/manifests/B0005.json"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text(json.dumps({"files": [{"archive_member": "B0005.mat",
+                                                "sha256": digest if registered else "0" * 64}]}), encoding="utf-8")
+    monkeypatch.setattr(traces, "ROOT", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["inspect_selected_traces", "--input", str(b0005),
+                                     "--early", "1", "--late", "2", "--active-load"])
+    if not registered:
+        with pytest.raises(SystemExit) as error:
+            runner.main()
+        captured = capsys.readouterr()
+        assert error.value.code == 2 and captured.out == ""
+        assert "does not match the registered manifest" in captured.err
+        return
+
+    runner.main()
+    evidence = json.loads(capsys.readouterr().out)
+    assert evidence["current_threshold_A"] == -1.0
+    assert evidence["selection"]["source_sha256"] == digest
+    assert evidence["selection"]["early_operation_index"] == 2
+    assert evidence["selection"]["late_operation_index"] == 4
+    assert evidence["earlier"] == {
+        "status": "observed",
+        "on_load_sample_count": 2,
+        "observed_span_s": 4.0,
+        "load_on_bracket": {
+            "before": {"sample_index": 1, "source_time_s": 10.0, "elapsed_s": 0.0, "current_A": 0.0},
+            "after": {"sample_index": 2, "source_time_s": 11.0, "elapsed_s": 1.0, "current_A": -2.0},
+        },
+        "load_off_bracket": {
+            "before": {"sample_index": 3, "source_time_s": 15.0, "elapsed_s": 5.0, "current_A": -2.0},
+            "after": {"sample_index": 4, "source_time_s": 21.0, "elapsed_s": 11.0, "current_A": 0.0},
+        },
+    }
+    assert evidence["later"]["load_on_bracket"]["after"] == {
+        "sample_index": 2, "source_time_s": 102.0, "elapsed_s": 2.0, "current_A": -1.0,
+    }
+    assert evidence["later"]["load_off_bracket"]["after"]["source_time_s"] == 107.0
 
 
 def test_analysis_does_not_change_source_arrays(source):

@@ -39,7 +39,7 @@ The development history is preserved with local development notes excluded. Remo
 
 ## Status
 
-The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 303 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
+The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 315 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
 
 Programmatic investigation helpers preserve incomplete requests for clarification, validate explicit discharge selections, and return comparisons with the source hash, original operation indices, discharge indices, and selection revision. Changed sources and inconsistent operation mappings are rejected before returning comparison evidence. A separate bounded LangChain/local-Ollama connection check exposes the comparison through a strict tool schema; it has completed live B0005 comparisons for discharges 1/168 and 1/100.
 
@@ -108,6 +108,16 @@ Both the standalone inspection and investigation CLIs display all twelve extrema
 These are unweighted sample statistics over the entire recording, not time-weighted or active-discharge statistics. Current sign is retained as recorded. Current changes are descriptive events, not load-state or cutoff classifiers; ties use the first occurrence. There is no current integration, protocol pass/fail tolerance, physical-cause inference, or comparability verdict. The final sample must not automatically be treated as a discharge cutoff.
 
 `make_trace_tool()` exposes the compact, selection-bound analysis through the same strict battery/early/late schema as the comparison tool. It accepts no file/output paths and writes no artifacts; full arrays remain in Python. The graph can execute this adapter once after the model selects trace inspection. Source hash, both index types, and revision must match the comparison. The original inspection plot remains three panels; the selected-pair overlay is separate and is written only by the standalone inspection command.
+
+### B0005 active-load check
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.inspect_selected_traces --early 1 --late 168 --active-load
+```
+
+This mode verifies the source against the B0005 manifest and prints the selected windows as JSON. The trial rule marks signed current at or below −1 A and looks for one consecutive block of at least two samples with off-load readings on both sides. Missing, split or unbracketed blocks return `unresolved` with a reason.
+
+For an observed window, the JSON retains the two samples that bracket each transition, their original and elapsed times, and the span from the first to last on-load sample. The selected discharges and original operation indices identify the two records. This threshold locates candidate load windows for B0005. Assessing comparability calls for reviewing the conditions within those windows. The command above without `--active-load` produces the whole-record evidence and plot.
 
 ## Protocol evidence lookup
 
