@@ -39,7 +39,7 @@ The development history is preserved with local development notes excluded. Remo
 
 ## Status
 
-The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 315 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
+The local inspection and automated reference comparison are verified on NASA B0005: 616 recorded operations, including 168 discharge operations. The current suite passes 319 test cases on Python 3.12.14 with the optional model dependencies installed. One command produces CSV/JSON inspection artifacts, plots, a selected-discharge comparison, a Markdown report, and an artifact-hash manifest. Identical source data and selections reuse the same investigation folder.
 
 Programmatic investigation helpers preserve incomplete requests for clarification, validate explicit discharge selections, and return comparisons with the source hash, original operation indices, discharge indices, and selection revision. Changed sources and inconsistent operation mappings are rejected before returning comparison evidence. A separate bounded LangChain/local-Ollama connection check exposes the comparison through a strict tool schema; it has completed live B0005 comparisons for discharges 1/168 and 1/100.
 
@@ -88,7 +88,7 @@ The fetch command reads only the first experiment package (approximately 57 MB) 
 
 In VS Code, open the project folder, select `.venv\Scripts\python.exe` through **Python: Select Interpreter**, then use the **Run battery investigation** debug configuration. It runs the investigation as a module from the project root.
 
-`requirements-lock.txt` retains the numerical/test package pins. The numerical baseline was previously checked on Python 3.12.14 and 3.15.0; model integration is verified only on 3.12.14. `requirements-dev.txt` defines numerical/development dependency ranges. The optional-layer tests contain 150 cases; without that layer they are skipped and the other 151 numerical/standard-library cases run.
+`requirements-lock.txt` retains the numerical/test package pins. The numerical baseline was previously checked on Python 3.12.14 and 3.15.0. Model integration is verified on 3.12.14. `requirements-dev.txt` defines numerical/development dependency ranges. Tests requiring optional model dependencies are skipped when those dependencies are unavailable.
 
 ## Selected whole-record trace inspection
 
@@ -185,6 +185,35 @@ With available documentation, executed trace inspection yields `partial` / `comp
 Each invocation writes a unique JSON record under `outputs/agent-investigations/` with the request, calculated evidence, retrieved passages, follow-up decision and reason, trace evidence if executed, findings if accepted, stopping reason, attempt counts, concise tool trace, timing and usage, source and model identities, prompt and schema hashes, package versions, and an input and configuration fingerprint. Raw model messages and private reasoning are excluded. The JSON is the evidence record for the run.
 
 Open the printed `Investigation report` path for the Markdown report with the same run ID. It links to the JSON and brings together the capacity comparison, protocol retrieval and citations, executed trace extrema and their sample locations, remaining limits, and the recorded next check. Python renders it directly from the saved run data. Failed or clarification runs show their stopping reason and any evidence already collected. Failed investigations exit with code 2 when their artifacts are written successfully. Use the selected-trace command above for the plot and the numerical investigation command for the separate reference report.
+
+## Portfolio task benchmark
+
+The [portfolio task set](evaluations/portfolio-cases.json) defines 30 scenarios with 24 development cases and six reserved variants. The [scoring rubric](evaluations/portfolio-rubric.json) covers execution, numerical accuracy, citation support, task fulfilment and engineering limits. It retains project-owner review as a separate result. Restart/resume and executing the load-window check through the agent are included as required tasks.
+
+Prepare a frozen collection from a checkout whose runtime files match the declared baseline, then collect the development cases with the existing local Ollama model running:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.collect_portfolio_baseline --prepare --output outputs/portfolio-baseline/20261107-a1
+.\.venv\Scripts\python.exe -m scripts.collect_portfolio_baseline --run --output outputs/portfolio-baseline/20261107-a1
+```
+
+The collector freezes source/configuration inputs, creates labelled missing/partial/corrupt protocol fixtures and runs a fresh investigation CLI process once per development case. It retains process errors, saved records, reports, hashes and wall times. Use a fresh output directory for each collection. The six reserved cases are evaluated only after the final candidate is fixed, when both frozen baseline and final candidate can be compared on them together.
+
+[Security case specifications](evaluations/security-cases.json) define 12 adversarial cases for the separate security pass. Their expected outcomes and execution status are recorded in that file. The task benchmark and adversarial pass have separate case counts.
+
+The [frozen d7e314f baseline](evaluations/baselines/portfolio-d7e314f-20261107.json) records all 24 development executions, one per case. Six reserved variants remain for the fixed final comparison. The reference review is provisional and awaits owner calibration.
+
+| Criterion | Pass | Fail | Not applicable |
+| --- | ---: | ---: | ---: |
+| Execution and declared scope | 19 | 5 | 0 |
+| Numerical accuracy against source | 15 | 0 | 9 |
+| Citation support | 11 | 0 | 13 |
+| Task fulfilment | 20 | 4 | 0 |
+| Limits and recommendation | 12 | 3 | 9 |
+
+Eighteen of the 24 development cases meet every applicable criterion under the provisional review. The baseline exposes missing final-voltage presentation, agent access to the observed-load-window analysis, and restart/resume. Two cases answer their main questions but fail narrow frozen scope-label expectations, which need owner review. Those original expectations and observations are retained in the reference.
+
+Independent source checks cover 15 comparisons, eight trace pairs, 96 extrema locations and 21 original quotations. Across 16 cases that executed local inference, median CLI wall time was 23.9 seconds and nearest-rank p95 was 28.9 seconds. Preloading took 10.5 seconds and is recorded separately. The local API charged USD 0. Electricity, hardware and hosting costs are unpriced. The record includes per-case durations, token usage and configuration hashes for the later provider comparison.
 
 ## Follow-up decision evaluation
 

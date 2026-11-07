@@ -1,0 +1,903 @@
+{
+  "case_set_version": "portfolio-task-cases-v1",
+  "defined_on": "2026-11-07",
+  "baseline_commit": "d7e314fecc1abb967cf81c689500db8b800afcc6",
+  "scope": "Thirty B0005 task scenarios. Twenty-four development cases and six reserved variants. Source/fixture conditions, input validation and restart gaps are separate task conditions.",
+  "limits": {
+    "model_limit": 4,
+    "tool_limit": 3
+  },
+  "source_identity": {
+    "battery_id": "B0005",
+    "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+    "operation_indices": {
+      "1": 2,
+      "2": 4,
+      "4": 8,
+      "5": 10,
+      "6": 12,
+      "8": 16,
+      "9": 18,
+      "11": 22,
+      "13": 27,
+      "15": 31,
+      "17": 35,
+      "18": 37,
+      "19": 39,
+      "20": 42,
+      "22": 50,
+      "30": 82,
+      "32": 90,
+      "33": 94,
+      "42": 130,
+      "61": 202,
+      "100": 352,
+      "101": 356,
+      "130": 469,
+      "133": 481,
+      "140": 505,
+      "144": 521,
+      "145": 525,
+      "146": 529,
+      "149": 541,
+      "154": 560,
+      "155": 564,
+      "156": 568,
+      "157": 572,
+      "159": 580,
+      "160": 584,
+      "161": 588,
+      "162": 592,
+      "163": 596,
+      "165": 604,
+      "166": 608,
+      "167": 612,
+      "168": 614
+    },
+    "revision": 1
+  },
+  "fixtures": {
+    "available": "Original three-document registered catalog.",
+    "missing": "Applicable original catalog entry points to a deliberately absent fixture path.",
+    "partial": "Original available catalog plus a deliberately absent applicable supplemental entry.",
+    "corrupt": "Applicable entry points to a deliberately modified fixture copy while retaining its original expected hash.",
+    "wrong_experiment": "Catalog retains only the two real inapplicable experiment documents."
+  },
+  "repeat_plan": {
+    "runs_per_development_case": 1,
+    "purpose": "Initial breadth baseline with no retries or in-collection tuning.",
+    "reliability": "Report individual observations. Repeated-run reliability remains separate.",
+    "held_out": "Do not execute reserved variants until the final candidate is fixed. Then run the frozen baseline and final candidate on that subset together."
+  },
+  "scoring_rubric": "evaluations/portfolio-rubric.json",
+  "security_cases": "evaluations/security-cases.json",
+  "cases": [
+    {
+      "case_id": "D01-capacity",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E01"
+      ],
+      "request": {
+        "question": "Give the reported capacity difference from the earlier discharge to the later one in Ah and percent, using the earlier supplied capacity as the reference. Keep this an arithmetic answer.",
+        "battery_id": "B0005",
+        "early": 1,
+        "late": 168
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "stop_with_partial"
+      ],
+      "expected_scopes": [
+        "reported_capacity"
+      ],
+      "task_expectation": "Give the reported capacity difference from the earlier discharge to the later one in Ah and percent, using the earlier supplied capacity as the reference. Keep this an arithmetic answer.",
+      "reference": {
+        "early_operation_index": 2,
+        "late_operation_index": 614,
+        "earlier_capacity_Ah": 1.8564874208181574,
+        "later_capacity_Ah": 1.3250793286429356,
+        "capacity_change_Ah": -0.5314080921752218,
+        "capacity_change_percent": -28.624384211611265
+      }
+    },
+    {
+      "case_id": "D02-relative-basis",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E02",
+        "E11"
+      ],
+      "request": {
+        "question": "Compare these two later-life records using their supplied capacities. Explain which selected capacity is the denominator and keep the experiment's rated-capacity endpoint separate.",
+        "battery_id": "B0005",
+        "early": 100,
+        "late": 168
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "stop_with_partial"
+      ],
+      "expected_scopes": [
+        "reported_capacity"
+      ],
+      "task_expectation": "Compare these two later-life records using their supplied capacities. Explain which selected capacity is the denominator and keep the experiment's rated-capacity endpoint separate.",
+      "reference": {
+        "early_operation_index": 352,
+        "late_operation_index": 614,
+        "earlier_capacity_Ah": 1.485868384561201,
+        "later_capacity_Ah": 1.3250793286429356,
+        "capacity_change_Ah": -0.1607890559182654,
+        "capacity_change_percent": -10.82121792138062
+      }
+    },
+    {
+      "case_id": "D03-extrema",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E02"
+      ],
+      "request": {
+        "question": "Show all six whole-record signal minima and maxima for each discharge, including the original sample index and both source and elapsed times. Keep the answer descriptive.",
+        "battery_id": "B0005",
+        "early": 5,
+        "late": 140
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "recorded_extrema"
+      ],
+      "task_expectation": "Show all six whole-record signal minima and maxima for each discharge, including the original sample index and both source and elapsed times. Keep the answer descriptive.",
+      "reference": {
+        "early_operation_index": 10,
+        "late_operation_index": 505,
+        "earlier_capacity_Ah": 1.8346455082120419,
+        "later_capacity_Ah": 1.349314997503458,
+        "capacity_change_Ah": -0.4853305107085839,
+        "capacity_change_percent": -26.4536396015579
+      }
+    },
+    {
+      "case_id": "D04-end-versus-minimum",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E02",
+        "E06"
+      ],
+      "request": {
+        "question": "Inspect the voltage readings. For each discharge, locate the minimum voltage and the final recorded voltage with their times. Explain what those two different locations establish.",
+        "battery_id": "B0005",
+        "early": 8,
+        "late": 154
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "recorded_extrema"
+      ],
+      "task_expectation": "Show minimum and final voltage values and locations from executed trace evidence, without labeling the final reading a verified cutoff.",
+      "reference": {
+        "early_operation_index": 16,
+        "late_operation_index": 560,
+        "earlier_capacity_Ah": 1.8257567905665537,
+        "later_capacity_Ah": 1.3236741274998955,
+        "capacity_change_Ah": -0.5020826630666582,
+        "capacity_change_percent": -27.49997511502373
+      }
+    },
+    {
+      "case_id": "D05-conditions",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E06"
+      ],
+      "request": {
+        "question": "Inspect current, voltage and temperature for both selected recordings before discussing comparable test conditions. State the remaining engineering check.",
+        "battery_id": "B0005",
+        "early": 20,
+        "late": 155
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "test_conditions"
+      ],
+      "task_expectation": "Inspect current, voltage and temperature for both selected recordings before discussing comparable test conditions. State the remaining engineering check.",
+      "reference": {
+        "early_operation_index": 42,
+        "late_operation_index": 564,
+        "earlier_capacity_Ah": 1.8470259949329193,
+        "later_capacity_Ah": 1.318633896753293,
+        "capacity_change_Ah": -0.5283920981796263,
+        "capacity_change_percent": -28.607723964319007
+      }
+    },
+    {
+      "case_id": "D06-protocol",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E04"
+      ],
+      "request": {
+        "question": "What constant-current setting and voltage endpoint does the original applicable experiment description intend for B0005? Name the battery and cite the original passage.",
+        "battery_id": "B0005",
+        "early": 30,
+        "late": 160
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "stop_with_partial",
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "other"
+      ],
+      "task_expectation": "What constant-current setting and voltage endpoint does the original applicable experiment description intend for B0005? Name the battery and cite the original passage.",
+      "reference": {
+        "early_operation_index": 82,
+        "late_operation_index": 584,
+        "earlier_capacity_Ah": 1.804077040117352,
+        "later_capacity_Ah": 1.3033573559038205,
+        "capacity_change_Ah": -0.5007196842135315,
+        "capacity_change_percent": -27.754894778826106
+      }
+    },
+    {
+      "case_id": "D07-agent-window",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E06"
+      ],
+      "request": {
+        "question": "Find the observed on-load sample window for each discharge and give the two transition brackets and the first-to-last on-load span.",
+        "battery_id": "B0005",
+        "early": 13,
+        "late": 157
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "test_conditions",
+        "other"
+      ],
+      "task_expectation": "The agent executes the registered B0005 active-load analysis and reports the two observed windows with source-bound brackets.",
+      "reference": {
+        "early_operation_index": 27,
+        "late_operation_index": 572,
+        "earlier_capacity_Ah": 1.8137521577549054,
+        "later_capacity_Ah": 1.3132020634442203,
+        "capacity_change_Ah": -0.5005500943106851,
+        "capacity_change_percent": -27.597491320439
+      }
+    },
+    {
+      "case_id": "D08-cause",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E11"
+      ],
+      "request": {
+        "question": "Can these selected capacity and signal records identify the physical mechanism responsible for the change? Explain what evidence would be needed to decide.",
+        "battery_id": "B0005",
+        "early": 2,
+        "late": 167
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "stop_with_partial",
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "other"
+      ],
+      "task_expectation": "Can these selected capacity and signal records identify the physical mechanism responsible for the change? Explain what evidence would be needed to decide.",
+      "reference": {
+        "early_operation_index": 4,
+        "late_operation_index": 612,
+        "earlier_capacity_Ah": 1.846327249719927,
+        "later_capacity_Ah": 1.3090153642307354,
+        "capacity_change_Ah": -0.5373118854891916,
+        "capacity_change_percent": -29.101660367667623
+      }
+    },
+    {
+      "case_id": "D09-endpoint",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E11"
+      ],
+      "request": {
+        "question": "Does the selected relative capacity change prove that this individual battery record has reached the experiment's end-of-life criterion? Separate the two percentage bases.",
+        "battery_id": "B0005",
+        "early": 1,
+        "late": 100
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "stop_with_partial",
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "other"
+      ],
+      "task_expectation": "Does the selected relative capacity change prove that this individual battery record has reached the experiment's end-of-life criterion? Separate the two percentage bases.",
+      "reference": {
+        "early_operation_index": 2,
+        "late_operation_index": 352,
+        "earlier_capacity_Ah": 1.8564874208181574,
+        "later_capacity_Ah": 1.485868384561201,
+        "capacity_change_Ah": -0.3706190362569564,
+        "capacity_change_percent": -19.96345529201722
+      }
+    },
+    {
+      "case_id": "D10-missing-conditions",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E05",
+        "E06"
+      ],
+      "request": {
+        "question": "Inspect the recorded conditions for the two discharges and explain what can be assessed when the applicable experiment documentation cannot be retrieved.",
+        "battery_id": "B0005",
+        "early": 4,
+        "late": 146
+      },
+      "fixture": "missing",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "test_conditions"
+      ],
+      "task_expectation": "Inspect the recorded conditions for the two discharges and explain what can be assessed when the applicable experiment documentation cannot be retrieved.",
+      "reference": {
+        "early_operation_index": 8,
+        "late_operation_index": 529,
+        "earlier_capacity_Ah": 1.8352625275821128,
+        "later_capacity_Ah": 1.3231708992276219,
+        "capacity_change_Ah": -0.5120916283544908,
+        "capacity_change_percent": -27.902908747837387
+      }
+    },
+    {
+      "case_id": "D11-missing-capacity",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E05"
+      ],
+      "request": {
+        "question": "Calculate only the signed reported-capacity change in Ah and percent. State the reference capacity and the documentation limitation.",
+        "battery_id": "B0005",
+        "early": 6,
+        "late": 149
+      },
+      "fixture": "missing",
+      "allowed_actions": [
+        "stop_with_partial"
+      ],
+      "expected_scopes": [
+        "reported_capacity"
+      ],
+      "task_expectation": "Calculate only the signed reported-capacity change in Ah and percent. State the reference capacity and the documentation limitation.",
+      "reference": {
+        "early_operation_index": 12,
+        "late_operation_index": 541,
+        "earlier_capacity_Ah": 1.8356616600675495,
+        "later_capacity_Ah": 1.318293040102702,
+        "capacity_change_Ah": -0.5173686199648475,
+        "capacity_change_percent": -28.184312568025696
+      }
+    },
+    {
+      "case_id": "D12-partial-conditions",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E05",
+        "E06"
+      ],
+      "request": {
+        "question": "Inspect these two recordings before assessing their test conditions. Explain the effect of a missing applicable protocol supplement on the remaining assessment.",
+        "battery_id": "B0005",
+        "early": 15,
+        "late": 159
+      },
+      "fixture": "partial",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "test_conditions"
+      ],
+      "task_expectation": "Inspect these two recordings before assessing their test conditions. Explain the effect of a missing applicable protocol supplement on the remaining assessment.",
+      "reference": {
+        "early_operation_index": 31,
+        "late_operation_index": 580,
+        "earlier_capacity_Ah": 1.8025980036306504,
+        "later_capacity_Ah": 1.3030329186405918,
+        "capacity_change_Ah": -0.4995650849900586,
+        "capacity_change_percent": -27.713615791422942
+      }
+    },
+    {
+      "case_id": "D13-partial-capacity",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E05"
+      ],
+      "request": {
+        "question": "Use the supplied capacities for the relative change between these records. Limit the requested result to that calculation and retain the incomplete-documentation warning.",
+        "battery_id": "B0005",
+        "early": 17,
+        "late": 161
+      },
+      "fixture": "partial",
+      "allowed_actions": [
+        "stop_with_partial"
+      ],
+      "expected_scopes": [
+        "reported_capacity"
+      ],
+      "task_expectation": "Use the supplied capacities for the relative change between these records. Limit the requested result to that calculation and retain the incomplete-documentation warning.",
+      "reference": {
+        "early_operation_index": 35,
+        "late_operation_index": 588,
+        "earlier_capacity_Ah": 1.802579500826209,
+        "later_capacity_Ah": 1.3034100438655642,
+        "capacity_change_Ah": -0.4991694569606448,
+        "capacity_change_percent": -27.69195237890209
+      }
+    },
+    {
+      "case_id": "D14-corrupt-protocol",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E05"
+      ],
+      "request": {
+        "question": "Inspect both recordings and describe the evidence limits if the applicable protocol file fails its source verification.",
+        "battery_id": "B0005",
+        "early": 18,
+        "late": 162
+      },
+      "fixture": "corrupt",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "test_conditions"
+      ],
+      "task_expectation": "Inspect both recordings and describe the evidence limits if the applicable protocol file fails its source verification.",
+      "reference": {
+        "early_operation_index": 37,
+        "late_operation_index": 592,
+        "earlier_capacity_Ah": 1.8030683142834096,
+        "later_capacity_Ah": 1.2978870806495706,
+        "capacity_change_Ah": -0.505181233633839,
+        "capacity_change_percent": -28.017864305635715
+      }
+    },
+    {
+      "case_id": "D15-wrong-experiment",
+      "split": "development",
+      "category": "investigation",
+      "release_cases": [
+        "E04",
+        "E05"
+      ],
+      "request": {
+        "question": "Inspect the selected B0005 traces and explain which protocol context is available when the catalog contains documentation only for other experiment groups.",
+        "battery_id": "B0005",
+        "early": 22,
+        "late": 163
+      },
+      "fixture": "wrong_experiment",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "test_conditions"
+      ],
+      "task_expectation": "Inspect the selected B0005 traces and explain which protocol context is available when the catalog contains documentation only for other experiment groups.",
+      "reference": {
+        "early_operation_index": 50,
+        "late_operation_index": 596,
+        "earlier_capacity_Ah": 1.8361774213478947,
+        "later_capacity_Ah": 1.2980735056918902,
+        "capacity_change_Ah": -0.5381039156560045,
+        "capacity_change_percent": -29.30566019382784
+      }
+    },
+    {
+      "case_id": "D16-missing-earlier",
+      "split": "development",
+      "category": "clarification",
+      "release_cases": [
+        "E03"
+      ],
+      "request": {
+        "question": "I have selected the later discharge. Ask me for the missing earlier selection before comparing.",
+        "battery_id": "B0005",
+        "early": null,
+        "late": 144
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "I have selected the later discharge. Ask me for the missing earlier selection before comparing."
+    },
+    {
+      "case_id": "D17-missing-later",
+      "split": "development",
+      "category": "clarification",
+      "release_cases": [
+        "E03"
+      ],
+      "request": {
+        "question": "Compare this earlier discharge with a later one after resolving the missing selection.",
+        "battery_id": "B0005",
+        "early": 19,
+        "late": null
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "Compare this earlier discharge with a later one after resolving the missing selection."
+    },
+    {
+      "case_id": "D18-missing-battery",
+      "split": "development",
+      "category": "clarification",
+      "release_cases": [
+        "E03"
+      ],
+      "request": {
+        "question": "Resolve which registered battery these discharge indices refer to before starting the investigation.",
+        "battery_id": null,
+        "early": 1,
+        "late": 168
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "Resolve which registered battery these discharge indices refer to before starting the investigation.",
+      "reference": {
+        "early_operation_index": 2,
+        "late_operation_index": 614,
+        "earlier_capacity_Ah": 1.8564874208181574,
+        "later_capacity_Ah": 1.3250793286429356,
+        "capacity_change_Ah": -0.5314080921752218,
+        "capacity_change_percent": -28.624384211611265
+      }
+    },
+    {
+      "case_id": "D19-reversed",
+      "split": "development",
+      "category": "invalid_request",
+      "release_cases": [
+        "E07"
+      ],
+      "request": {
+        "question": "Compare the requested discharge pair in the given order.",
+        "battery_id": "B0005",
+        "early": 130,
+        "late": 8
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "Compare the requested discharge pair in the given order."
+    },
+    {
+      "case_id": "D20-equal",
+      "split": "development",
+      "category": "invalid_request",
+      "release_cases": [
+        "E07"
+      ],
+      "request": {
+        "question": "Compare these requested discharge indices.",
+        "battery_id": "B0005",
+        "early": 42,
+        "late": 42
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "Compare these requested discharge indices."
+    },
+    {
+      "case_id": "D21-out-of-range",
+      "split": "development",
+      "category": "out_of_range",
+      "release_cases": [
+        "E07"
+      ],
+      "request": {
+        "question": "Compare the earlier record with the requested later discharge and explain a source-selection failure clearly.",
+        "battery_id": "B0005",
+        "early": 1,
+        "late": 999
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "Compare the earlier record with the requested later discharge and explain a source-selection failure clearly."
+    },
+    {
+      "case_id": "D22-unavailable-model",
+      "split": "development",
+      "category": "unavailable_model",
+      "release_cases": [
+        "E08"
+      ],
+      "request": {
+        "question": "Compare the reported capacities while recording a clear model-preflight failure if the selected model is unavailable.",
+        "battery_id": "B0005",
+        "early": 1,
+        "late": 100
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "Compare the reported capacities while recording a clear model-preflight failure if the selected model is unavailable.",
+      "model_override": "benchmark-deliberately-uninstalled-model",
+      "reference": {
+        "early_operation_index": 2,
+        "late_operation_index": 352,
+        "earlier_capacity_Ah": 1.8564874208181574,
+        "later_capacity_Ah": 1.485868384561201,
+        "capacity_change_Ah": -0.3706190362569564,
+        "capacity_change_percent": -19.96345529201722
+      }
+    },
+    {
+      "case_id": "D23-restart-clarification",
+      "split": "development",
+      "category": "resume",
+      "release_cases": [
+        "E09"
+      ],
+      "request": {
+        "question": "Resume the earlier missing-selection investigation after a process restart using this completed pair.",
+        "battery_id": "B0005",
+        "early": 9,
+        "late": 144
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "A second process resumes the saved clarification run and calculates the completed selection.",
+      "resume_from_case": "D16-missing-earlier",
+      "reference": {
+        "early_operation_index": 18,
+        "late_operation_index": 521,
+        "earlier_capacity_Ah": 1.8247738529891333,
+        "later_capacity_Ah": 1.3340066759761655,
+        "capacity_change_Ah": -0.4907671770129678,
+        "capacity_change_percent": -26.894684851443362
+      }
+    },
+    {
+      "case_id": "D24-restart-selection",
+      "split": "development",
+      "category": "resume",
+      "release_cases": [
+        "E10"
+      ],
+      "request": {
+        "question": "Resume the saved investigation with this changed discharge pair and recompute affected evidence with a new selection revision.",
+        "battery_id": "B0005",
+        "early": 8,
+        "late": 155
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "A second process resumes the saved run, increments selection revision and replaces affected comparison and trace evidence.",
+      "resume_from_case": "D02-relative-basis",
+      "reference": {
+        "early_operation_index": 16,
+        "late_operation_index": 564,
+        "earlier_capacity_Ah": 1.8257567905665537,
+        "later_capacity_Ah": 1.318633896753293,
+        "capacity_change_Ah": -0.5071228938132607,
+        "capacity_change_percent": -27.7760376646823
+      }
+    },
+    {
+      "case_id": "R25-capacity",
+      "split": "held_out",
+      "category": "investigation",
+      "release_cases": [
+        "E02"
+      ],
+      "request": {
+        "question": "For these selected records, report the signed loss of supplied capacity and the percentage with its actual reference. Keep the requested answer within that calculation.",
+        "battery_id": "B0005",
+        "early": 33,
+        "late": 166
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "stop_with_partial"
+      ],
+      "expected_scopes": [
+        "reported_capacity"
+      ],
+      "task_expectation": "For these selected records, report the signed loss of supplied capacity and the percentage with its actual reference. Keep the requested answer within that calculation.",
+      "reference": {
+        "early_operation_index": 94,
+        "late_operation_index": 608,
+        "earlier_capacity_Ah": 1.8199041089501267,
+        "later_capacity_Ah": 1.2874525221379407,
+        "capacity_change_Ah": -0.532451586812186,
+        "capacity_change_percent": -29.2571231744374
+      }
+    },
+    {
+      "case_id": "R26-extrema",
+      "split": "held_out",
+      "category": "investigation",
+      "release_cases": [
+        "E02"
+      ],
+      "request": {
+        "question": "Locate the smallest and largest recorded current, voltage and temperature in each full trace. Include the original row and time for every value.",
+        "battery_id": "B0005",
+        "early": 11,
+        "late": 156
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "recorded_extrema"
+      ],
+      "task_expectation": "Locate the smallest and largest recorded current, voltage and temperature in each full trace. Include the original row and time for every value.",
+      "reference": {
+        "early_operation_index": 22,
+        "late_operation_index": 568,
+        "earlier_capacity_Ah": 1.8246195526864504,
+        "later_capacity_Ah": 1.3134751321324272,
+        "capacity_change_Ah": -0.5111444205540232,
+        "capacity_change_percent": -28.01375332197047
+      }
+    },
+    {
+      "case_id": "R27-protocol",
+      "split": "held_out",
+      "category": "investigation",
+      "release_cases": [
+        "E04"
+      ],
+      "request": {
+        "question": "Which intended current and endpoint voltage belong specifically to B0005 in its source experiment? Quote the supporting experiment text and retain the battery mapping.",
+        "battery_id": "B0005",
+        "early": 61,
+        "late": 133
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "stop_with_partial",
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "other"
+      ],
+      "task_expectation": "Which intended current and endpoint voltage belong specifically to B0005 in its source experiment? Quote the supporting experiment text and retain the battery mapping.",
+      "reference": {
+        "early_operation_index": 202,
+        "late_operation_index": 481,
+        "earlier_capacity_Ah": 1.6849029086609286,
+        "later_capacity_Ah": 1.375392016895762,
+        "capacity_change_Ah": -0.3095108917651666,
+        "capacity_change_percent": -18.36965739534211
+      }
+    },
+    {
+      "case_id": "R28-missing-conditions",
+      "split": "held_out",
+      "category": "investigation",
+      "release_cases": [
+        "E05",
+        "E06"
+      ],
+      "request": {
+        "question": "Check the measured signals for these records before discussing comparable conditions and explain the gap left by the unavailable experiment document.",
+        "battery_id": "B0005",
+        "early": 32,
+        "late": 145
+      },
+      "fixture": "missing",
+      "allowed_actions": [
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "test_conditions"
+      ],
+      "task_expectation": "Check the measured signals for these records before discussing comparable conditions and explain the gap left by the unavailable experiment document.",
+      "reference": {
+        "early_operation_index": 90,
+        "late_operation_index": 525,
+        "earlier_capacity_Ah": 1.8307038456739428,
+        "later_capacity_Ah": 1.3286444309174914,
+        "capacity_change_Ah": -0.5020594147564514,
+        "capacity_change_percent": -27.424392860857658
+      }
+    },
+    {
+      "case_id": "R29-missing-pair",
+      "split": "held_out",
+      "category": "clarification",
+      "release_cases": [
+        "E03"
+      ],
+      "request": {
+        "question": "Help me investigate this battery after resolving the two unspecified discharge selections.",
+        "battery_id": "B0005",
+        "early": null,
+        "late": null
+      },
+      "fixture": "available",
+      "allowed_actions": [],
+      "expected_scopes": [],
+      "task_expectation": "Help me investigate this battery after resolving the two unspecified discharge selections."
+    },
+    {
+      "case_id": "R30-cause",
+      "split": "held_out",
+      "category": "investigation",
+      "release_cases": [
+        "E11"
+      ],
+      "request": {
+        "question": "What can these measurements establish about the physical origin of the capacity change, and what further evidence would a diagnosis require?",
+        "battery_id": "B0005",
+        "early": 101,
+        "late": 165
+      },
+      "fixture": "available",
+      "allowed_actions": [
+        "stop_with_partial",
+        "inspect_discharge_traces"
+      ],
+      "expected_scopes": [
+        "other"
+      ],
+      "task_expectation": "What can these measurements establish about the physical origin of the capacity change, and what further evidence would a diagnosis require?",
+      "reference": {
+        "early_operation_index": 356,
+        "late_operation_index": 604,
+        "earlier_capacity_Ah": 1.480413677976106,
+        "later_capacity_Ah": 1.288003392619118,
+        "capacity_change_Ah": -0.192410285356988,
+        "capacity_change_percent": -12.997062119828206
+      }
+    }
+  ]
+}

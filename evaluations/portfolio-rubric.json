@@ -1,0 +1,45 @@
+{
+  "rubric_version": "portfolio-rubric-v1",
+  "defined_on": "2026-11-07",
+  "method": "Retain execution, source checks, task review and project-owner labels as distinct results. A pending review remains pending.",
+  "criteria": [
+    {
+      "id": "execution",
+      "method": "automatic",
+      "pass": "The case reaches its declared clarification/rejection/partial outcome within budgets, keeps source/selection identity and saves valid evidence/report artifacts. A required unsupported operation is a capability gap."
+    },
+    {
+      "id": "numerical_accuracy",
+      "method": "independent_source_check",
+      "pass": "Capacity differences and trace values/locations match the original MATLAB object read. Use absolute tolerance 1e-12 for arithmetic comparisons and the documented display precision for report text."
+    },
+    {
+      "id": "citation_support",
+      "method": "source_review",
+      "pass": "Applicable original passages support the complete battery-scoped claims and exact excerpts.",
+      "claim_rubric": "evaluations/protocol-claim-review.json"
+    },
+    {
+      "id": "task_fulfilment",
+      "method": "source_review",
+      "pass": "Every requested numerical value, source location or lifecycle operation is supplied. Honest partial limits preserve uncertainty but do not earn completion of an absent requested operation."
+    },
+    {
+      "id": "limits_and_recommendation",
+      "method": "source_review",
+      "pass": "Claims distinguish measured evidence, intended protocol, executed checks and proposed checks. The next step addresses the narrow request.",
+      "recommendation_rubric": "evaluations/recommendation-review.json"
+    }
+  ],
+  "values": {
+    "pass": 1,
+    "fail": 0,
+    "not_applicable": null,
+    "pending": "pending"
+  },
+  "case_success": "Every applicable criterion must pass. Report failures, capability gaps and pending reviews separately. Do not count pending or unexecuted cases as passes.",
+  "overall_reporting": "Report a development-case denominator, per-criterion counts, unresolved reviews and which cases executed real inference. Report reserved-case results separately when they are run.",
+  "judge_calibration": "Anand supplies or approves labels on a reviewed subset. Compare any automated judge's per-criterion decisions with those labels and report disagreements. Current reference review does not establish owner acceptance or calibrated judge agreement.",
+  "cost_and_time": "Capture case wall time, graph time, model usage and cold/warm conditions. Local API monetary charges are recorded separately from unmeasured electricity/hardware costs. Hosted cost requires provider prices and their effective date.",
+  "privacy": "Published summaries use project-relative paths and public NASA data. Credentials, private reasoning and unnecessary user content stay outside versioned evaluation artifacts."
+}

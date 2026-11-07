@@ -1,0 +1,926 @@
+{
+  "baseline_id": "portfolio-d7e314f-20261107",
+  "collected_on": "2026-11-07",
+  "timezone": "Europe/Berlin",
+  "source_commit": "d7e314fecc1abb967cf81c689500db8b800afcc6",
+  "runtime_matches_committed_baseline": true,
+  "verified_runtime_dependency_files": 23,
+  "case_set": "evaluations/portfolio-cases.json",
+  "case_set_sha256": "16cf6d6367e2d3cfb53216f4d2e60bb0739f2a2aa29fd35348f27e7496f5b5aa",
+  "rubric": "evaluations/portfolio-rubric.json",
+  "rubric_sha256": "9407a652fcb78886c7990520e30bb77699179ef5109e389058b380281f26827e",
+  "case_counts": {
+    "defined": 30,
+    "development_executed": 24,
+    "reserved_unexecuted": 6,
+    "cases_with_local_inference": 16,
+    "runs_per_case": 1,
+    "retries": 0
+  },
+  "security": {
+    "case_set": "evaluations/security-cases.json",
+    "defined": 12,
+    "executed": 0
+  },
+  "source_checks": {
+    "comparisons": 15,
+    "trace_pairs": 8,
+    "extrema_locations": 96,
+    "literal_quotes": 21
+  },
+  "scores": {
+    "status": "provisional_source_based_review",
+    "per_criterion": {
+      "execution": {
+        "pass": 19,
+        "fail": 5,
+        "not_applicable": 0
+      },
+      "numerical_accuracy": {
+        "pass": 15,
+        "fail": 0,
+        "not_applicable": 9
+      },
+      "citation_support": {
+        "pass": 11,
+        "fail": 0,
+        "not_applicable": 13
+      },
+      "task_fulfilment": {
+        "pass": 20,
+        "fail": 4,
+        "not_applicable": 0
+      },
+      "limits_and_recommendation": {
+        "pass": 12,
+        "fail": 3,
+        "not_applicable": 9
+      }
+    },
+    "all_applicable_criteria_pass": 18,
+    "development_denominator": 24,
+    "owner_review": "pending",
+    "judge_calibration": "pending"
+  },
+  "review_notes": [
+    "D06 and D09 answer the main questions but fail the frozen narrow scope-label expectations. Owner calibration should review these labels before using scope scores as a model-quality claim.",
+    "D04 returns the final voltage only inside trace JSON, omitting it and its interpretation from the engineer-facing report.",
+    "D07 cannot execute the standalone active-load check through the agent and gives premature no-further-check guidance.",
+    "D23 and D24 expose missing restart/resume support through the actual CLI rejection.",
+    "Some generated limitations use imprecise protocol-verification wording. Source identity/applicability checks exist; measured-record compliance assessment remains unresolved."
+  ],
+  "performance": {
+    "preload_seconds": 10.518935200001579,
+    "cli_wall_time_all_development": {
+      "sample_count": 24,
+      "median_seconds": 15.976128750000498,
+      "p95_seconds_nearest_rank": 27.574940399998013,
+      "minimum_seconds": 1.2798693000004278,
+      "maximum_seconds": 28.885099300001457
+    },
+    "cli_wall_time_with_inference": {
+      "sample_count": 16,
+      "median_seconds": 23.922876650000035,
+      "p95_seconds_nearest_rank": 28.885099300001457,
+      "minimum_seconds": 5.26138169999831,
+      "maximum_seconds": 28.885099300001457
+    },
+    "graph_time_with_inference": {
+      "sample_count": 16,
+      "median_seconds": 22.357502849999946,
+      "p95_seconds_nearest_rank": 27.172092000000703,
+      "minimum_seconds": 3.733181699997658,
+      "maximum_seconds": 27.172092000000703
+    },
+    "timing_scope": "CLI wall time includes process startup and report writing. Graph time is the CLI's recorded elapsed_seconds. Local model preloading is measured separately.",
+    "cold_start_cases": 0
+  },
+  "inference_cost": {
+    "local_api_charges_USD": 0,
+    "basis": "Installed local model through loopback Ollama, with cloud features disabled for this collection.",
+    "unpriced": [
+      "electricity",
+      "hardware",
+      "hosting"
+    ],
+    "input_tokens": 100774,
+    "output_tokens": 8264
+  },
+  "configuration": {
+    "workflow_version": "trace-follow-up-v16",
+    "trace_analysis_version": "whole-record-traces-v2",
+    "limits": {
+      "model_limit": 4,
+      "tool_limit": 3
+    },
+    "prompt_hashes": {
+      "tools": "3e47d30aa1492e27db6cc97eac4476f984d39e5142f929cdd99ca45e354434ec",
+      "follow_up": "56a884fdfc3d106179be19032dba8b5b2c41958051c5e089d413943a140035f9",
+      "findings": "de3d632b6a1863d3c1c3658fd95546709596ab8c92f8f7febc0cd32138c557e6"
+    },
+    "follow_up_schema_sha256": "db2acd1a07cdf1506ecb2c5981f32db6f8bca2536f15a4b2329bc8d3c5485d3b",
+    "findings_schema_sha256": "18547abf1d074c285b5c38e27565933360d4153bd184eae2b27d8244b2e35da6",
+    "packages": {
+      "langchain": "1.4.7",
+      "langgraph": "1.2.16",
+      "langchain-ollama": "1.1.0",
+      "pydantic": "2.14.1"
+    },
+    "model_used": {
+      "model": "qwen3.8:27b-q4_K_M",
+      "model_digest": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+      "ollama_version": "0.40.11",
+      "settings": {
+        "temperature": 0,
+        "reasoning": false,
+        "num_ctx": 8192,
+        "num_predict": 1024,
+        "keep_alive": "2m"
+      }
+    }
+  },
+  "evidence": {
+    "local_directory": "outputs/portfolio-baseline/20261107-a1",
+    "plan_sha256": "d271dd3a03be09cef245ba18f0c6d160edd5cbffedd65afc17075e87b89b84ba",
+    "collection_sha256": "395da8e0ab6ee9b87af52d41a08b2432ab9233f0ec17ce11a61197e6b04e36d4",
+    "source_audit_sha256": "49167fda5789582e422b0cde4eaac2053c3cbd397f86a41552876406fb8b6ac9",
+    "source_audit_helper_sha256": "26eee36b3ae545fb68208b00ffc19fc2cc54a55262643b959ae7a6abf676a163",
+    "review_helper_sha256": "731ed43fde6d7e8fae65d0b024e933d6d14426b89226871f9ea0834da809fbd0",
+    "frozen_source_files": 64
+  },
+  "code_checks": {
+    "passed": 318,
+    "seconds": 5.79,
+    "dependency_check": "No broken requirements found."
+  },
+  "post_collection_checks": {
+    "passed": 319,
+    "seconds": 7.06,
+    "dependency_check": "No broken requirements found."
+  },
+  "collection_harness": {
+    "path": "scripts/collect_portfolio_baseline.py",
+    "collected_sha256": "3b89d00127eae415d9ebbc90232ff5e7b8c67887f59bb1246dd5447a077f842b",
+    "current_sha256": "46169de19d7a3938ee4056e6150ee9cf7e457a65e4955c759dd614b4aa05462a",
+    "post_collection_change": "Allow later documentation/evaluation commits when all original runtime files match the frozen baseline. The original collected harness is retained in the source snapshot. Original execution outcomes are unchanged."
+  },
+  "reserved_ids_not_executed": [
+    "R25-capacity",
+    "R26-extrema",
+    "R27-protocol",
+    "R28-missing-conditions",
+    "R29-missing-pair",
+    "R30-cause"
+  ],
+  "limits": [
+    "One run per development scenario measures this frozen baseline and provides no repeated-run reliability estimate.",
+    "All numerical investigations use B0005. Protocol gaps/corruption are labelled constructed fixtures.",
+    "Six reserved cases and all twelve adversarial specifications remain unexecuted.",
+    "Reference judgments require project-owner review and calibration. No automatic semantic judge was used.",
+    "Hosted-provider cost, public availability and external-user feedback remain separate release work."
+  ],
+  "cases": [
+    {
+      "case_id": "D01-capacity",
+      "process_exit": 0,
+      "wall_seconds": 22.693282299998828,
+      "stdout_sha256": "49e46c10a776a86559503ef1c579d2cc08f0899e103fbadfd4597262b170ab3b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "969ffd21dce04ba2818a2091178281c0",
+      "record_path": "outputs/agent-investigations/969ffd21dce04ba2818a2091178281c0.json",
+      "record_sha256": "eb63d18142abe2acf843145b31ccca8eb0d1d81715ec5f018e431cdc2e8ff7ef",
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "report_sha256": "eb3ddee9474a7fc4483ab814bd30b18f44e84192fe41c9a911839a4e34f533cd",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "reported_capacity",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "token_usage": {
+        "input_tokens": 5039,
+        "output_tokens": 617
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D02-relative-basis",
+      "process_exit": 0,
+      "wall_seconds": 23.507680899998377,
+      "stdout_sha256": "ad0a9992250d2536110969594a821dfb6d396cd7c2ad5395531f63e3dd646f27",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "7e4c957edf0342fdbe47967b23270b71",
+      "record_path": "outputs/agent-investigations/7e4c957edf0342fdbe47967b23270b71.json",
+      "record_sha256": "eed04147d05ef1b81ef7d6411c124bf905b7f65032d5ee4315cb1dc74d83cea7",
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "report_sha256": "6f2428b2a54944cb7f3d9a7286f0b05676fa8b199a406d59fc04b2c0de053290",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "reported_capacity",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "token_usage": {
+        "input_tokens": 5055,
+        "output_tokens": 650
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D03-extrema",
+      "process_exit": 0,
+      "wall_seconds": 25.756754900001397,
+      "stdout_sha256": "2c5f29c53d5865ab47a1556072a9fe7a2f9d87c7158b6e75033211bffd9fb913",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "0e43198d37f34da8a6f3be7fa1ea0757",
+      "record_path": "outputs/agent-investigations/0e43198d37f34da8a6f3be7fa1ea0757.json",
+      "record_sha256": "9c29e5be8d29d1dafb38d599f7d81e0a00df3f2d871b94d9539b3a6ad57b85c5",
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "report_sha256": "6cf59cbc30478eb5d025384b3c4b85afb28474789f5d66fea5988b717473099f",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "recorded_extrema",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "token_usage": {
+        "input_tokens": 9117,
+        "output_tokens": 630
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D04-end-versus-minimum",
+      "process_exit": 0,
+      "wall_seconds": 26.14664139999877,
+      "stdout_sha256": "60c42ac7d7230acf962e831586642334ce6755c0f55db122e817ccc4fe3d6e46",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "69349aa0c8b84b62a112dba981c7c251",
+      "record_path": "outputs/agent-investigations/69349aa0c8b84b62a112dba981c7c251.json",
+      "record_sha256": "8eb5266bb8fc0cf6ece7cade61cee424673e4a0025803f9ca4481a6976271083",
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "report_sha256": "bb0d42c7c7a7dadfdb09556eea1f88db23a5ce62c637c521fd844907673469c7",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 0,
+        "limits_and_recommendation": 0
+      },
+      "provisional_case_outcome": "fail",
+      "reference_review": "The JSON contains last_sample values, but the engineer-facing CLI/report displays only extrema and omits the requested final voltage/time and explanation. The next check says no further check is needed despite that missing answer coverage.",
+      "actual_scope": "recorded_extrema",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "token_usage": {
+        "input_tokens": 9043,
+        "output_tokens": 638
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D05-conditions",
+      "process_exit": 0,
+      "wall_seconds": 26.848575600000913,
+      "stdout_sha256": "01a6cc77307f33e19af9e04ac80f7ea92a6594dff3676367418c8eee694c0196",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "1ae91ad6bc1542dd86f7ba8ad5b8b81e",
+      "record_path": "outputs/agent-investigations/1ae91ad6bc1542dd86f7ba8ad5b8b81e.json",
+      "record_sha256": "5fe5e0c0b880a48aec506bb031f13e34380aa67705774d311a37e890b9541c02",
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "report_sha256": "84983200ff85d922c5a09b1517283b97dcebf2c0fdb73e95a450670fa4018dda",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "test_conditions",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "token_usage": {
+        "input_tokens": 9113,
+        "output_tokens": 636
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D06-protocol",
+      "process_exit": 0,
+      "wall_seconds": 19.88897039999938,
+      "stdout_sha256": "b98770a29bbb83bfd0c54ee4655ccb00d7530c9efac13a82b02885034bb4e131",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "7909ee7552644ffc846106790e2d70d8",
+      "record_path": "outputs/agent-investigations/7909ee7552644ffc846106790e2d70d8.json",
+      "record_sha256": "42098317018c524ed1755f233326badcbfc1fe261b4f3eba0335717d4da25364",
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "report_sha256": "1e571425ff4d53ef1a4e3c336344ed9ec1b423370b3ca9b6a4b582f284c92f83",
+      "scores": {
+        "execution": 0,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 0
+      },
+      "provisional_case_outcome": "fail",
+      "reference_review": "The intended B0005 2 A / 2.7 V protocol is correctly answered. Frozen expected scope is other, while the model chooses test_conditions. This expectation needs owner calibration. The next_check field restates the answer instead of a check or explicit bounded completion.",
+      "actual_scope": "test_conditions",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "token_usage": {
+        "input_tokens": 5038,
+        "output_tokens": 472
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D07-agent-window",
+      "process_exit": 0,
+      "wall_seconds": 27.574940399998013,
+      "stdout_sha256": "5c8c94a7bcdf2bdc2289d5718f7569a5bc418a9e235807912dd9ef50d67468d8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "77589333c6fd48e7a2cd11350ad7c7cd",
+      "record_path": "outputs/agent-investigations/77589333c6fd48e7a2cd11350ad7c7cd.json",
+      "record_sha256": "90c9dd7ad17096c02689cda3ffa852a1e62377c51ce3a41e9654ce88c41dc650",
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "action": "inspect_discharge_traces",
+      "report_sha256": "cdaf2645eb0ecf346b29cc2de1d88c59efdb1f6c16ef528d54740a7bc355f17b",
+      "scores": {
+        "execution": 0,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 0,
+        "limits_and_recommendation": 0
+      },
+      "provisional_case_outcome": "fail",
+      "reference_review": "The selected whole-record trace tool provides extrema and current steps but executes no active-load-window analysis. The model describes window-location capability, selects recorded_extrema against the frozen expected scopes and says no further check is needed. The requested windows/spans are absent.",
+      "actual_scope": "recorded_extrema",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "token_usage": {
+        "input_tokens": 9100,
+        "output_tokens": 647
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D08-cause",
+      "process_exit": 0,
+      "wall_seconds": 25.746437600002537,
+      "stdout_sha256": "9b77710c86e0d3e62f5be72b003da6bcdf2deaa156b6ba85b5ae961c53df30fa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "b63e4f76305743aeac5d330f08e28713",
+      "record_path": "outputs/agent-investigations/b63e4f76305743aeac5d330f08e28713.json",
+      "record_sha256": "b3e4f230505e627e9c802f7490116d260c3cae74bcb5a5bcf0302afc88ae4c67",
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "report_sha256": "bed1af4981429d105c084792c4f8065de3930b012518538df08a8148dfceacf3",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "other",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "token_usage": {
+        "input_tokens": 5000,
+        "output_tokens": 681
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D09-endpoint",
+      "process_exit": 0,
+      "wall_seconds": 27.07624769999893,
+      "stdout_sha256": "7259badd86573e07d594ea5f03bdb24293558c7c491d115e27775a90dffa53ca",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "9888a39f4ba34836b875e49f78feb8c3",
+      "record_path": "outputs/agent-investigations/9888a39f4ba34836b875e49f78feb8c3.json",
+      "record_sha256": "4feb62bb75b6b4d67e9c5ee8e0cd3bd53ecb100553a1c40daad429516002c2db",
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "action": "stop_with_partial",
+      "report_sha256": "537c3e591436a565e237e751805081a38d9606cee31246fef7f20124f980fa03",
+      "scores": {
+        "execution": 0,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "fail",
+      "reference_review": "The answer separates earlier-record percentage change from the rated-capacity endpoint and preserves the uncertainty. The frozen expected scope is other, while the model chooses reported_capacity. The scope expectation needs owner calibration even though the main question is answered.",
+      "actual_scope": "reported_capacity",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "token_usage": {
+        "input_tokens": 5042,
+        "output_tokens": 730
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D10-missing-conditions",
+      "process_exit": 0,
+      "wall_seconds": 16.00752619999912,
+      "stdout_sha256": "323fbc3c2d7fb536dc68c4c915df67d870fd1f0c021aa24656b9a696bb6c815c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "f5d19933e6c54c828a1ba4a81ed421dc",
+      "record_path": "outputs/agent-investigations/f5d19933e6c54c828a1ba4a81ed421dc.json",
+      "record_sha256": "c3dea3b957eec026d89c59f27f2dff447fe856d2039000248222cb211a23c688",
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "action": "inspect_discharge_traces",
+      "report_sha256": "2fa31be059f711f68813b375fe0d47ed92e58c26ae9a37ed7f66fc19bc6e65f1",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "test_conditions",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "token_usage": {
+        "input_tokens": 7108,
+        "output_tokens": 287
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D11-missing-capacity",
+      "process_exit": 0,
+      "wall_seconds": 13.020162700002402,
+      "stdout_sha256": "7ce7609ad5be8240eba984873138350da0bc4fdffabab884e6d9d7b5bb740a83",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "f4d6398a9e24484c9925909cf2ef44df",
+      "record_path": "outputs/agent-investigations/f4d6398a9e24484c9925909cf2ef44df.json",
+      "record_sha256": "a8697687c6eeee35f4a5dbad8270a953bb286132c4882df45e97e6aeaacd3846",
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "action": "stop_with_partial",
+      "report_sha256": "f43f25b680007000a83056ca135410a0338b2f21b7e8d3206acf844a8b6eea9c",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "reported_capacity",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "token_usage": {
+        "input_tokens": 3033,
+        "output_tokens": 287
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D12-partial-conditions",
+      "process_exit": 0,
+      "wall_seconds": 28.885099300001457,
+      "stdout_sha256": "cda38614f34fc205a9f6a940046e40bf77807f74572940eca7c355193090ae1d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "70db30d105a8403ab158a130390fc74c",
+      "record_path": "outputs/agent-investigations/70db30d105a8403ab158a130390fc74c.json",
+      "record_sha256": "cb823de99f1512d8f54daafc07da2b6d4d3b8c54f197f3028f0c3fcf95782fe3",
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "action": "inspect_discharge_traces",
+      "report_sha256": "ab053d5cd36ab724438275f7b04b2154e2b0c71801ea03e83c73ba6478355adf",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "test_conditions",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "token_usage": {
+        "input_tokens": 9187,
+        "output_tokens": 677
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D13-partial-capacity",
+      "process_exit": 0,
+      "wall_seconds": 24.338072400001693,
+      "stdout_sha256": "7565e369531bb3261728e50d4d673fb09e59dc52bdfac5eb61b82c87292733dc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "c1a0dfda57a4481782b2b2cfe605e03e",
+      "record_path": "outputs/agent-investigations/c1a0dfda57a4481782b2b2cfe605e03e.json",
+      "record_sha256": "5b3cad4879bef4d92ce4016c37116f83cdad674b140a89766d7fa96a5e64ce7c",
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "action": "stop_with_partial",
+      "report_sha256": "47ab5ebdf02d2cfe6648167ea50a2e5940c1483ff607183d99c3a7ed8802bc9d",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "reported_capacity",
+      "model_attempts": 3,
+      "tool_attempts": 2,
+      "token_usage": {
+        "input_tokens": 5073,
+        "output_tokens": 640
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D14-corrupt-protocol",
+      "process_exit": 0,
+      "wall_seconds": 15.944731300001877,
+      "stdout_sha256": "304c56932d894eef79e32fd364e6a82ff01d682151be9c285ea3f727d82859ea",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "4a7913d7e94d4cfebb6f1c54b8983cc9",
+      "record_path": "outputs/agent-investigations/4a7913d7e94d4cfebb6f1c54b8983cc9.json",
+      "record_sha256": "929f789e526ffe0deb519bbd27af162d0708c934754e9d5e16b596d04aeb3800",
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "action": "inspect_discharge_traces",
+      "report_sha256": "f8eec9d86b5767019263fd2687c8548a7604536c11b6b20c7d50c77cbb67330f",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "test_conditions",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "token_usage": {
+        "input_tokens": 7142,
+        "output_tokens": 287
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D15-wrong-experiment",
+      "process_exit": 0,
+      "wall_seconds": 15.78081039999961,
+      "stdout_sha256": "e6605b842327cc02fae836ddfc5f0025905cf90466cd762f68c8394b32cee662",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "cbab2222532644efb133ee04900d51a8",
+      "record_path": "outputs/agent-investigations/cbab2222532644efb133ee04900d51a8.json",
+      "record_sha256": "aba0c8f58475dd4542194e3c93705e089ce5cabd50272ab220c383bc1bf9853d",
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "action": "inspect_discharge_traces",
+      "report_sha256": "cdcf046911f7b1201d3a62f9833a7a04ec1a3739710f1a7963edd886dd0db802",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": "test_conditions",
+      "model_attempts": 3,
+      "tool_attempts": 3,
+      "token_usage": {
+        "input_tokens": 7083,
+        "output_tokens": 293
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D16-missing-earlier",
+      "process_exit": 0,
+      "wall_seconds": 1.6362926000001607,
+      "stdout_sha256": "2111b3cabeb7e072c7fa0d9b9c0c8e21940951c7d339cae61248d92e6e5e17ae",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "cc75e5e1510046cf92069fe70e6e7a41",
+      "record_path": "outputs/agent-investigations/cc75e5e1510046cf92069fe70e6e7a41.json",
+      "record_sha256": "b9d50c4bc79e2755a8193476293bd7e3331b8b42c5b2cd20f9cb70018def46ce",
+      "status": "needs_clarification",
+      "stop_reason": "missing_selection",
+      "action": null,
+      "report_sha256": "9d56aeb3c6d44e262a8d1f3404bf3073952a858453e41c8009d2d85654195ef9",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": null,
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "token_usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D17-missing-later",
+      "process_exit": 0,
+      "wall_seconds": 1.5766480999991472,
+      "stdout_sha256": "d07e8d321afdcdcd3428fd7ef96dc18fe21745f83944c5ec54358631e5aa0a48",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "ad7ae799fb204b84ba0a3fde282eb47c",
+      "record_path": "outputs/agent-investigations/ad7ae799fb204b84ba0a3fde282eb47c.json",
+      "record_sha256": "c41250673d917ba99c6c9c6a30e3a663ba8b8f6b84dcb8233b37c81c2804d396",
+      "status": "needs_clarification",
+      "stop_reason": "missing_selection",
+      "action": null,
+      "report_sha256": "a82140ea024b0b34b8ca30e1bbfe1e4ecff406474f6ae5aef2ac8d34356f6d18",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": null,
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "token_usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D18-missing-battery",
+      "process_exit": 0,
+      "wall_seconds": 1.5374693000012485,
+      "stdout_sha256": "6b08990babed85ddfcd80079b03ba0e5b830d951c46d45c0e777a3bdb24a80bf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "a513a58d278f404ab18822fae94fc4ff",
+      "record_path": "outputs/agent-investigations/a513a58d278f404ab18822fae94fc4ff.json",
+      "record_sha256": "42a842e395f7bc40fbfa5812786473bc020f37e3a988d84a51891c56fe67b9fc",
+      "status": "needs_clarification",
+      "stop_reason": "missing_selection",
+      "action": null,
+      "report_sha256": "c112e8fc6740fea2829952a29eae587d677397d8eefc8444b3a0228f2d7c6751",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": null,
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "token_usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D19-reversed",
+      "process_exit": 2,
+      "wall_seconds": 1.483702000001358,
+      "stdout_sha256": "0261fe6f7948757a1e13e16126a44b3853740ce33bb802aab26701a618cde2b1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "cb9a4904b4be43abb5f7e5ce6af9ecd0",
+      "record_path": "outputs/agent-investigations/cb9a4904b4be43abb5f7e5ce6af9ecd0.json",
+      "record_sha256": "fdbeea9359216963a29a2c9228543ec1df03a42787c67e4e8b57541fb3692975",
+      "status": "failed",
+      "stop_reason": "invalid_request",
+      "action": null,
+      "report_sha256": "0a84e69352bd55239cc8e3db8fe242e6418f427e0a4ffb27cc053270ae3117ef",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": null,
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "token_usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D20-equal",
+      "process_exit": 2,
+      "wall_seconds": 1.5144861999979184,
+      "stdout_sha256": "1aa13fd7b1401a50f238fc888423cacec4392487f4094acdb98a893836e845bd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "85538a4ecfbb43aa8cbc5566cf9e6bba",
+      "record_path": "outputs/agent-investigations/85538a4ecfbb43aa8cbc5566cf9e6bba.json",
+      "record_sha256": "020e3f45becf213ec4e675a6ffcfbd98a84ea55b406eb036fef7e117ac7e8339",
+      "status": "failed",
+      "stop_reason": "invalid_request",
+      "action": null,
+      "report_sha256": "ed6c5d443703378312dba162e80fed6f8786258d874e2b05d0fdc65e6d653e56",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": null,
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "token_usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D21-out-of-range",
+      "process_exit": 2,
+      "wall_seconds": 5.26138169999831,
+      "stdout_sha256": "eb0918c616d9ac7edb6f343c9ceed7180bcdd404ec421a1797b8885684930290",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "b6d7e0f8a09b41d19c7bfe6c8699abd2",
+      "record_path": "outputs/agent-investigations/b6d7e0f8a09b41d19c7bfe6c8699abd2.json",
+      "record_sha256": "1b29ac40ec56a26916aa0109bbc9acad5348a3166096975ade188e169d4d9d3c",
+      "status": "failed",
+      "stop_reason": "tool_error",
+      "action": null,
+      "report_sha256": "0eb2eba8297b760c9118b3160f313b3bb8996385c2ac2be505799cca4981106f",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": null,
+      "model_attempts": 1,
+      "tool_attempts": 1,
+      "token_usage": {
+        "input_tokens": 601,
+        "output_tokens": 92
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D22-unavailable-model",
+      "process_exit": 2,
+      "wall_seconds": 1.5277022999980545,
+      "stdout_sha256": "8fdc4becd3087d4a98259655982fe03af2f8fea839615dc04b19d0dcbb42aedb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "f816276557234e16a66053e32e6148b0",
+      "record_path": "outputs/agent-investigations/f816276557234e16a66053e32e6148b0.json",
+      "record_sha256": "dd0a0ed3b6bd6c46751f4d4fac2fdece331a1fe6f774e64e833b5b12059ebb1d",
+      "status": "failed",
+      "stop_reason": "model_or_tool_request_error",
+      "action": null,
+      "report_sha256": "762dd5922c50b575a251848ed0746fb915e47ee120f96cf96bb49cdf1e7809a9",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "provisional_case_outcome": "pass",
+      "reference_review": "The request, complete finding/clarification/error and original source evidence meet the applicable criteria.",
+      "actual_scope": null,
+      "model_attempts": 1,
+      "tool_attempts": 0,
+      "token_usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D23-restart-clarification",
+      "process_exit": 2,
+      "wall_seconds": 1.2798693000004278,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "eeb7b4287fd7310d2ef1e0790f88dd244075f6162686b513d980e0d1307e2869",
+      "run_id": null,
+      "record_path": null,
+      "record_sha256": null,
+      "status": "no_run_record",
+      "stop_reason": null,
+      "action": null,
+      "scores": {
+        "execution": 0,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 0,
+        "limits_and_recommendation": null
+      },
+      "provisional_case_outcome": "fail",
+      "reference_review": "The second CLI process rejects --resume. No resumed investigation record is produced.",
+      "actual_scope": null,
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "token_usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "owner_review": "pending"
+    },
+    {
+      "case_id": "D24-restart-selection",
+      "process_exit": 2,
+      "wall_seconds": 1.3030287999972643,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "51e33dca1d10a71d00f084cbbd582c1c1b180e8e7ec59c007aa7395d9b22ca90",
+      "run_id": null,
+      "record_path": null,
+      "record_sha256": null,
+      "status": "no_run_record",
+      "stop_reason": null,
+      "action": null,
+      "scores": {
+        "execution": 0,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 0,
+        "limits_and_recommendation": null
+      },
+      "provisional_case_outcome": "fail",
+      "reference_review": "The second CLI process rejects --resume. The requested revised-selection lifecycle cannot execute.",
+      "actual_scope": null,
+      "model_attempts": 0,
+      "tool_attempts": 0,
+      "token_usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "owner_review": "pending"
+    }
+  ]
+}
