@@ -177,27 +177,30 @@ def inspect_selection_traces(selection: ValidatedSelection, source_path: Path) -
 
 
 def format_trace_extrema(evidence: dict) -> str:
-    """Render the located extrema returned by the current analysis, without inference."""
+    """Render located extrema and final voltage from the current recorded evidence."""
     if evidence["analysis_version"] != ANALYSIS_VERSION:
         raise ValueError("Extrema display requires the current trace analysis version")
     selection = evidence["selection"]
     lines = [
-        f"Trace extrema: {evidence['evidence_id']} ({evidence['analysis_version']})",
+        f"Trace extrema and final voltage: {evidence['evidence_id']} ({evidence['analysis_version']})",
         f"Battery: {selection['battery_id']}; source SHA256: {selection['source_sha256']}",
         "Scope: whole recording; active-load boundaries unresolved; comparability not established.",
         "Ties use the first occurrence. Display rounded to 12 significant digits; JSON retains stored floats.",
+        "Minimum voltage is the lowest recorded reading; final voltage is the last recorded sample.",
+        "Neither location alone establishes the active-discharge cutoff or a physical cause.",
     ]
     for side in ("earlier", "later"):
         record = evidence[side]
         lines.extend([
             f"{side.capitalize()}: discharge {record['discharge_index']}, operation {record['operation_index']}",
-            f"{'Signal (unit)':<18} | Extremum | {'Value':>20} | {'Sample':>6} | "
+            f"{'Signal (unit)':<18} | Reading | {'Value':>20} | {'Sample':>6} | "
             f"{'Source time (s)':>20} | {'Elapsed (s)':>20}",
         ])
         for label, name in (("current_A", "current (A)"), ("voltage_V", "voltage (V)"),
                             ("temperature_C", "temperature (degC)")):
-            for kind in ("minimum", "maximum"):
-                point = record["extrema_samples"][label][kind]
+            kinds = ("minimum", "maximum", "final") if label == "voltage_V" else ("minimum", "maximum")
+            for kind in kinds:
+                point = record["last_sample"] if kind == "final" else record["extrema_samples"][label][kind]
                 lines.append(f"{name:<18} | {kind} | {point[label]:>20.12g} | {point['sample_index']:>6} | "
                              f"{point['source_time_s']:>20.12g} | {point['elapsed_s']:>20.12g}")
     return "\n".join(lines)

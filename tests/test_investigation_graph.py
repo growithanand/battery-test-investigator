@@ -349,6 +349,15 @@ def test_cli_shows_executed_extrema_even_when_later_findings_fail(
     assert output.count("| minimum |") == output.count("| maximum |") == 6
     assert f"```text\n{format_trace_extrema(expected)}\n```" in report
     assert report.count("| minimum |") == report.count("| maximum |") == 6
+    for rendered in (output, report):
+        final_rows = [[cell.strip() for cell in line.split("|")] for line in rendered.splitlines()
+                      if "| final |" in line]
+        assert final_rows == [
+            ["voltage (V)", "final", "3.5", "5", "24", "14"],
+            ["voltage (V)", "final", "3.5", "5", "124", "14"],
+        ]
+        assert "Minimum voltage is the lowest recorded reading; final voltage is the last recorded sample." in rendered
+        assert "Neither location alone establishes the active-discharge cutoff or a physical cause." in rendered
     assert json.loads(model.calls[-1]["messages"][-1].content)["trace_evidence"] == expected
     if reject_findings:
         assert saved["status"] == "failed" and saved["stop_reason"] == "findings_error"

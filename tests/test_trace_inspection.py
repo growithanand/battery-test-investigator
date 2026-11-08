@@ -142,26 +142,30 @@ def test_extended_evidence_has_a_new_analysis_identity(source):
     assert result["evidence_id"] != f"traces-{old_digest}"
 
 
-def test_extrema_display_includes_values_units_and_both_source_time_bases(source):
+def test_extrema_and_final_voltage_display_include_values_and_both_source_time_bases(source):
     evidence = traces.inspect_selection_traces(selection(source), source)
     text = traces.format_trace_extrema(evidence)
     assert evidence["evidence_id"] in text and evidence["selection"]["source_sha256"] in text
     assert "Earlier: discharge 1, operation 2" in text and "Later: discharge 2, operation 4" in text
     assert "first occurrence" in text and "12 significant digits" in text
     assert "active-load boundaries unresolved" in text and "comparability not established" in text
+    assert "Minimum voltage is the lowest recorded reading; final voltage is the last recorded sample." in text
+    assert "Neither location alone establishes the active-discharge cutoff or a physical cause." in text
     rows = [[cell.strip() for cell in line.split("|")] for line in text.splitlines()
-            if "| minimum |" in line or "| maximum |" in line]
+            if any(f"| {kind} |" in line for kind in ("minimum", "maximum", "final"))]
     assert rows == [
         ["current (A)", "minimum", "-2", "2", "11", "1"],
         ["current (A)", "maximum", "0", "1", "10", "0"],
         ["voltage (V)", "minimum", "2.6", "3", "15", "5"],
         ["voltage (V)", "maximum", "4.2", "1", "10", "0"],
+        ["voltage (V)", "final", "3.3", "5", "24", "14"],
         ["temperature (degC)", "minimum", "24", "1", "10", "0"],
         ["temperature (degC)", "maximum", "26", "3", "15", "5"],
         ["current (A)", "minimum", "-1", "2", "102", "2"],
         ["current (A)", "maximum", "0", "1", "100", "0"],
         ["voltage (V)", "minimum", "2.7", "3", "106", "6"],
         ["voltage (V)", "maximum", "4.2", "1", "100", "0"],
+        ["voltage (V)", "final", "3.5", "5", "112", "12"],
         ["temperature (degC)", "minimum", "24", "1", "100", "0"],
         ["temperature (degC)", "maximum", "27", "3", "106", "6"],
     ]
