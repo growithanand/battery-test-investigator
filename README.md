@@ -229,6 +229,20 @@ Prepare a frozen collection from a checkout whose runtime files match the declar
 
 The collector freezes source/configuration inputs, creates labelled missing/partial/corrupt protocol fixtures and runs a fresh investigation CLI process once per development case. It retains process errors, saved records, reports, hashes and wall times. Use a fresh output directory for each collection. The six reserved cases are evaluated only after the final candidate is fixed, when both frozen baseline and final candidate can be compared on them together.
 
+### Compare a local candidate
+
+With the installed baseline Ollama model running, collect the current workflow in a fresh output directory:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.collect_portfolio_candidate --output outputs/portfolio-candidate/local-v19-a1
+```
+
+The command requires the original local baseline plan at `outputs/portfolio-baseline/20261107-a1/plan.json` and the fixture files it references. It checks their hashes against the baseline reference and checks the case definitions, source data and local model configuration. Each of the 24 development cases gets a separate CLI process. D23 and D24 take their parent run IDs from this collection and use the questions saved in those parents.
+
+Open `comparison.md` in the candidate directory for the baseline and candidate execution checks. `collection.json` records outcomes, wall times, usage, file hashes and links to the run records. Numerical and semantic review use the saved evidence separately. Use a new output directory to collect another candidate.
+
+The local v19 candidate passed **22/24 execution and scope checks**, compared with **19/24** in the frozen baseline. D07 and both resume cases gained passes. D06 and D09 still differ from their frozen scope labels. A separate source audit matched 17 capacity comparisons, eight trace pairs, 96 extrema locations, 16 active-load windows and 24 literal quotations. Claim meaning, task coverage and owner review remain pending.
+
 [Security case specifications](evaluations/security-cases.json) define 12 adversarial cases for the separate security pass. Their expected outcomes and execution status are recorded in that file. The task benchmark and adversarial pass have separate case counts.
 
 The [frozen d7e314f baseline](evaluations/baselines/portfolio-d7e314f-20261107.json) records all 24 development executions, one per case. Six reserved variants remain for the fixed final comparison. The reference review is provisional and awaits owner calibration.

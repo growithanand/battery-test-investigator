@@ -76,6 +76,26 @@ def assess(record, case_id="trace-1-168"):
     return evaluation.evaluate_follow_up(record, CASES[case_id], CASE_SET)
 
 
+def test_candidate_resume_requires_a_new_revision_and_report_lineage():
+    from scripts.collect_portfolio_candidate import execution_failures
+
+    record = make_record()
+    record["findings"]["protocol_evidence_limitation"] = None
+    record["resumed_from_run_id"] = "saved-parent"
+    record["comparison"]["selection"]["revision"] = 2
+    record["trace_evidence"]["selection"]["revision"] = 2
+    case = {**CASES["trace-1-168"], "category": "resume", "fixture": "available", "allowed_actions": [],
+            "expected_scopes": [], "request": {**record["request"], "question": "Scenario description"}}
+    parent = {"run_id": "saved-parent", "request": {**record["request"], "early": 100},
+              "comparison": {"selection": {"revision": 1}}, "trace_evidence": {"evidence_id": "old-evidence"}}
+    report = "[Result](constructed-evaluation-record.json) [Parent](saved-parent.json)"
+    assert execution_failures(case, CASE_SET, record, report, 0, parent=parent) == []
+    record["trace_evidence"]["selection"]["revision"] = 1
+    assert "trace_identity_matches" in execution_failures(case, CASE_SET, record, report, 0, parent=parent)
+    assert "resume_lineage" in execution_failures(case, CASE_SET, record, "[Result](constructed-evaluation-record.json)",
+                                                  0, parent=parent)
+
+
 @pytest.mark.parametrize("case_id", [case["case_id"] for case in CASE_SET["cases"] if case["split"] == "development"])
 def test_valid_execution_contract_still_requires_human_review(case_id):
     report = assess(make_record(case_id), case_id)
