@@ -49,7 +49,7 @@ A metadata-based protocol lookup returns applicable original passages with docum
 
 After the initial comparison and protocol retrieval, the graph asks the model to choose one follow-up: inspect the selected whole-record traces or stop with partial findings. Python supplies the unchanged selection, verifies returned trace identity against the comparison, and prevents additional follow-up calls. The read-only trace tool and separate selected-pair plotting command describe the full recordings without guessing load boundaries. Citation checks prove source identity, applicability, and literal quote matching, not semantic support; claims still require review. This is an initial metadata-retrieval-plus-generation workflow, not an evaluated complete investigation agent.
 
-A versioned follow-up case set and saved-run evaluator check decision/execution contracts separately from human evidence review. In the first three-repeat development baseline, the general conditions case skipped required trace inspection in all three runs. An isolated follow-up-prompt correction now inspects traces in all three development repeats; all five other cases retain their expected behavior. Python now adds a known protocol-availability limitation to validated findings and displays it alongside the generated analytical limits. Source-based review covers claim scope and recommendation relevance in the development cases. Python supplies recommendation hints from the accepted question scope and executed evidence; generated wording and scope interpretation still require review. The first reserved-question evaluation passes all nine execution checks but exposes incomplete extrema/source-location answers in three repeats; see the separate coverage results below. Project-owner acceptance and broader decision-quality evaluation remain pending. Embedding-retrieval comparisons, broader decision/citation evaluation, durable resume, a demonstration interface, and optional Jira/Confluence publishing remain planned. The numerical report command still uses Python calculations and a fixed template without model calls. Publishing investigation results from the application is not implemented.
+A versioned follow-up case set and saved-run evaluator check decision/execution contracts separately from human evidence review. In the first three-repeat development baseline, the general conditions case skipped required trace inspection in all three runs. An isolated follow-up-prompt correction now inspects traces in all three development repeats; all five other cases retain their expected behavior. Python now adds a known protocol-availability limitation to validated findings and displays it alongside the generated analytical limits. Source-based review covers claim scope and recommendation relevance in the development cases. Python supplies recommendation hints from the accepted question scope and executed evidence; generated wording and scope interpretation still require review. The first reserved-question evaluation passes all nine execution checks but exposes incomplete extrema/source-location answers in three repeats; see the separate coverage results below. Project-owner acceptance and broader decision-quality evaluation remain pending. Embedding-retrieval comparisons, broader decision/citation evaluation, a demonstration interface, and optional Jira/Confluence publishing remain planned. The numerical report command still uses Python calculations and a fixed template without model calls. Publishing investigation results from the application is not implemented.
 
 The data source is NASA's Battery Data Set. The documentation audit found nine distinct short readmes describing materially different experimental conditions and endpoints. The eventual retrieval component will be evaluated against supplying this compact document collection directly.
 
@@ -172,7 +172,7 @@ Prepare the numerical source and protocol documents as above, install the option
 .\.venv\Scripts\python.exe -m scripts.run_agent_investigation --model qwen3.8:27b-q4_K_M --battery-id B0005 --early 1 --late 100
 ```
 
-This entry point does not infer selections from natural-language wording. Missing selection fields return `needs_clarification` before reading battery sources or connecting to the model. A new invocation needs the complete explicit request; it does not resume an earlier run. Only B0005 numerical investigation is currently exposed. `--question` changes the investigation question; `--protocol-catalog` supplies trusted local catalog configuration for evaluation and is never model-controlled.
+This entry point takes the selected battery and discharges as explicit arguments. Missing selection fields return `needs_clarification` before reading battery sources or connecting to the model. Only B0005 numerical investigation is currently exposed. Use `--question` to set the question for a new run and `--protocol-catalog` to supply a trusted local catalog for evaluation.
 
 The graph checks the request, asks the model for the comparison and protocol tools, validates the entire requested batch before execution, and runs those tools. The model may choose their order or request both together; these initial evidence requirements are fixed by code. Tool arguments must match the requested selection. Tools and call IDs cannot be repeated, and raw arrays are not sent to the model.
 
@@ -187,6 +187,34 @@ With available documentation, executed trace inspection yields `partial` / `comp
 Each invocation writes a unique JSON record under `outputs/agent-investigations/` with the request, calculated evidence, retrieved passages, follow-up decision and reason, trace evidence if executed, findings if accepted, stopping reason, attempt counts, concise tool trace, timing and usage, source and model identities, prompt and schema hashes, package versions, and an input and configuration fingerprint. Raw model messages and private reasoning are excluded. The JSON is the evidence record for the run.
 
 Open the printed `Investigation report` path for the Markdown report with the same run ID. It links to the JSON and brings together the capacity comparison, protocol retrieval and citations, trace extrema and sample locations, any sampled load windows, remaining limits and the recorded next check. Python renders it directly from the saved run data. Failed or clarification runs show their stopping reason and any evidence already collected. Failed investigations exit with code 2 when their artifacts are written successfully. Use the selected-trace command above for the plot and the numerical investigation command for the separate reference report.
+
+### Resume a saved clarification
+
+For example, start a capacity comparison with the earlier discharge missing:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.run_agent_investigation --model qwen3.8:27b-q4_K_M --battery-id B0005 --late 144 --question "Compare the two reported capacities once both discharges are selected."
+```
+
+Copy the 32-character filename stem from `Local run record`. In a separate invocation, set `$runId` to that ID and fill in the missing selection:
+
+```powershell
+$runId = '<saved run ID>'
+.\.venv\Scripts\python.exe -m scripts.run_agent_investigation --model qwen3.8:27b-q4_K_M --resume $runId --early 9
+```
+
+For a pending clarification, resume uses the saved question and any selections already supplied. Pass the missing selection flags and the model to run. The CLI verifies the registered source and the completed pair before inference, then saves a new JSON record and report linked to the clarification.
+
+### Revise a saved discharge pair
+
+For a run with an accepted comparison, set `$runId` to its ID and supply at least one different discharge index. Omitted indices keep their saved values.
+
+```powershell
+$runId = '<saved run ID>'
+.\.venv\Scripts\python.exe -m scripts.run_agent_investigation --model qwen3.8:27b-q4_K_M --resume $runId --early 8 --late 155
+```
+
+The saved question and registered source carry forward. The new run advances the selection revision by one, calculates the comparison from the new pair, and gathers fresh trace evidence when the workflow selects inspection. Each run has its own report, and the new one links to its parent. Start a separate investigation to ask a different question.
 
 ## Portfolio task benchmark
 
@@ -218,6 +246,10 @@ Eighteen of the 24 development cases meet every applicable criterion under the p
 The current formatter now displays final voltage and its source locations alongside the extrema, using the existing saved trace fields. This presentation correction leaves the frozen baseline reports and scores unchanged. It does not establish a new live-model benchmark result.
 
 A targeted local run of the development case D07 used the new load-window check for B0005 discharges 13 and 157. The model selected trace inspection. The report showed both transition brackets per discharge and on-load spans of 3235.157 s and 2344.016 s respectively. Independent checks matched the bracket samples, times, signed currents and spans to the MATLAB arrays. The D01 capacity-only and D05 conditions cases also ran once as controls. The final portfolio benchmark remains pending.
+
+For D23, a separate process reopened the original D16 clarification and supplied discharge 9, completing the saved pair of 9 and 144. The resulting report linked to the clarification and showed a capacity change of −0.490767177 Ah (−26.894685% relative to discharge 9).
+
+For D24, a separate process revised the saved D02 comparison from discharges 100 and 168 to 8 and 155. The report recorded revision 2 and a capacity change of −0.507122894 Ah (−27.776038% relative to discharge 8). A separate conditions run revised a saved investigation with existing traces and produced a new trace ID and load windows for the new pair. The operation mappings, capacities and revised load windows were checked against the MATLAB source. These are targeted development runs.
 
 Independent source checks cover 15 comparisons, eight trace pairs, 96 extrema locations and 21 original quotations. Across 16 cases that executed local inference, median CLI wall time was 23.9 seconds and nearest-rank p95 was 28.9 seconds. Preloading took 10.5 seconds and is recorded separately. The local API charged USD 0. Electricity, hardware and hosting costs are unpriced. The record includes per-case durations, token usage and configuration hashes for the later provider comparison.
 

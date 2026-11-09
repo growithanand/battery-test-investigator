@@ -7,7 +7,7 @@ from langchain.tools import tool
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, ConfigDict, Field
 
-from scripts.investigation_state import InvestigationRequest, resolve_selection
+from scripts.investigation_state import InvestigationRequest, ValidatedSelection, resolve_selection
 from scripts.investigation_tools import compare_selection
 from scripts.protocol_evidence import CATALOG_PATH, ROOT, retrieve_protocol_evidence
 from scripts.trace_inspection import inspect_selection_traces
@@ -23,7 +23,21 @@ class ComparisonArguments(BaseModel):
     late: int = Field(gt=0, description="Later discharge-only index, greater than early")
 
 
-def make_comparison_tool(source_paths: Mapping[str, Path]) -> BaseTool:
+def _tool_selection(
+    request: InvestigationRequest, source_path: Path, validated_selection: ValidatedSelection | None,
+) -> ValidatedSelection:
+    if validated_selection is None:
+        return resolve_selection(request, source_path)
+    requested = (request.battery_id, request.early, request.late)
+    expected = (validated_selection.battery_id, validated_selection.early, validated_selection.late)
+    if requested != expected:
+        raise ValueError("Tool arguments differ from the validated selection")
+    return validated_selection
+
+
+def make_comparison_tool(
+    source_paths: Mapping[str, Path], *, validated_selection: ValidatedSelection | None = None,
+) -> BaseTool:
     """Keep the source registry in Python, outside the model-visible arguments."""
     sources = {battery_id: Path(path) for battery_id, path in source_paths.items()}
 
@@ -39,7 +53,7 @@ def make_comparison_tool(source_paths: Mapping[str, Path]) -> BaseTool:
         if battery_id not in sources:
             raise ValueError(f"Battery is not registered: {battery_id}")
         source_path = sources[battery_id]
-        selection = resolve_selection(request, source_path)
+        selection = _tool_selection(request, source_path, validated_selection)
         return compare_selection(selection, source_path)
 
     return compare_discharge_capacity
@@ -67,7 +81,10 @@ def make_protocol_tool(catalog_path: Path = CATALOG_PATH, *, root: Path = ROOT) 
     return get_battery_protocol
 
 
-def make_trace_tool(source_paths: Mapping[str, Path], *, include_active_load: bool = False) -> BaseTool:
+def make_trace_tool(
+    source_paths: Mapping[str, Path], *, include_active_load: bool = False,
+    validated_selection: ValidatedSelection | None = None,
+) -> BaseTool:
     """Expose read-only trace analysis, not artifact paths or file-writing authority."""
     sources = {battery_id: Path(path) for battery_id, path in source_paths.items()}
     active_load_battery = "B0005" if include_active_load and "B0005" in sources else None
@@ -84,7 +101,7 @@ def make_trace_tool(source_paths: Mapping[str, Path], *, include_active_load: bo
             raise ValueError(f"Battery is not registered: {battery_id}")
         source_path = sources[battery_id]
         return inspect_selection_traces(
-            resolve_selection(request, source_path), source_path,
+            _tool_selection(request, source_path, validated_selection), source_path,
             include_active_load=battery_id == active_load_battery,
         )
 

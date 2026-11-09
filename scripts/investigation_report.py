@@ -3,6 +3,7 @@
 from html import escape
 import re
 
+from scripts.investigation_resume import RUN_ID_PATTERN
 from scripts.trace_inspection import format_trace_extrema
 
 
@@ -19,11 +20,16 @@ def render_investigation_report(result: dict) -> str:
     lines = [
         "# Battery test investigation", "",
         f"- Run record: [{run_id}.json]({run_id}.json)",
+    ]
+    parent_id = result.get("resumed_from_run_id")
+    if isinstance(parent_id, str) and RUN_ID_PATTERN.fullmatch(parent_id):
+        lines.append(f"- Resumed from: [{parent_id}.json]({parent_id}.json)")
+    lines.extend([
         f"- Status: `{result['status']}`",
         f"- Stop reason: `{result['stop_reason']}`",
         f"- Model attempts: {result['model_attempts']}. Tool attempts: {result['tool_attempts']}.",
         "", "## Request", "", f"> {_prose(request['question'])}", "",
-    ]
+    ])
     battery = request["battery_id"] or "unspecified"
     early = request["early"] if request["early"] is not None else "unspecified"
     late = request["late"] if request["late"] is not None else "unspecified"

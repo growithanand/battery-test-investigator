@@ -450,25 +450,33 @@ def test_agent_cli_reports_registered_load_windows(evidence_tools, monkeypatch, 
             assert "After sample 4: source 110 s, elapsed 10 s, current 0 A." in rendered
 
 
-@pytest.mark.parametrize("report_write_fails", [False, True])
-def test_cli_clarification_report_preserves_saved_record(tmp_path, monkeypatch, capsys, report_write_fails):
+@pytest.mark.parametrize("failed_suffix", [None, ".md", ".json"])
+def test_cli_clarification_publishes_complete_artifacts(tmp_path, monkeypatch, capsys, failed_suffix):
     from scripts import run_agent_investigation as runner
 
     question = "Compare the discharges.\n## Fake heading <script>"
     monkeypatch.setattr(runner, "ROOT", tmp_path)
     monkeypatch.setattr(sys, "argv", ["run_agent_investigation", "--model", "unused-model", "--question", question])
 
-    if report_write_fails:
+    if failed_suffix:
+        replace = Path.replace
+
         def fail_replace(self, target):
-            raise OSError("Constructed report publication failure")
+            if target.suffix == failed_suffix:
+                raise OSError("Constructed artifact publication failure")
+            return replace(self, target)
 
         monkeypatch.setattr(Path, "replace", fail_replace)
-        with pytest.raises(OSError, match="Constructed report publication failure"):
+        with pytest.raises(OSError, match="Constructed artifact publication failure"):
             runner.main()
     else:
         runner.main()
 
     directory = tmp_path / "outputs/agent-investigations"
+    if failed_suffix == ".json":
+        assert list(directory.iterdir()) == []
+        assert "Local run record:" not in capsys.readouterr().out
+        return
     record = next(directory.glob("*.json"))
     saved = json.loads(record.read_bytes())
     assert saved["request"]["question"] == question
@@ -476,7 +484,7 @@ def test_cli_clarification_report_preserves_saved_record(tmp_path, monkeypatch, 
     assert saved["model_attempts"] == saved["tool_attempts"] == 0
     assert f"Local run record: {record}" in capsys.readouterr().out
     report = record.with_suffix(".md")
-    if report_write_fails:
+    if failed_suffix == ".md":
         assert sorted(directory.iterdir()) == [record]
     else:
         content = report.read_text(encoding="utf-8")
@@ -484,6 +492,164 @@ def test_cli_clarification_report_preserves_saved_record(tmp_path, monkeypatch, 
         assert r"Please specify: battery\_id, early, late." in content
         assert r"\#\# Fake heading &lt;script&gt;" in content
         assert "**Documented claim:**" not in content and "**Recommendation:**" not in content
+
+
+@pytest.fixture
+def resume_cli(evidence_tools, tmp_path, monkeypatch):
+    import hashlib
+
+    from scipy.io import savemat
+    from scripts import run_agent_investigation as runner, trace_inspection
+
+    source = tmp_path / "data/raw/nasa/package-1/B0005.mat"
+    source.parent.mkdir(parents=True)
+    cycles = [
+        {"type": "discharge", "ambient_temperature": 24, "data": {
+            "Time": [0, 1, 2, 3], "Current_measured": [0, -2, -2, 0],
+            "Voltage_measured": [4.1, 3.9, 2.7, 3.1], "Temperature_measured": [24, 24, 25, 25],
+            "Capacity": capacity,
+        }}
+        for capacity in (2.0, 1.5, 1.0)
+    ]
+    savemat(source, {"B0005": {"cycle": cycles}})
+    manifest = tmp_path / "data/manifests/B0005.json"
+    manifest.parent.mkdir()
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    manifest.write_text(json.dumps({"files": [{"archive_member": source.name, "sha256": digest}]}), encoding="utf-8")
+    evidence_tools[2]["protocol"]["catalog_sha256"] = "c" * 64
+    monkeypatch.setattr(runner, "ROOT", tmp_path)
+    monkeypatch.setattr(trace_inspection, "ROOT", tmp_path)
+    monkeypatch.setattr(runner, "make_protocol_tool", lambda path: evidence_tools[0][1])
+    return runner, source, digest
+
+
+@pytest.mark.parametrize("resume_flags, error", [
+    (["--late", "2"], None),
+    ([], "Complete the saved selection by supplying --late"),
+    (["--early", "2", "--late", "3"], "Resume cannot change the saved early selection"),
+    (["--late", "4"], "received early=1, late=4"),
+    (["--late", "2", "--question", "Replace the original question"], "not allowed with argument"),
+])
+def test_cli_resumes_saved_clarification(resume_cli, tmp_path, monkeypatch, capsys, resume_flags, error):
+    import hashlib
+
+    runner, _, digest = resume_cli
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response(), findings_response())
+    model_loads = []
+
+    def load_model(*args):
+        model_loads.append(args)
+        return model, {"test": "scripted model"}
+
+    question = "Compare the reported capacities after I specify the later discharge."
+    command = ["run_agent_investigation", "--model", "constructed-model"]
+    monkeypatch.setattr(runner, "create_local_model", load_model)
+    monkeypatch.setattr(sys, "argv", [*command, "--battery-id", "B0005", "--early", "1", "--question", question])
+    runner.main()
+    directory = tmp_path / "outputs/agent-investigations"
+    parent = next(directory.glob("*.json"))
+    parent_bytes = parent.read_bytes()
+    parent_report = parent.with_suffix(".md").read_bytes()
+    assert json.loads(parent_bytes)["status"] == "needs_clarification" and not model_loads
+    capsys.readouterr()
+
+    monkeypatch.setattr(sys, "argv", [*command, "--resume", parent.stem, *resume_flags])
+    if error:
+        with pytest.raises(SystemExit) as rejected:
+            runner.main()
+        assert rejected.value.code == 2 and error in capsys.readouterr().err
+        assert not model_loads and list(directory.glob("*.json")) == [parent]
+    else:
+        runner.main()
+        child = next(path for path in directory.glob("*.json") if path != parent)
+        saved = json.loads(child.read_bytes())
+        assert saved["resumed_from_run_id"] == parent.stem
+        assert saved["status"] == "partial" and len(model_loads) == 1
+        assert saved["request"] == {**REQUEST, "question": question}
+        assert saved["comparison"]["selection"]["source_sha256"] == digest
+        assert saved["comparison"]["selection"]["revision"] == 1
+        assert saved["comparison"]["comparison"]["capacity_change_Ah"] == -0.5
+        for key, call in zip(("tools", "follow_up", "findings"), model.calls, strict=True):
+            prompt = call["messages"][0].content
+            assert "The saved selection clarification has been answered." in prompt
+            assert saved["configuration"]["prompt_hashes"][key] == hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        assert f"Resumed from run: {parent.stem}" in capsys.readouterr().out
+        assert f"[{parent.name}]({parent.name})" in child.with_suffix(".md").read_text(encoding="utf-8")
+    assert parent.read_bytes() == parent_bytes
+    assert parent.with_suffix(".md").read_bytes() == parent_report
+
+
+@pytest.mark.parametrize("variant", ["new_pair", "same_pair", "different_source"])
+def test_cli_recomputes_evidence_for_revised_selection(resume_cli, tmp_path, monkeypatch, capsys, variant):
+    from scripts.investigation_state import InvestigationRequest, resolve_selection
+    from scripts.trace_inspection import inspect_selection_traces
+
+    runner, source, digest = resume_cli
+    question = "Compare the reported capacities and check conditions for discharges 1 and 2."
+    command = ["run_agent_investigation", "--model", "constructed-model"]
+    directory = tmp_path / "outputs/agent-investigations"
+
+    def scripted_model(late, revision):
+        request = InvestigationRequest(question, "B0005", 1, late)
+        selection = resolve_selection(request, source, revision=revision)
+        evidence = inspect_selection_traces(selection, source, include_active_load=True)
+        args = {"battery_id": "B0005", "early": 1, "late": late}
+        return StubModel(
+            AIMessage(content="", tool_calls=[{**COMPARISON_CALL, "args": args}, PROTOCOL_CALL]),
+            decision_response("inspect_discharge_traces"),
+            findings_response(trace_evidence_id=evidence["evidence_id"]),
+        )
+
+    first_model = scripted_model(2, 1)
+    monkeypatch.setattr(runner, "create_local_model", lambda *args: (first_model, {}))
+    monkeypatch.setattr(sys, "argv", [*command, "--battery-id", "B0005", "--early", "1", "--late", "2",
+                                     "--question", question])
+    runner.main()
+    parent = next(directory.glob("*.json"))
+    first = json.loads(parent.read_bytes())
+    if variant == "different_source":
+        modified = deepcopy(first)
+        modified["comparison"]["selection"]["source_sha256"] = "0" * 64
+        parent.write_text(json.dumps(modified), encoding="utf-8")
+    parent_bytes = parent.read_bytes()
+    parent_report = parent.with_suffix(".md").read_bytes()
+    capsys.readouterr()
+
+    second_model = scripted_model(3, 2)
+    model_loads = []
+
+    def load_model(*args):
+        model_loads.append(args)
+        return second_model, {}
+
+    monkeypatch.setattr(runner, "create_local_model", load_model)
+    late = "2" if variant == "same_pair" else "3"
+    monkeypatch.setattr(sys, "argv", [*command, "--resume", parent.stem, "--late", late])
+    if variant == "new_pair":
+        runner.main()
+        child = next(path for path in directory.glob("*.json") if path != parent)
+        second = json.loads(child.read_bytes())
+        assert second["status"] == "partial" and second["resumed_from_run_id"] == parent.stem
+        assert second["request"] == {**first["request"], "late": 3}
+        selection = second["comparison"]["selection"]
+        assert selection == {**first["comparison"]["selection"], "late": 3, "late_operation_index": 3,
+                             "source_sha256": digest, "revision": 2}
+        assert second["comparison"]["comparison"]["capacity_change_Ah"] == -1
+        assert second["trace_evidence"]["selection"] == second["trace_evidence"]["active_load"]["selection"] == selection
+        assert second["trace_evidence"]["evidence_id"] != first["trace_evidence"]["evidence_id"]
+        assert second["findings"]["trace_evidence_id"] == second["trace_evidence"]["evidence_id"]
+        assert "The engineer revised the discharge pair." in second_model.calls[0]["messages"][0].content
+        assert first["trace_evidence"]["evidence_id"] not in second_model.calls[-1]["messages"][-1].content
+        assert "selection revision 2" in child.with_suffix(".md").read_text(encoding="utf-8")
+    else:
+        with pytest.raises(SystemExit) as rejected:
+            runner.main()
+        expected = "Supply a different discharge pair" if variant == "same_pair" else "registered source has changed"
+        assert rejected.value.code == 2 and expected in capsys.readouterr().err
+        assert not model_loads and list(directory.glob("*.json")) == [parent]
+    assert parent.read_bytes() == parent_bytes
+    assert parent.with_suffix(".md").read_bytes() == parent_report
 
 
 @pytest.mark.parametrize("limits, responses, reason", [

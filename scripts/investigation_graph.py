@@ -1,4 +1,4 @@
-"""First bounded, in-memory tool-and-citation workflow; not durable resume."""
+"""Bounded tool-and-citation workflow for a validated investigation request."""
 
 from dataclasses import asdict
 import json
@@ -15,7 +15,7 @@ from scripts.investigation_findings import (
 from scripts.investigation_state import InvestigationRequest
 
 
-WORKFLOW_VERSION = "trace-follow-up-v17"
+WORKFLOW_VERSION = "trace-follow-up-v19"
 TOOL_PROMPT = (
     "Investigate the explicit battery/discharge selection. Request both available "
     "evidence tools exactly once, together or in either order. Never change the "
@@ -91,6 +91,27 @@ FINDINGS_PROMPT = (
 )
 
 
+RESUME_CONTEXT = {
+    "clarification": (
+        "The saved selection clarification has been answered. The original question "
+        "may describe a missing field from the earlier run. Use the complete, validated "
+        "battery and discharge indices in the current request and proceed with the comparison."
+    ),
+    "selection_change": (
+        "The engineer revised the discharge pair. Use the complete, validated indices "
+        "in the current request even if the original question describes the earlier pair. "
+        "Use the evidence collected for the current selection."
+    ),
+}
+
+
+def investigation_prompts(*, resume_kind: str | None = None) -> dict[str, str]:
+    context = "" if resume_kind is None else "\n\n" + RESUME_CONTEXT[resume_kind]
+    return {name: prompt + context for name, prompt in (
+        ("tools", TOOL_PROMPT), ("follow_up", FOLLOW_UP_PROMPT), ("findings", FINDINGS_PROMPT),
+    )}
+
+
 class InvestigationInput(TypedDict):
     request: dict
 
@@ -122,6 +143,7 @@ def build_investigation_graph(
     *,
     model_limit: int = 4,
     tool_limit: int = 3,
+    resume_kind: str | None = None,
 ):
     """Trusted Python supplies the model/tools/budgets; graph input is only a request."""
     if any(type(limit) is not int or limit < 1 for limit in (model_limit, tool_limit)):
@@ -132,6 +154,7 @@ def build_investigation_graph(
     if trace_tool.name != "inspect_discharge_traces":
         raise ValueError("The follow-up requires the read-only selected-trace tool")
     active_load_battery = (getattr(trace_tool, "metadata", None) or {}).get("active_load_battery")
+    prompts = investigation_prompts(resume_kind=resume_kind)
 
     def prepare(state):
         update = {
@@ -150,7 +173,7 @@ def build_investigation_graph(
             return {**update, "status": "needs_clarification", "stop_reason": "missing_selection",
                     "clarification": f"Please specify: {', '.join(request.missing_fields())}."}
         update["messages"] = [
-            SystemMessage(content=TOOL_PROMPT),
+            SystemMessage(content=prompts["tools"]),
             HumanMessage(content=json.dumps(asdict(request))),
         ]
         return update
@@ -242,7 +265,7 @@ def build_investigation_graph(
                 response = model_factory().with_structured_output(
                     FollowUpDecision, method="json_schema", include_raw=True,
                 ).invoke([
-                    SystemMessage(content=FOLLOW_UP_PROMPT),
+                    SystemMessage(content=prompts["follow_up"]),
                     HumanMessage(content=json.dumps(payload)),
                 ])
             decision = checked_structured_response(response, FollowUpDecision)
@@ -306,7 +329,7 @@ def build_investigation_graph(
             payload = {key: state[key] for key in ("request", "comparison", "protocol", "follow_up", "trace_evidence")}
             payload["recommendation_guidance"] = guidance
             messages = [
-                SystemMessage(content=FINDINGS_PROMPT),
+                SystemMessage(content=prompts["findings"]),
                 HumanMessage(content=json.dumps(payload)),
             ]
             with langsmith.tracing_context(enabled=False):
