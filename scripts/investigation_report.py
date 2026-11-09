@@ -106,5 +106,5 @@ def render_investigation_report(result: dict) -> str:
         if findings["protocol_evidence_limitation"]:
             lines.append(f"- {_prose(findings['protocol_evidence_limitation'])}")
         lines.extend(f"- {_prose(limit)}" for limit in findings["limitations"])
-        lines.extend(["", f"**Recommended next check (not executed):** {_prose(findings['next_check'])}"])
+        lines.extend(["", f"**Recommendation:** {_prose(findings['next_check'])}"])
     return "\n".join(lines) + "\n"

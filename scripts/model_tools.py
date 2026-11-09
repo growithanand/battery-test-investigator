@@ -67,22 +67,26 @@ def make_protocol_tool(catalog_path: Path = CATALOG_PATH, *, root: Path = ROOT) 
     return get_battery_protocol
 
 
-def make_trace_tool(source_paths: Mapping[str, Path]) -> BaseTool:
+def make_trace_tool(source_paths: Mapping[str, Path], *, include_active_load: bool = False) -> BaseTool:
     """Expose read-only trace analysis, not artifact paths or file-writing authority."""
     sources = {battery_id: Path(path) for battery_id, path in source_paths.items()}
+    active_load_battery = "B0005" if include_active_load and "B0005" in sources else None
 
     @tool("inspect_discharge_traces", args_schema=ComparisonArguments)
     def inspect_discharge_traces(battery_id: str, early: int, late: int) -> dict:
         """Inspect signed current/voltage/temperature for the explicit discharge pair.
 
-        Return whole-record sample statistics and located extrema/current steps.
-        No active-load segmentation, cutoff classification, integration,
-        comparable-test verdict or physical cause is established. No files are written.
+        Return whole-record statistics and located extrema/current steps. When configured
+        for registered B0005, also check sampled load windows. The tool writes no files.
         """
         request = InvestigationRequest("Inspect selected traces", battery_id, early, late)
         if battery_id not in sources:
             raise ValueError(f"Battery is not registered: {battery_id}")
         source_path = sources[battery_id]
-        return inspect_selection_traces(resolve_selection(request, source_path), source_path)
+        return inspect_selection_traces(
+            resolve_selection(request, source_path), source_path,
+            include_active_load=battery_id == active_load_battery,
+        )
 
+    inspect_discharge_traces.metadata = {"active_load_battery": active_load_battery}
     return inspect_discharge_traces

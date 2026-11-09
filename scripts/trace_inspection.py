@@ -72,6 +72,11 @@ def find_b0005_active_load_window(time_s: np.ndarray, current_A: np.ndarray) -> 
 
 def inspect_b0005_active_load(selection: ValidatedSelection, source_path: Path) -> dict:
     """Apply the trial rule to both selected records in the registered source."""
+    _require_registered_b0005(selection)
+    return _build_active_load_evidence(selection, read_selection_records(selection, source_path))
+
+
+def _require_registered_b0005(selection: ValidatedSelection) -> None:
     if selection.battery_id != "B0005":
         raise ValueError("The active-load rule requires the registered B0005 source")
     manifest = json.loads((ROOT / "data/manifests/B0005.json").read_text(encoding="utf-8"))
@@ -79,7 +84,8 @@ def inspect_b0005_active_load(selection: ValidatedSelection, source_path: Path) 
     if entry is None or selection.source_sha256 != entry["sha256"]:
         raise ValueError("B0005 source does not match the registered manifest")
 
-    records = read_selection_records(selection, source_path)
+
+def _build_active_load_evidence(selection: ValidatedSelection, records: list[dict]) -> dict:
     result = {
         "analysis_version": ACTIVE_LOAD_ANALYSIS_VERSION,
         "current_threshold_A": B0005_LOAD_THRESHOLD_A,
@@ -151,10 +157,12 @@ def summarize_trace(record: dict) -> dict:
     }
 
 
-def _build_evidence(selection, records):
+def _build_evidence(selection, records, active_load=None):
     identity = {"analysis_version": ANALYSIS_VERSION, "selection": asdict(selection)}
+    if active_load is not None:
+        identity["active_load_analysis_version"] = active_load["analysis_version"]
     digest = hashlib.sha256(json.dumps(identity, sort_keys=True).encode("utf-8")).hexdigest()[:16]
-    return {
+    evidence = {
         **identity, "evidence_id": f"traces-{digest}",
         "scope": "whole_recording", "statistics_basis": "unweighted_recorded_samples",
         "time_basis": "elapsed seconds since each record's first sample; no phase alignment",
@@ -162,6 +170,8 @@ def _build_evidence(selection, records):
         "later": summarize_trace(records[selection.late - 1]),
         "comparability": "not_established",
         "limits": [
+            "Recording duration covers the whole trace. The observed on-load span is reported separately."
+            if active_load is not None else
             "No active-discharge segmentation: recording duration is not active-load duration.",
             "Signed current is retained as recorded; protocol current may describe load magnitude.",
             "Sample statistics are not time-weighted and include startup and any post-load readings.",
@@ -169,11 +179,52 @@ def _build_evidence(selection, records):
             "No current integration, protocol pass/fail tolerance, physical cause or end-of-life verdict is inferred.",
         ],
     }
+    if active_load is not None:
+        evidence["active_load"] = active_load
+    return evidence
 
 
-def inspect_selection_traces(selection: ValidatedSelection, source_path: Path) -> dict:
+def inspect_selection_traces(selection: ValidatedSelection, source_path: Path, *, include_active_load: bool = False) -> dict:
     """Return compact selection-bound trace evidence; keep raw arrays outside model context."""
-    return _build_evidence(selection, read_selection_records(selection, source_path))
+    if include_active_load:
+        _require_registered_b0005(selection)
+    records = read_selection_records(selection, source_path)
+    active_load = _build_active_load_evidence(selection, records) if include_active_load else None
+    return _build_evidence(selection, records, active_load)
+
+
+def _format_active_load_windows(evidence: dict) -> list[str]:
+    lines = [
+        f"Observed active-load windows ({evidence['analysis_version']})",
+        f"On-load rule: signed current <= {evidence['current_threshold_A']:g} A.",
+        evidence["interpretation_limit"],
+    ]
+    selection = evidence["selection"]
+    for side, index in (("earlier", "early"), ("later", "late")):
+        window = evidence[side]
+        lines.append(f"{side.capitalize()}: discharge {selection[index]}, operation {selection[f'{index}_operation_index']}")
+        if window["status"] == "unresolved":
+            reason = window["reason"].replace("_", " ")
+            missing = window.get("missing_brackets", [])
+            if missing:
+                reason += " (" + ", ".join(label.replace("_", "-") for label in missing) + ")"
+            lines.append(f"  Window unresolved: {reason}.")
+            continue
+        load_on, load_off = window["load_on_bracket"], window["load_off_bracket"]
+        lines.append(
+            f"  On-load samples {load_on['after']['sample_index']} to {load_off['before']['sample_index']} "
+            f"({window['on_load_sample_count']} samples); observed span {window['observed_span_s']:.12g} s."
+        )
+        for label, bracket in (("Load-on", load_on), ("Load-off", load_off)):
+            lines.append(f"  {label} bracket:")
+            for position in ("before", "after"):
+                point = bracket[position]
+                lines.append(
+                    f"    {position.capitalize()} sample {point['sample_index']}: "
+                    f"source {point['source_time_s']:.12g} s, elapsed {point['elapsed_s']:.12g} s, "
+                    f"current {point['current_A']:.12g} A."
+                )
+    return lines
 
 
 def format_trace_extrema(evidence: dict) -> str:
@@ -181,9 +232,12 @@ def format_trace_extrema(evidence: dict) -> str:
     if evidence["analysis_version"] != ANALYSIS_VERSION:
         raise ValueError("Extrema display requires the current trace analysis version")
     selection = evidence["selection"]
+    active_load = evidence.get("active_load")
     lines = [
         f"Trace extrema and final voltage: {evidence['evidence_id']} ({evidence['analysis_version']})",
         f"Battery: {selection['battery_id']}; source SHA256: {selection['source_sha256']}",
+        "Scope: whole recording; comparability not established. See the separate load-window check below."
+        if active_load is not None else
         "Scope: whole recording; active-load boundaries unresolved; comparability not established.",
         "Ties use the first occurrence. Display rounded to 12 significant digits; JSON retains stored floats.",
         "Minimum voltage is the lowest recorded reading; final voltage is the last recorded sample.",
@@ -203,6 +257,8 @@ def format_trace_extrema(evidence: dict) -> str:
                 point = record["last_sample"] if kind == "final" else record["extrema_samples"][label][kind]
                 lines.append(f"{name:<18} | {kind} | {point[label]:>20.12g} | {point['sample_index']:>6} | "
                              f"{point['source_time_s']:>20.12g} | {point['elapsed_s']:>20.12g}")
+    if active_load is not None:
+        lines.extend(["", *_format_active_load_windows(active_load)])
     return "\n".join(lines)
 
 

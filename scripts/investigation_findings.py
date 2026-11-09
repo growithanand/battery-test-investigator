@@ -57,6 +57,12 @@ RECOMMENDATION_GUIDANCE = {
     "review_remaining_conditions": (
         "Review active-load boundaries to distinguish active discharge from startup and post-load readings."
     ),
+    "compare_observed_load_conditions": (
+        "Compare measured conditions within the observed load windows against the applicable protocol."
+    ),
+    "review_unresolved_load_window": (
+        "Review the current trace and the unresolved transition or sample block before assessing comparable conditions."
+    ),
     "answer_extrema_request": (
         "No further check is needed for the requested extrema and source locations; "
         "broader comparability and physical cause remain unresolved."
@@ -69,7 +75,9 @@ RECOMMENDATION_GUIDANCE = {
 }
 
 
-def select_recommendation_guidance(protocol_status: str, action: str, question_scope: str) -> dict:
+def select_recommendation_guidance(
+    protocol_status: str, action: str, question_scope: str, *, active_load: dict | None = None,
+) -> dict:
     """Use the accepted scope and executed evidence; do not infer scope from tool use."""
     if protocol_status not in {"available", "partial", "unavailable"}:
         raise ValueError("Unknown protocol evidence availability status")
@@ -82,7 +90,14 @@ def select_recommendation_guidance(protocol_status: str, action: str, question_s
     elif question_scope == "recorded_extrema" and action == "inspect_discharge_traces":
         focus = "answer_extrema_request"
     elif question_scope == "test_conditions" and action == "inspect_discharge_traces":
-        focus = "review_remaining_conditions" if protocol_status == "available" else "recover_protocol_evidence"
+        if protocol_status != "available":
+            focus = "recover_protocol_evidence"
+        elif active_load is None:
+            focus = "review_remaining_conditions"
+        elif all(active_load[side]["status"] == "observed" for side in ("earlier", "later")):
+            focus = "compare_observed_load_conditions"
+        else:
+            focus = "review_unresolved_load_window"
     else:
         focus = "answer_request"
     return {"focus": focus, "next_check_hint": RECOMMENDATION_GUIDANCE[focus]}

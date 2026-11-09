@@ -19,7 +19,7 @@ from scripts.investigation_report import render_investigation_report
 from scripts.local_model import create_local_model
 from scripts.model_tools import make_comparison_tool, make_protocol_tool, make_trace_tool
 from scripts.protocol_evidence import CATALOG_PATH
-from scripts.trace_inspection import ANALYSIS_VERSION, format_trace_extrema
+from scripts.trace_inspection import ACTIVE_LOAD_ANALYSIS_VERSION, ANALYSIS_VERSION, format_trace_extrema
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,8 +52,11 @@ def main():
         return runtime[0][0]
 
     limits = {"model_limit": 4, "tool_limit": 3}
-    graph = build_investigation_graph(load_model, make_comparison_tool({"B0005": source}),
-                                     make_protocol_tool(args.protocol_catalog), make_trace_tool({"B0005": source}), **limits)
+    sources = {"B0005": source}
+    graph = build_investigation_graph(
+        load_model, make_comparison_tool(sources), make_protocol_tool(args.protocol_catalog),
+        make_trace_tool(sources, include_active_load=True), **limits,
+    )
     started = perf_counter()
     # Disable hosted tracing for the graph itself as well as the model/tool nodes.
     with langsmith.tracing_context(enabled=False):
@@ -66,6 +69,7 @@ def main():
         "configuration": {
             "workflow_version": WORKFLOW_VERSION, "model_requested": args.model,
             "trace_analysis_version": ANALYSIS_VERSION,
+            "active_load_analysis_version": ACTIVE_LOAD_ANALYSIS_VERSION,
             "model_used": runtime[0][1] if runtime else None, "limits": limits,
             "prompt_hashes": {name: hashlib.sha256(prompt.encode("utf-8")).hexdigest()
                               for name, prompt in (("tools", TOOL_PROMPT), ("follow_up", FOLLOW_UP_PROMPT), ("findings", FINDINGS_PROMPT))},
@@ -105,7 +109,7 @@ def main():
             print(f"Protocol limitation: {result['findings']['protocol_evidence_limitation']}")
         for limitation in result["findings"]["limitations"]:
             print(f"Limitation: {limitation}")
-        print(f"Next check (not executed): {result['findings']['next_check']}")
+        print(f"Recommendation: {result['findings']['next_check']}")
     print(f"Local run record: {output}")
     report = output.with_suffix(".md")
     pending_report = report.with_suffix(".md.tmp")

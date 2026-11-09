@@ -364,11 +364,90 @@ def test_cli_shows_executed_extrema_even_when_later_findings_fail(
         assert saved["findings"] is None and "Documented claim:" not in output
         assert "Status: `failed`" in report and "Stop reason: `findings_error`" in report
         assert "no accepted final findings or recommendation" in report
-        assert "**Documented claim:**" not in report and "**Recommended next check" not in report
+        assert "**Documented claim:**" not in report and "**Recommendation:**" not in report
     else:
         assert saved["status"] == "partial" and saved["findings"]["trace_evidence_id"] == expected["evidence_id"]
         assert "Status: `partial`" in report
-        assert "Review active-load boundaries before assessing comparable conditions." in report
+        assert "**Recommendation:** Review active-load boundaries before assessing comparable conditions." in report
+        assert "Recommendation: Review active-load boundaries before assessing comparable conditions." in output
+
+
+@pytest.mark.parametrize("missing_load_off", [False, True])
+def test_agent_cli_reports_registered_load_windows(evidence_tools, monkeypatch, tmp_path, capsys, missing_load_off):
+    import hashlib
+
+    import numpy as np
+    from scipy.io import savemat
+    from scripts import run_agent_investigation as runner, trace_inspection
+    from scripts.model_tools import make_trace_tool
+
+    source = tmp_path / "data/raw/nasa/package-1/B0005.mat"
+    source.parent.mkdir(parents=True)
+    cycles = [
+        {"type": "discharge", "ambient_temperature": 24, "data": {
+            "Time": np.array(times), "Current_measured": np.array(current),
+            "Voltage_measured": np.array([4.1, 3.8, 2.6, 3.4, 3.5]),
+            "Temperature_measured": np.array([24, 25, 28, 27, 26]), "Capacity": capacity,
+        }}
+        for times, current, capacity in (
+            ([10, 11, 15, 21, 24], [0, -2, -2, 0, 0], 2.0),
+            ([100, 102, 107, 110, 115], [0, -2, -2, -2, -2] if missing_load_off else [0, -2, -2, 0, 0], 1.5),
+        )
+    ]
+    savemat(source, {"B0005": {"cycle": cycles}})
+    manifest = tmp_path / "data/manifests/B0005.json"
+    manifest.parent.mkdir()
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    manifest.write_text(json.dumps({"files": [{"archive_member": source.name, "sha256": digest}]}), encoding="utf-8")
+    monkeypatch.setattr(trace_inspection, "ROOT", tmp_path)
+    sources = {"B0005": source}
+    plain = make_trace_tool(sources).invoke(COMPARISON_CALL["args"])
+    expected = make_trace_tool(sources, include_active_load=True).invoke(COMPARISON_CALL["args"])
+    assert expected["evidence_id"] != plain["evidence_id"]
+    assert "active_load" not in plain
+    assert expected["earlier"] == plain["earlier"] and expected["later"] == plain["later"]
+
+    evidence_tools[2]["protocol"]["catalog_sha256"] = "c" * 64
+    response = findings_response(trace_evidence_id=expected["evidence_id"],
+                                 limitations=["The trial threshold only describes sampled load transitions."])
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response("inspect_discharge_traces", "test_conditions"), response)
+    monkeypatch.setattr(runner, "ROOT", tmp_path)
+    monkeypatch.setattr(runner, "create_local_model", lambda *args: (model, {"test": "scripted model"}))
+    monkeypatch.setattr(runner, "make_protocol_tool", lambda path: evidence_tools[0][1])
+    monkeypatch.setattr(sys, "argv", ["run_agent_investigation", "--model", "constructed-model",
+                                     "--battery-id", "B0005", "--early", "1", "--late", "2"])
+    runner.main()
+
+    output = capsys.readouterr().out
+    record = next((tmp_path / "outputs/agent-investigations").glob("*.json"))
+    saved = json.loads(record.read_bytes())
+    report = record.with_suffix(".md").read_text(encoding="utf-8")
+    assert saved["status"] == "partial" and saved["model_attempts"] == saved["tool_attempts"] == 3
+    assert saved["configuration"]["active_load_analysis_version"] == "b0005-active-load-v1"
+    assert saved["trace_evidence"] == expected
+    active_load = saved["trace_evidence"]["active_load"]
+    assert active_load["selection"] == saved["comparison"]["selection"]
+    assert active_load["selection"]["source_sha256"] == digest
+    assert active_load["later"]["status"] == ("unresolved" if missing_load_off else "observed")
+    assert json.loads(model.calls[1]["messages"][-1].content)["active_load_available"] is True
+    findings_input = json.loads(model.calls[-1]["messages"][-1].content)
+    assert findings_input["trace_evidence"]["active_load"] == active_load
+    assert findings_input["recommendation_guidance"]["focus"] == (
+        "review_unresolved_load_window" if missing_load_off else "compare_observed_load_conditions"
+    )
+    for rendered in (output, report):
+        assert "On-load samples 2 to 3 (2 samples); observed span 4 s." in rendered
+        assert "Before sample 1: source 10 s, elapsed 0 s, current 0 A." in rendered
+        assert "After sample 2: source 11 s, elapsed 1 s, current -2 A." in rendered
+        assert "Before sample 3: source 15 s, elapsed 5 s, current -2 A." in rendered
+        assert "After sample 4: source 21 s, elapsed 11 s, current 0 A." in rendered
+        if missing_load_off:
+            assert "Window unresolved: missing transition brackets (load-off)." in rendered
+            assert rendered.count("samples); observed span") == 1
+        else:
+            assert "On-load samples 2 to 3 (2 samples); observed span 5 s." in rendered
+            assert "After sample 4: source 110 s, elapsed 10 s, current 0 A." in rendered
 
 
 @pytest.mark.parametrize("report_write_fails", [False, True])
@@ -404,7 +483,7 @@ def test_cli_clarification_report_preserves_saved_record(tmp_path, monkeypatch, 
         assert "Status: `needs_clarification`" in content
         assert r"Please specify: battery\_id, early, late." in content
         assert r"\#\# Fake heading &lt;script&gt;" in content
-        assert "**Documented claim:**" not in content and "**Recommended next check" not in content
+        assert "**Documented claim:**" not in content and "**Recommendation:**" not in content
 
 
 @pytest.mark.parametrize("limits, responses, reason", [
@@ -600,7 +679,8 @@ def test_follow_up_sees_evidence_then_executes_trace_with_unchanged_arguments(ev
     assert state["model_attempts"] == state["tool_attempts"] == 3
     assert evidence_tools[1] == ["comparison", "protocol", "trace"]
     decision_input = json.loads(model.calls[1]["messages"][-1].content)
-    assert decision_input == {"request": REQUEST, "comparison": COMPARISON, "protocol": PROTOCOL}
+    assert decision_input == {"request": REQUEST, "comparison": COMPARISON, "protocol": PROTOCOL,
+                              "active_load_available": False}
     findings_input = json.loads(model.calls[2]["messages"][-1].content)
     assert findings_input["trace_evidence"] == TRACE_EVIDENCE
     event = next(item for item in state["trace"] if item["event"] == "follow_up_tool_requested")
@@ -629,6 +709,20 @@ def test_trace_payload_must_match_its_selection_envelope(evidence_tools, record,
                       decision_response("inspect_discharge_traces"))
     state = invoke(model, evidence_tools)
     assert state["status"] == "failed" and state["trace_evidence"] is None
+
+
+@pytest.mark.parametrize("active_load", [None, {"selection": {**COMPARISON["selection"], "revision": 2}}])
+def test_enabled_load_check_rejects_missing_or_mismatched_evidence(evidence_tools, active_load):
+    tools, _, results = evidence_tools
+    tools[2].metadata = {"active_load_battery": "B0005"}
+    results["trace"]["active_load"] = active_load
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response("inspect_discharge_traces"))
+    state = invoke(model, evidence_tools)
+    assert state["status"] == "failed" and state["stop_reason"] == "tool_error"
+    assert state["tool_attempts"] == 3 and state["model_attempts"] == 2
+    assert state["trace_evidence"] is None and state["findings"] is None
+    assert "Load-window evidence does not match" in state["trace"][-1]["detail"]
 
 
 def test_trace_failure_counts_attempt_and_retains_initial_evidence(evidence_tools):

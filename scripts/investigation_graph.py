@@ -15,7 +15,7 @@ from scripts.investigation_findings import (
 from scripts.investigation_state import InvestigationRequest
 
 
-WORKFLOW_VERSION = "trace-follow-up-v16"
+WORKFLOW_VERSION = "trace-follow-up-v17"
 TOOL_PROMPT = (
     "Investigate the explicit battery/discharge selection. Request both available "
     "evidence tools exactly once, together or in either order. Never change the "
@@ -27,10 +27,13 @@ FOLLOW_UP_PROMPT = (
     "Choose exactly one permitted action: inspect_discharge_traces or stop_with_partial. "
     "Set question_scope to reported_capacity for capacity-only arithmetic, recorded_extrema "
     "for raw signal extrema and source locations only, test_conditions for conditions or "
-    "comparability questions, or other for requests outside those scopes. "
-    "Trace inspection can supply whole-record signed current/voltage/temperature statistics "
-    "and located extrema/current steps for the unchanged pair; it cannot segment active "
-    "load, classify cutoff, integrate current, prove comparability or diagnose cause. "
+    "comparability questions, or other for requests outside those scopes. Use other "
+    "for requests limited to observed load windows, transition brackets or on-load span. "
+    "Trace inspection supplies whole-record current, voltage and temperature statistics "
+    "and located extrema/current steps. When active_load_available is true, it also "
+    "checks B0005 sampled load windows and may return observed brackets and spans or an "
+    "unresolved result. Choose inspection for requested load windows when this check is available. "
+    "These checks cannot classify cutoff, integrate current, prove comparability or diagnose cause. "
     "If the question asks to assess test conditions or comparability, choose "
     "inspect_discharge_traces to collect the available recorded-condition evidence "
     "before stopping. Inability to prove comparability is a remaining limit after "
@@ -61,8 +64,10 @@ FINDINGS_PROMPT = (
     "as intended protocol, not proof that the selected records followed it. "
     "Do not label a selected record end of life from this comparison. Do not infer physical cause "
     "or establish comparability. If trace_evidence is supplied, copy its evidence_id "
-    "to trace_evidence_id and acknowledge that whole-record inspection ran; active-load "
-    "segmentation has not run. "
+    "to trace_evidence_id and acknowledge that whole-record inspection ran. The separate "
+    "active_load field, when present, gives the check status for each record. Python shows "
+    "the recorded brackets and spans directly. Treat a window as observed only when "
+    "its status is observed. If active_load is absent, the window check did not run. "
     "If trace_evidence is null, set trace_evidence_id to null and do not claim inspection "
     "ran. Preserve the follow-up decision and unresolved evidence gaps. A documented endpoint relative to "
     "rated capacity is not the measured percentage relative to the earlier record. "
@@ -74,6 +79,9 @@ FINDINGS_PROMPT = (
     "accepted follow_up.question_scope, the question and executed evidence. The guidance "
     "uses that scope and known evidence state; a trace inspection alone does not mean "
     "the question asks about comparable conditions. Retain broader limits. "
+    "For a question limited to load windows, say the requested check is complete only "
+    "if both windows are observed. Otherwise recommend reviewing the unresolved recording "
+    "or running a suitable check if none ran. "
     "For stopped capacity-only questions it explains the bounded answer even "
     "with missing documentation; for other stopped questions propose a justified "
     "unexecuted check addressing their gap. Do not output metadata, internal focus "
@@ -123,6 +131,7 @@ def build_investigation_graph(
         raise ValueError("The graph requires exactly the comparison and protocol tools")
     if trace_tool.name != "inspect_discharge_traces":
         raise ValueError("The follow-up requires the read-only selected-trace tool")
+    active_load_battery = (getattr(trace_tool, "metadata", None) or {}).get("active_load_battery")
 
     def prepare(state):
         update = {
@@ -226,13 +235,15 @@ def build_investigation_graph(
         if state["model_attempts"] >= model_limit - 1:
             return {"status": "partial", "stop_reason": "model_budget_exhausted"}
         attempts = state["model_attempts"] + 1
+        payload = {key: state[key] for key in ("request", "comparison", "protocol")}
+        payload["active_load_available"] = state["request"]["battery_id"] == active_load_battery
         try:
             with langsmith.tracing_context(enabled=False):
                 response = model_factory().with_structured_output(
                     FollowUpDecision, method="json_schema", include_raw=True,
                 ).invoke([
                     SystemMessage(content=FOLLOW_UP_PROMPT),
-                    HumanMessage(content=json.dumps({key: state[key] for key in ("request", "comparison", "protocol")})),
+                    HumanMessage(content=json.dumps(payload)),
                 ])
             decision = checked_structured_response(response, FollowUpDecision)
             return {
@@ -265,6 +276,11 @@ def build_investigation_graph(
                     raise ValueError("Trace record mapping differs from its selection identity")
             if not isinstance(result["evidence_id"], str) or not result["evidence_id"].strip():
                 raise ValueError("Trace evidence requires a nonempty evidence ID")
+            active_load = result.get("active_load")
+            if (active_load is not None) != (arguments["battery_id"] == active_load_battery):
+                raise ValueError("Load-window evidence does not match the configured trace check")
+            if active_load is not None and active_load["selection"] != result["selection"]:
+                raise ValueError("Load-window evidence does not match the full trace selection")
             return {
                 "tool_attempts": attempts, "trace_evidence": result,
                 "completed_tools": [*state["completed_tools"], trace_tool.name],
@@ -282,8 +298,10 @@ def build_investigation_graph(
         attempts = state["model_attempts"] + 1
         guidance = None
         try:
+            evidence = state["trace_evidence"]
             guidance = select_recommendation_guidance(
                 state["protocol"]["status"], state["follow_up"]["action"], state["follow_up"]["question_scope"],
+                active_load=evidence.get("active_load") if evidence else None,
             )
             payload = {key: state[key] for key in ("request", "comparison", "protocol", "follow_up", "trace_evidence")}
             payload["recommendation_guidance"] = guidance
