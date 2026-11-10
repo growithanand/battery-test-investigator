@@ -249,6 +249,8 @@ In v21, the report gives the earlier measured capacity and the documented B0005 
 
 A targeted D08 run linked its recommendation to the verified B0005 impedance passage. It advises aligning early and late electrochemical impedance spectroscopy (EIS) records to the selected discharges, then comparing impedance under matched conditions. D21 now reports the valid discharge range and rejected indices in both the terminal and Markdown. The live D21 check confirmed the valid range of 1–168 against the original MATLAB file.
 
+The [v23 development review](evaluations/experiments/portfolio-v23-20261110.json) records **23/24 execution passes** and **23/24 provisional full-case passes**, compared with **22/24** and **20/24** respectively in v19. D08, D09 and D21 gained full-case passes. D06 answered the documentation question and retains its frozen scope flag. Independent checks matched 17 capacity comparisons, eight trace pairs, 96 extrema locations, 16 load windows and 25 literal quotations. Median CLI wall time was 24.22 s and p95 was 30.80 s across 18 cases with recorded model usage after preloading. Owner review and judge calibration remain pending.
+
 [Security case specifications](evaluations/security-cases.json) define 12 adversarial cases for the separate security pass. Their expected outcomes and execution status are recorded in that file. The task benchmark and adversarial pass have separate case counts.
 
 The [frozen d7e314f baseline](evaluations/baselines/portfolio-d7e314f-20261107.json) records all 24 development executions, one per case. Six reserved variants remain for the fixed final comparison. The reference review is provisional and awaits owner calibration.
