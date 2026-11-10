@@ -189,6 +189,7 @@ def test_tool_failure_counts_attempt_and_stops_without_final_generation(evidence
     state = invoke(model, evidence_tools)
     assert state["status"] == "failed" and state["stop_reason"] == "tool_error"
     assert state["tool_attempts"] == 1 and state["findings"] is None and len(model.calls) == 1
+    assert state["selection_diagnostic"] is None
 
 
 def test_tool_result_cannot_change_the_selection(evidence_tools):
@@ -243,6 +244,84 @@ def test_known_protocol_limit_survives_model_omission(evidence_tools, status, ex
     assert state["model_attempts"] == len(model.calls) == 3
     assert state["stop_reason"] == ("protocol_evidence_incomplete" if status != "available" else
                                     "comparability_assessment_pending" if trace_id else "selected_trace_check_pending")
+
+
+def test_report_uses_verified_capacity_basis_when_model_swaps_denominators(evidence_tools):
+    from scripts.investigation_report import render_investigation_report
+    from scripts.protocol_evidence import B0005_PROTOCOL_SHA256
+
+    protocol = evidence_tools[2]["protocol"]
+    passage = protocol["evidence"][0]
+    passage["source_sha256"] = B0005_PROTOCOL_SHA256
+    excerpt = "The experiments stopped after a 30% fade in rated capacity (from 2Ahr to 1.4Ahr)."
+    passage["text"] = excerpt
+    bad_limit = "The experiment used 1.4 Ah as rated capacity."
+    unsupported_rate = "The rated capacity fade was 20 percent."
+    wrong_verdict = "The 19.96% change is below 30%, so the record does not meet the end-of-life criterion."
+    useful_limit = "The measured conditions remain unresolved."
+    response = findings_response(
+        protocol, protocol_claims=[{
+            "statement": "The B0005 experiment used a rated-capacity fade criterion.",
+            "evidence_id": passage["evidence_id"], "quote": excerpt,
+        }],
+        limitations=[bad_limit, unsupported_rate, useful_limit],
+        next_check=wrong_verdict,
+    )
+    decision = decision_response(question_scope="other")
+    decision["parsed"].reason = wrong_verdict
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision, response)
+    state = invoke(model, evidence_tools, {**REQUEST, "question": "Does this change prove end of life?"})
+    endpoint = state["findings"]["documented_capacity_endpoint"]
+    assert json.loads(model.calls[-1]["messages"][-1].content)["documented_capacity_endpoint"] == endpoint
+    assert endpoint == {"battery_id": "B0005", "rated_capacity_Ah": 2.0, "end_of_life_threshold_Ah": 1.4,
+                        "rated_capacity_fade_percent": 30.0, "evidence_id": passage["evidence_id"]}
+    assert state["findings"]["limitations"] == [useful_limit]
+    assert "The selected percentage alone cannot establish end of life." in state["follow_up"]["reason"]
+    assert state["findings"]["next_check"].startswith("Verify the selected record's test conditions")
+    report = render_investigation_report({**state, "run_id": "constructed-run"})
+    assert "the earlier discharge capacity of 2.000000000 Ah as its reference" in report
+    assert "uses 2.0 Ah as rated capacity" in report
+    assert "A 30% fade sets the end-of-life threshold at 1.4 Ah." in report
+    assert "cannot establish whether a record met that criterion" in report
+    assert bad_limit not in report and unsupported_rate not in report and wrong_verdict not in report
+
+
+@pytest.mark.parametrize("variant", ["verified_mechanism", "unverified_source", "capacity_question"])
+def test_mechanism_recommendation_uses_verified_impedance_method(evidence_tools, variant):
+    from scripts.investigation_report import render_investigation_report
+    from scripts.protocol_evidence import B0005_PROTOCOL_SHA256
+
+    protocol = evidence_tools[2]["protocol"]
+    passage = protocol["evidence"][0]
+    passage["source_sha256"] = "0" * 64 if variant == "unverified_source" else B0005_PROTOCOL_SHA256
+    passage["text"] += (
+        " Impedance measurement was carried out through an electrochemical impedance spectroscopy (EIS) "
+        "frequency sweep from 0.1Hz to 5kHz."
+    )
+    question = "Which physical mechanism caused capacity loss?"
+    if variant == "capacity_question":
+        question = "Compare the earlier and later reported capacities."
+    generic = "Run a suitable check for the remaining evidence gap."
+    response = findings_response(protocol, next_check=generic)
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]),
+                      decision_response(question_scope="other"), response)
+    state = invoke(model, evidence_tools, {**REQUEST, "question": question})
+    findings = state["findings"]
+    report = render_investigation_report({**state, "run_id": "constructed-run"})
+    assert findings["physical_cause"] == "not_determined"
+    assert state["completed_tools"] == ["compare_discharge_capacity", "get_battery_protocol"]
+    if variant == "verified_mechanism":
+        assert findings["recommendation_evidence_id"] == passage["evidence_id"]
+        assert "electrochemical impedance spectroscopy (EIS)" in findings["next_check"]
+        assert "selected discharges" in findings["next_check"]
+        assert "compare impedance under matched test conditions" in findings["next_check"]
+        assert f"Recommendation evidence ID: {passage['evidence_id']}" in report
+        assert generic not in report
+    else:
+        assert findings["next_check"] == generic
+        assert "recommendation_evidence_id" not in findings
+        assert "Recommendation evidence ID:" not in report
 
 
 def test_unknown_protocol_status_cannot_produce_findings(evidence_tools):
@@ -521,6 +600,28 @@ def resume_cli(evidence_tools, tmp_path, monkeypatch):
     monkeypatch.setattr(trace_inspection, "ROOT", tmp_path)
     monkeypatch.setattr(runner, "make_protocol_tool", lambda path: evidence_tools[0][1])
     return runner, source, digest
+
+
+def test_cli_explains_source_index_range_in_the_failed_report(resume_cli, tmp_path, monkeypatch, capsys):
+    runner, _, _ = resume_cli
+    call = {**COMPARISON_CALL, "args": {**COMPARISON_CALL["args"], "late": 999}}
+    model = StubModel(AIMessage(content="", tool_calls=[call, PROTOCOL_CALL]))
+    monkeypatch.setattr(runner, "create_local_model", lambda *args: (model, {}))
+    monkeypatch.setattr(sys, "argv", ["run_agent_investigation", "--model", "constructed-model",
+                                     "--battery-id", "B0005", "--early", "1", "--late", "999"])
+    with pytest.raises(SystemExit) as error:
+        runner.main()
+    assert error.value.code == 2
+    record = next((tmp_path / "outputs/agent-investigations").glob("*.json"))
+    saved = json.loads(record.read_bytes())
+    diagnostic = "Choose discharge indices with 1 <= early < late <= 3; received early=1, late=999"
+    assert saved["selection_diagnostic"] == diagnostic
+    assert saved["status"] == "failed" and saved["stop_reason"] == "tool_error" and saved["comparison"] is None
+    assert f"Selection issue: {diagnostic}" in capsys.readouterr().out
+    report = record.with_suffix(".md").read_text(encoding="utf-8")
+    assert "**Selection issue:** Choose discharge indices with 1 &lt;= early &lt; late &lt;= 3" in report
+    assert "received early=1, late=999" in report
+    assert len(model.calls) == 1
 
 
 @pytest.mark.parametrize("resume_flags, error", [

@@ -241,7 +241,13 @@ The command requires the original local baseline plan at `outputs/portfolio-base
 
 Open `comparison.md` in the candidate directory for the baseline and candidate execution checks. `collection.json` records outcomes, wall times, usage, file hashes and links to the run records. Numerical and semantic review use the saved evidence separately. Use a new output directory to collect another candidate.
 
-The local v19 candidate passed **22/24 execution and scope checks**, compared with **19/24** in the frozen baseline. D07 and both resume cases gained passes. D06 and D09 still differ from their frozen scope labels. A separate source audit matched 17 capacity comparisons, eight trace pairs, 96 extrema locations, 16 active-load windows and 24 literal quotations. Claim meaning, task coverage and owner review remain pending.
+The local v19 candidate passed **22/24 execution and scope checks**, compared with **19/24** in the frozen baseline. D07 and both resume cases gained passes. D06 and D09 still differ from their frozen scope labels. A separate source audit matched 17 capacity comparisons, eight trace pairs, 96 extrema locations, 16 active-load windows and 24 literal quotations.
+
+The [provisional candidate review](evaluations/experiments/portfolio-v19-20261109.json) records **20/24** cases passing all applicable criteria. D06 answers the documentation question. D08 gives a generic follow-up for mechanism identification. D09 correctly cites the experiment endpoint but gives conflicting rated-capacity values in its limitations. D21 saves the valid discharge range in JSON while the report shows a generic tool error. The baseline readback found the same denominator and failure-presentation issues in D09 and D21. Owner review and judge calibration remain pending.
+
+In v21, the report gives the earlier measured capacity and the documented B0005 rating separate roles. The verified protocol passage supplies the 2.0 Ah rating and 1.4 Ah end-of-life threshold. For an explicit end-of-life question, the explanation and recommendation use those roles and leave the individual record's status unresolved. A targeted D09 run verified the correction against the original MATLAB data and protocol. The v19 benchmark above records the earlier candidate.
+
+A targeted D08 run linked its recommendation to the verified B0005 impedance passage. It advises aligning early and late electrochemical impedance spectroscopy (EIS) records to the selected discharges, then comparing impedance under matched conditions. D21 now reports the valid discharge range and rejected indices in both the terminal and Markdown. The live D21 check confirmed the valid range of 1–168 against the original MATLAB file.
 
 [Security case specifications](evaluations/security-cases.json) define 12 adversarial cases for the separate security pass. Their expected outcomes and execution status are recorded in that file. The task benchmark and adversarial pass have separate case counts.
 

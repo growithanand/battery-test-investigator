@@ -7,6 +7,10 @@ from pathlib import Path
 from scripts.inspect_sample import read_discharge_records
 
 
+class DischargeSelectionOutOfRange(ValueError):
+    """The requested discharge pair falls outside the validated source's index range."""
+
+
 @dataclass(frozen=True)
 class InvestigationRequest:
     """Keep requested selections explicit; None means clarification is needed."""
@@ -78,7 +82,7 @@ def resolve_selection(
     if hashlib.sha256(source_path.read_bytes()).hexdigest() != source_sha256:
         raise ValueError("Source changed while resolving the selection; retry with a stable file")
     if not 1 <= request.early < request.late <= len(records):
-        raise ValueError(
+        raise DischargeSelectionOutOfRange(
             f"Choose discharge indices with 1 <= early < late <= {len(records)}; "
             f"received early={request.early}, late={request.late}"
         )

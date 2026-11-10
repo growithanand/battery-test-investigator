@@ -1,0 +1,395 @@
+{
+  "candidate_id": "portfolio-v19-20261109",
+  "runtime_checkout": "3ccb791acbfc70eb0daac4847ae47dc54b5aee7c",
+  "collector_commit": "2ab5f1f33c30492a5637237ac9d88349abaf191e",
+  "baseline_id": "portfolio-d7e314f-20261107",
+  "case_set_sha256": "16cf6d6367e2d3cfb53216f4d2e60bb0739f2a2aa29fd35348f27e7496f5b5aa",
+  "rubric_sha256": "9407a652fcb78886c7990520e30bb77699179ef5109e389058b380281f26827e",
+  "collection_sha256": "ea649c634e2c648ca9724c0ea36e0650ac77ea1581033da3de31b7c9ce2821b8",
+  "source_audit_sha256": "1d9eeb42371cba98682abf3e049eaa019db85fad9db7e276f0e52a1fb5276d8c",
+  "review_status": "provisional_source_based_review",
+  "owner_review": "pending",
+  "judge_calibration": "pending",
+  "review_scope": {
+    "development_cases": 24,
+    "reserved_cases_executed": 0,
+    "security_cases_executed": 0,
+    "runs_per_case": 1,
+    "retries": 0
+  },
+  "scores": {
+    "per_criterion": {
+      "execution": {
+        "pass": 22,
+        "fail": 2,
+        "not_applicable": 0
+      },
+      "numerical_accuracy": {
+        "pass": 17,
+        "fail": 0,
+        "not_applicable": 7
+      },
+      "citation_support": {
+        "pass": 13,
+        "fail": 0,
+        "not_applicable": 11
+      },
+      "task_fulfilment": {
+        "pass": 21,
+        "fail": 3,
+        "not_applicable": 0
+      },
+      "limits_and_recommendation": {
+        "pass": 15,
+        "fail": 2,
+        "not_applicable": 7
+      }
+    },
+    "all_applicable_criteria_pass": 20
+  },
+  "review_notes": [
+    "D06 and D09 retain their original scope flags. Documentation lookup and endpoint interpretation are distinct from assessing recorded conditions and capacity-only arithmetic.",
+    "Citation support scores the emitted protocol claims. The D09 contradiction appears in a limitation and fails both the task and recommendation/limits criteria.",
+    "A readback of the frozen baseline found the same D09 denominator error and the same D21 presentation gap. The earlier baseline scores retain their historical judgments. Candidate full-case totals use this provisional review.",
+    "The D08 baseline named EIS spectra and resistance trends as a follow-up. The candidate gives a generic recommendation for the same request.",
+    "This review uses the saved development run evidence. Owner agreement and automated judge calibration are separate steps."
+  ],
+  "cases": [
+    {
+      "case_id": "D01-capacity",
+      "run_id": "6d31c2605ba541c6911b789e972095bc",
+      "record_sha256": "6baa195e6ea23bf46fdd2d6fcaed53fa9184ff3f5a321b281a9a6940af095914",
+      "report_sha256": "60fc5f330653d2f4ee15517ba29afcf76bc699c19be38faa776f05a5c174b9cc",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "The signed result and earlier-capacity denominator are explicit. The recommendation closes the narrow calculation."
+    },
+    {
+      "case_id": "D02-relative-basis",
+      "run_id": "c9fadc527f004941b4eb2218432447b4",
+      "record_sha256": "df9fe0a43ad53ebb15c2d9fd75bb89b7b799acc192e74bee9bc1e37bd8484bed",
+      "report_sha256": "3b4575aa01546b134dea7df7504dcf08666b24e73c1fcb349aea285fe42571ad",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "The calculation uses the earlier selected capacity. The cited rated-capacity endpoint stays separate."
+    },
+    {
+      "case_id": "D03-extrema",
+      "run_id": "8272bacdf8434cfaacf8346c0ed8fba1",
+      "record_sha256": "ea69eaaccce7f4ddda1c7356c2aa9b607b519de46e212e8ffad6d688246a61f5",
+      "report_sha256": "4aad4402321d1110fc220b728ce9c9f0e9159663b0fe471122ef81b8c265c86d",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "Both sets of six located extrema are shown with source and elapsed times. The limits preserve their descriptive scope."
+    },
+    {
+      "case_id": "D04-end-versus-minimum",
+      "run_id": "0eb8e837df464d458dc4f49354e9eb33",
+      "record_sha256": "6edf732a52d47df72516c703017679cde5d4d81a03072464d001423a3cba1c97",
+      "report_sha256": "a919515b9310d86e957cc8945b4c285036d56e77f1b6c149d575a520d1eb4dc7",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "The report identifies each minimum and final voltage with times and explains the two sample locations and their limits."
+    },
+    {
+      "case_id": "D05-conditions",
+      "run_id": "0bdafeb0a9144d6692eb4247a938cca9",
+      "record_sha256": "9ba969229af0bd7c5dd8ff0e18d03bf65be5005845e3e6ca77221dcfc51d6a16",
+      "report_sha256": "76ae388193efa793ffb0c3b915d270daebca9e80f17befd2c5a349656093951b",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "The report supplies both recordings and sampled load windows. Comparing measured conditions inside the windows remains a concrete follow-up."
+    },
+    {
+      "case_id": "D06-protocol",
+      "run_id": "cc0b876553fd4004b0ee3050df0617ca",
+      "record_sha256": "187b472a1e55872da8123e77c96640cc0bad5ce5ea97a00becfccca5e0653c71",
+      "report_sha256": "8da5596ff0c2a136db8003d76cf63b754aff0728f4148731e94c5baea2ae7685",
+      "scores": {
+        "execution": 0,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "The applicable passage supports B0005's intended 2 A setting and 2.7 V cutoff. The recommendation explicitly says the document answers this question. The frozen scope flag remains."
+    },
+    {
+      "case_id": "D07-agent-window",
+      "run_id": "56f670a83ae846baa7ca805333a01853",
+      "record_sha256": "6257e6a34014b688ab65e43d1b234ea077d721e03b31b509706a8112d05739f6",
+      "report_sha256": "378a40745c6e3c94abe1c1b164fb38660603fc1576e55fe7dded095666f79cd9",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "Each window has both sampled transition brackets and the first-to-last span. The recommendation closes the requested window check."
+    },
+    {
+      "case_id": "D08-cause",
+      "run_id": "46b5b2ccf7a04e2395a21287f8a69613",
+      "record_sha256": "8a0e8fd1ab9418bef69fce3c4e44bebde18398a8a9d12151e506e1d894c30215",
+      "report_sha256": "6c6980300475cffe45e8b6f7f074571fb725889e27d2c84ca92dd0b54e29e86d",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 0,
+        "limits_and_recommendation": 0
+      },
+      "review": "The result correctly leaves cause unresolved and cites the experiment's EIS measurements. The suggested suitable check identifies neither a specific measurement to compare nor how it would distinguish mechanisms."
+    },
+    {
+      "case_id": "D09-endpoint",
+      "run_id": "eb33b59d9ba74f22aa9a90602173a264",
+      "record_sha256": "e80afcbaf78f052666d17457c488f6c28f888d12f1416b62ba109b71dccbbced",
+      "report_sha256": "114bfa52f1413ac599f89169944f77e50051b0eb14e98947968c709195a70ba1",
+      "scores": {
+        "execution": 0,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 0,
+        "limits_and_recommendation": 0
+      },
+      "review": "The two cited claims are supported. A limitation calls the 1.4 Ah endpoint the rated capacity, contradicting the correct 2.0 Ah basis elsewhere. The report gives inconsistent denominators and the recommendation only closes the arithmetic."
+    },
+    {
+      "case_id": "D10-missing-conditions",
+      "run_id": "e2cd2929bc624574bffa0fa30138b633",
+      "record_sha256": "775b0a3c9143a53e853c377c2e85c8a31332984487830b9fdd46a4dcbff818b8",
+      "report_sha256": "df434520e3f52c763b6ef1848e6d980e44a5e5e918fcf1088c9adb25905e373f",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "Recorded traces remain available. The report identifies the missing protocol and recommends recovering it before assessing compliance."
+    },
+    {
+      "case_id": "D11-missing-capacity",
+      "run_id": "552be370c77241ab94dd627eff8d3871",
+      "record_sha256": "0a90ef2a7607db38e4dc634baf9e4a1daa5fc44fa84931f0723cad2d34f336c2",
+      "report_sha256": "1bb2e2f0b8125e02c7acfb5b65cc4d288329187278a1215b1b8f97c1a7ac3815",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "The comparison supplies the signed change, earlier reference and missing-document warning. The narrow result needs no further check."
+    },
+    {
+      "case_id": "D12-partial-conditions",
+      "run_id": "aa04553a996a46f58d513b42e4131bc0",
+      "record_sha256": "70d3fbdbd1274d64fbf7424734fd1c9a44bab63211063ae52eb970bee4c6a46d",
+      "report_sha256": "a96dc7d5f878105ca4c4b300c29ff2dbb892edd83c07c65a7da95d39d34db9c1",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "Verified protocol passages and both traces remain visible with the missing supplement warning. The recommendation addresses source recovery."
+    },
+    {
+      "case_id": "D13-partial-capacity",
+      "run_id": "0e9e3756d725466ea0ae33214aafda95",
+      "record_sha256": "dd0a385a54a92edbfc66e4060ce5040734aa3367c9961b0eeed0afaf836f0e3f",
+      "report_sha256": "d4d177526ae9e3e8e4d24f87e725850e3a7bb9006fb20d2e2000ec201e4d83f2",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "The signed calculation and incomplete-document warning answer the request. Protocol claims use the available original passage."
+    },
+    {
+      "case_id": "D14-corrupt-protocol",
+      "run_id": "9649d82ee8b24e2fb697c88248aa7396",
+      "record_sha256": "b2124edd418bbb5614169202875741107fb08378ee24832af4a19cdb586991b2",
+      "report_sha256": "7585afcb1abaa10f7a520768e141f56c250fb40a9080ba571e1a6c4d3a3091e8",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "The corrupt source is rejected while recorded traces remain available. The report explains the hash failure and proposes recovering verified documentation."
+    },
+    {
+      "case_id": "D15-wrong-experiment",
+      "run_id": "be0819dca6684cce9df369628a59c61a",
+      "record_sha256": "7e9ddfe75290bc4753f7e51d2d9833f0032c4c7fcdb52b9d7a17a0708018e5be",
+      "report_sha256": "b7c199e04da85d02d0e5d0ab757fd9b0d125f2ef518b90eb3ae52ccc5d5469ae",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "The report shows the selected recordings and reports that no applicable B0005 protocol was retrieved."
+    },
+    {
+      "case_id": "D16-missing-earlier",
+      "run_id": "dd4df79be2124bcaaba15a3c2fdddc47",
+      "record_sha256": "af852eca5937cd91a4c950b0ddfa391c7285ba82c7936f42a5d4c7ebbb08259c",
+      "report_sha256": "44b5adbacf0a4d7c79b65b61bcf075be20da79012dbea8fa402a0db26ac69da7",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "review": "The clarification requests the missing earlier discharge and the run stops before tools or inference."
+    },
+    {
+      "case_id": "D17-missing-later",
+      "run_id": "bc0f562064904b6fa2010bc948ce24bc",
+      "record_sha256": "1e44177b21d0cfe3b7216ec08394a64c5cdd2d22b0958c95d6bee1bbaf762af8",
+      "report_sha256": "b247bbe2fdf0ee0438567d385b1ba82f47aea791df19d1308df2b7d3955ff1c1",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "review": "The clarification requests the missing later discharge and the run stops before tools or inference."
+    },
+    {
+      "case_id": "D18-missing-battery",
+      "run_id": "f369ad3b42b34167ada8f31dbf107e6a",
+      "record_sha256": "648ec9b1aae1f982ced4955e0b11b06d0a8ff1b83b88a24bc25358c055d025e8",
+      "report_sha256": "151c072c7693bbb1d3cc6331ce84dde711f0aa0f2f4e80f7e9bc7b0532ce6139",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "review": "The clarification requests the registered battery ID and the run stops before tools or inference."
+    },
+    {
+      "case_id": "D19-reversed",
+      "run_id": "609f0ce8d05f4c7ebf680ab3230c2c83",
+      "record_sha256": "4edf49cf2577c0b28be3d400cad7ef40a48466be853c2055fad48ccf13d88d6a",
+      "report_sha256": "4310133e9c5d15a5a232e456d0a852406bf60c7960005bd842eb6ed2ffabf95b",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "review": "The invalid order is rejected and the saved diagnostic identifies the required index order."
+    },
+    {
+      "case_id": "D20-equal",
+      "run_id": "3946f0e6a3794c9e8a4a4d47da40c47f",
+      "record_sha256": "de1b5efd974f73f227156da0acb691aad879d55b596343c4bfde9c5a151d3b05",
+      "report_sha256": "e33e5de2c830fd690b75bbff572933ca046d855bac33b0f91920dfa799ef4c18",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "review": "Equal indices are rejected and the saved diagnostic identifies the required index order."
+    },
+    {
+      "case_id": "D21-out-of-range",
+      "run_id": "3b15582c9c7f4160bcfd5ed8f5772d2b",
+      "record_sha256": "f63cd04fa1d9fd5dcc0d3fe11537d4d912860e6bf3c626cc1225dbc1c250d761",
+      "report_sha256": "2fd199120a8b0a4d504b3371f815226c89b4c50490bba74640eee6b93755b2c6",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 0,
+        "limits_and_recommendation": null
+      },
+      "review": "The JSON trace gives the valid range and rejected index. The CLI and Markdown omit that explanation and display only the generic tool error code."
+    },
+    {
+      "case_id": "D22-unavailable-model",
+      "run_id": "1706d557dd8b4c9c9e9d7a02d8420f13",
+      "record_sha256": "0769567b8e8ad4a308ab57b20c3e195c076ed9741f4c147326e969de9ba24f4e",
+      "report_sha256": "9a2937f3483515588f5a2168510ca2a488a24a1da71a5ce312a1bf760758291a",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": null,
+        "citation_support": null,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": null
+      },
+      "review": "The saved record captures the missing installed model diagnostic and stops before tools run."
+    },
+    {
+      "case_id": "D23-restart-clarification",
+      "run_id": "73aa1cd9b51d429887d1c2fab8309153",
+      "record_sha256": "cf94a8eb0a5c6e2c5178b4db4d8e5d64cffb77d06d56b1df500ec8721392c89d",
+      "report_sha256": "4bebe80b85ac91e70ea7033cb492449eddc1ab0ad96e15fb45581e56711b1e36",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "A fresh process resumes the saved question and retains discharge 144 while validating discharge 9. The linked comparison closes the capacity request."
+    },
+    {
+      "case_id": "D24-restart-selection",
+      "run_id": "4cb9eae8bc244fd8af33bf0e1e4bf2c6",
+      "record_sha256": "c7bb0d8e0fc73fd8a8ea59aa8fef03a9276e3c4659470a7ce05f8efacc21fbe8",
+      "report_sha256": "c53a62a656b457af2282ce6e1621b4f4da9891e02ca0632d55605d0719e3c6fa",
+      "scores": {
+        "execution": 1,
+        "numerical_accuracy": 1,
+        "citation_support": 1,
+        "task_fulfilment": 1,
+        "limits_and_recommendation": 1
+      },
+      "review": "A fresh process links to its parent and recomputes the changed pair at revision 2. The inherited capacity-only question stops after comparison and protocol."
+    }
+  ]
+}

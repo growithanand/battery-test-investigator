@@ -14,7 +14,7 @@ import langsmith
 
 from scripts.investigation_findings import FollowUpDecision, InvestigationFindings
 from scripts.investigation_graph import WORKFLOW_VERSION, build_investigation_graph, investigation_prompts
-from scripts.investigation_report import render_investigation_report
+from scripts.investigation_report import format_capacity_bases, render_investigation_report
 from scripts.investigation_resume import resume_investigation
 from scripts.investigation_state import resolve_selection
 from scripts.local_model import create_local_model
@@ -139,9 +139,13 @@ def main():
         print(f"Resumed from run: {args.resume}")
     if result["clarification"]:
         print(result["clarification"])
+    if diagnostic := result.get("selection_diagnostic"):
+        print(f"Selection issue: {diagnostic}")
     if result["comparison"]:
         comparison = result["comparison"]["comparison"]
         print(f"Capacity change: {comparison['capacity_change_Ah']:.9f} Ah ({comparison['capacity_change_percent']:.6f}%)")
+    for line in format_capacity_bases(result):
+        print(line)
     if result["follow_up"]:
         print(f"Follow-up: {result['follow_up']['action']}: {result['follow_up']['reason']}")
     if result["trace_evidence"]:
@@ -155,6 +159,8 @@ def main():
         for limitation in result["findings"]["limitations"]:
             print(f"Limitation: {limitation}")
         print(f"Recommendation: {result['findings']['next_check']}")
+        if evidence_id := result["findings"].get("recommendation_evidence_id"):
+            print(f"Recommendation evidence ID: {evidence_id}")
     print(f"Local run record: {output}")
     report = output.with_suffix(".md")
     _write_artifact(report, render_investigation_report(result))

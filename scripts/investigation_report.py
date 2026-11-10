@@ -13,6 +13,23 @@ def _prose(value: str) -> str:
     return re.sub(r"([\\`*_\[\]~#])", r"\\\1", text)
 
 
+def format_capacity_bases(result: dict) -> list[str]:
+    """Read the measured reference and the separately documented experiment criterion."""
+    endpoint = (result["findings"] or {}).get("documented_capacity_endpoint")
+    if endpoint is None or result["comparison"] is None:
+        return []
+    comparison = result["comparison"]["comparison"]
+    earlier = comparison["earlier"]["reported_capacity_Ah"]
+    return [
+        f"The reported change uses the earlier discharge capacity of {earlier:.9f} Ah as its reference.",
+        f"For {endpoint['battery_id']}, the documented experiment uses {endpoint['rated_capacity_Ah']:.1f} Ah "
+        f"as rated capacity. A {endpoint['rated_capacity_fade_percent']:g}% fade sets the end-of-life threshold "
+        f"at {endpoint['end_of_life_threshold_Ah']:.1f} Ah.",
+        "The relative change between the selected discharges alone cannot establish whether a record met that criterion.",
+        f"Evidence ID: {endpoint['evidence_id']}",
+    ]
+
+
 def render_investigation_report(result: dict) -> str:
     """Format saved evidence and the recorded outcome without executing another check."""
     run_id = result["run_id"]
@@ -36,6 +53,8 @@ def render_investigation_report(result: dict) -> str:
     lines.append(f"Requested battery {_prose(battery)}, earlier discharge {early}, later discharge {late}.")
     if result["clarification"]:
         lines.extend(["", f"**Clarification:** {_prose(result['clarification'])}"])
+    if diagnostic := result.get("selection_diagnostic"):
+        lines.extend(["", f"**Selection issue:** {_prose(diagnostic)}"])
 
     lines.extend(["", "## Capacity comparison", ""])
     if result["comparison"] is None:
@@ -74,6 +93,10 @@ def render_investigation_report(result: dict) -> str:
             lines.extend(["", "Retrieved evidence IDs (including document hash and line range):"])
             lines.extend(f"- {_prose(passage['evidence_id'])}" for passage in protocol["evidence"])
             lines.extend(["", "The documentation describes intended conditions. Compliance of the selected records remains unresolved."])
+        basis = format_capacity_bases(result)
+        if basis:
+            lines.extend(["", "### Capacity reference and documented endpoint", ""])
+            lines.extend(f"- {_prose(line)}" for line in basis)
 
     lines.extend(["", "## Trace inspection", ""])
     follow_up = result["follow_up"]
@@ -113,4 +136,6 @@ def render_investigation_report(result: dict) -> str:
             lines.append(f"- {_prose(findings['protocol_evidence_limitation'])}")
         lines.extend(f"- {_prose(limit)}" for limit in findings["limitations"])
         lines.extend(["", f"**Recommendation:** {_prose(findings['next_check'])}"])
+        if evidence_id := findings.get("recommendation_evidence_id"):
+            lines.append(f"Recommendation evidence ID: {_prose(evidence_id)}")
     return "\n".join(lines) + "\n"

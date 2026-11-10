@@ -10,7 +10,26 @@ import pytest
 
 from scripts import fetch_protocols
 from scripts.fetch_sample import SOURCE_URL
-from scripts.protocol_evidence import read_catalog, retrieve_protocol_evidence
+from scripts.protocol_evidence import B0005_PROTOCOL_SHA256, documented_capacity_endpoint, read_catalog, retrieve_protocol_evidence
+
+
+@pytest.mark.parametrize("battery, status, source_hash, expected", [
+    ("B0005", "partial", B0005_PROTOCOL_SHA256, True),
+    ("B0005", "available", "0" * 64, False),
+    ("B0006", "available", B0005_PROTOCOL_SHA256, False),
+    ("B0005", "unavailable", B0005_PROTOCOL_SHA256, False),
+])
+def test_documented_capacity_criterion_requires_reviewed_b0005_source(battery, status, source_hash, expected):
+    passage = {"source_sha256": source_hash, "applicable_batteries": ["B0005", "B0006"],
+               "text": "Experiment ended after a 30% fade in rated capacity (from 2Ahr to 1.4Ahr).",
+               "evidence_id": "test-source:L1-L2"}
+    protocol = {"battery_id": battery, "status": status, "evidence": [passage]}
+    endpoint = documented_capacity_endpoint(protocol)
+    if expected:
+        assert endpoint["rated_capacity_Ah"] == 2.0 and endpoint["end_of_life_threshold_Ah"] == 1.4
+        assert endpoint["evidence_id"] == passage["evidence_id"]
+    else:
+        assert endpoint is None
 
 
 def register_bytes(document, content):

@@ -1,8 +1,29 @@
 """Structured generated findings and deterministic citation-reference checks."""
 
+import re
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+ENDPOINT_NEXT_CHECK = (
+    "Verify the selected record's test conditions before comparing its reported capacity "
+    "with the documented end-of-life threshold."
+)
+IMPEDANCE_NEXT_CHECK = (
+    "Check how early and late electrochemical impedance spectroscopy (EIS) records align with "
+    "the selected discharges, then compare impedance under matched test conditions."
+)
+
+
+def mentions_end_of_life(text: str) -> bool:
+    """Recognize an explicit end-of-life reference for the capacity-basis explanation."""
+    return bool(re.search(r"\b(?:end[-\s]+of[-\s]+life|eol)\b", text, re.IGNORECASE))
+
+
+def mentions_physical_mechanism(text: str) -> bool:
+    """Recognize explicit physical-cause and degradation-mechanism questions."""
+    return bool(re.search(r"\b(?:physical\s+(?:cause|mechanism)|degradation\s+mechanism)s?\b", text, re.IGNORECASE))
 
 
 class ProtocolClaim(BaseModel):
@@ -35,8 +56,11 @@ class InvestigationFindings(BaseModel):
     next_check: str = Field(min_length=1, max_length=350, description="Recommended check, not a claim that it has been executed")
 
 
-def finalize_findings(findings: InvestigationFindings, protocol_status: str) -> dict:
-    """Preserve generated findings and add a limitation from known retrieval state."""
+def finalize_findings(
+    findings: InvestigationFindings, protocol_status: str, *, capacity_endpoint: dict | None = None,
+    endpoint_question: bool = False,
+) -> dict:
+    """Add source-bound facts and keep their numerical restatements out of limitations."""
     protocol_limits = {
         "available": None,
         "partial": "Protocol evidence is incomplete: some applicable sources could not be retrieved or verified.",
@@ -47,7 +71,25 @@ def finalize_findings(findings: InvestigationFindings, protocol_status: str) -> 
     }
     if protocol_status not in protocol_limits:
         raise ValueError("Unknown protocol evidence availability status")
-    return {**findings.model_dump(), "protocol_evidence_limitation": protocol_limits[protocol_status]}
+    result = {**findings.model_dump(), "protocol_evidence_limitation": protocol_limits[protocol_status]}
+    if capacity_endpoint is not None:
+        result["documented_capacity_endpoint"] = capacity_endpoint
+        result["limitations"] = [
+            limit for limit in findings.limitations
+            if not _restates_capacity_values(limit) and not (endpoint_question and mentions_end_of_life(limit))
+        ]
+        if not result["limitations"]:
+            result["limitations"] = ["Comparability and physical cause remain unresolved."]
+        if endpoint_question:
+            result["next_check"] = ENDPOINT_NEXT_CHECK
+    return result
+
+
+def _restates_capacity_values(limit: str) -> bool:
+    if re.search(r"\d\s*(?:m?ahr?|ampere[- ]hours?)\b", limit, re.IGNORECASE):
+        return True
+    return bool(re.search(r"\d\s*(?:%|percent\b)", limit, re.IGNORECASE)
+                and re.search(r"\b(?:capacity|fade|rated|end.of.life|eol)\b", limit, re.IGNORECASE))
 
 
 RECOMMENDATION_GUIDANCE = {

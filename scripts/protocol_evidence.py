@@ -10,6 +10,34 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_PATH = ROOT / "data/manifests/protocol-sources.json"
 RETRIEVER_VERSION = "battery-metadata-v1"
+B0005_PROTOCOL_SHA256 = "2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90"
+B0005_CAPACITY_CRITERION = "a 30% fade in rated capacity (from 2Ahr to 1.4Ahr)"
+B0005_IMPEDANCE_METHOD = "Impedance measurement was carried out through an electrochemical impedance spectroscopy (EIS) frequency sweep"
+
+
+def _verified_b0005_evidence_id(protocol: dict, excerpt: str) -> str | None:
+    if protocol["battery_id"] != "B0005" or protocol["status"] not in ("available", "partial"):
+        return None
+    for passage in protocol["evidence"]:
+        if (passage.get("source_sha256") == B0005_PROTOCOL_SHA256
+                and "B0005" in passage["applicable_batteries"]
+                and excerpt in passage["text"]):
+            return passage["evidence_id"]
+    return None
+
+
+def documented_capacity_endpoint(protocol: dict) -> dict | None:
+    """Expose the reviewed criterion only with its verified B0005 source passage."""
+    evidence_id = _verified_b0005_evidence_id(protocol, B0005_CAPACITY_CRITERION)
+    if evidence_id is None:
+        return None
+    return {"battery_id": "B0005", "rated_capacity_Ah": 2.0, "end_of_life_threshold_Ah": 1.4,
+            "rated_capacity_fade_percent": 30.0, "evidence_id": evidence_id}
+
+
+def documented_impedance_evidence_id(protocol: dict) -> str | None:
+    """Locate the verified B0005 passage that describes the impedance measurement."""
+    return _verified_b0005_evidence_id(protocol, B0005_IMPEDANCE_METHOD)
 
 
 def read_catalog(catalog_path: Path) -> tuple[dict, str]:

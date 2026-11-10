@@ -9,13 +9,15 @@ from langgraph.graph import END, START, StateGraph
 import langsmith
 
 from scripts.investigation_findings import (
-    FollowUpDecision, InvestigationFindings, finalize_findings, select_recommendation_guidance,
+    ENDPOINT_NEXT_CHECK, IMPEDANCE_NEXT_CHECK, FollowUpDecision, InvestigationFindings,
+    finalize_findings, mentions_end_of_life, mentions_physical_mechanism, select_recommendation_guidance,
     validate_citations, validate_next_check,
 )
-from scripts.investigation_state import InvestigationRequest
+from scripts.investigation_state import DischargeSelectionOutOfRange, InvestigationRequest
+from scripts.protocol_evidence import documented_capacity_endpoint, documented_impedance_evidence_id
 
 
-WORKFLOW_VERSION = "trace-follow-up-v19"
+WORKFLOW_VERSION = "trace-follow-up-v23"
 TOOL_PROMPT = (
     "Investigate the explicit battery/discharge selection. Request both available "
     "evidence tools exactly once, together or in either order. Never change the "
@@ -28,6 +30,7 @@ FOLLOW_UP_PROMPT = (
     "Set question_scope to reported_capacity for capacity-only arithmetic, recorded_extrema "
     "for raw signal extrema and source locations only, test_conditions for conditions or "
     "comparability questions, or other for requests outside those scopes. Use other "
+    "for interpreting whether a record meets a documented end-of-life criterion. Use other "
     "for requests limited to observed load windows, transition brackets or on-load span. "
     "Trace inspection supplies whole-record current, voltage and temperature statistics "
     "and located extrema/current steps. When active_load_available is true, it also "
@@ -71,6 +74,10 @@ FINDINGS_PROMPT = (
     "If trace_evidence is null, set trace_evidence_id to null and do not claim inspection "
     "ran. Preserve the follow-up decision and unresolved evidence gaps. A documented endpoint relative to "
     "rated capacity is not the measured percentage relative to the earlier record. "
+    "When documented_capacity_endpoint is supplied, Python reports both capacity bases. "
+    "Keep numerical capacity amounts and fade percentages out of limitations. "
+    "For an end-of-life question, explain that the selected percentage alone cannot decide it. "
+    "Verify the recorded conditions before applying the documented criterion to an individual record. "
     "next_check is an engineering recommendation for the reader, distinct from "
     "follow_up.action. Never copy a bare workflow action or tool name into it. "
     "Use one complete plain-language sentence under 180 characters. The workflow "
@@ -122,6 +129,7 @@ class GraphState(TypedDict, total=False):
     status: str
     stop_reason: str
     clarification: str | None
+    selection_diagnostic: str | None
     comparison: dict | None
     protocol: dict | None
     follow_up: dict | None
@@ -159,6 +167,7 @@ def build_investigation_graph(
     def prepare(state):
         update = {
             "messages": [], "status": "running", "stop_reason": "", "clarification": None,
+            "selection_diagnostic": None,
             "comparison": None, "protocol": None, "follow_up": None, "trace_evidence": None, "findings": None,
             "recommendation_guidance": None,
             "model_attempts": 0, "tool_attempts": 0, "pending_calls": [],
@@ -248,6 +257,8 @@ def build_investigation_graph(
                 update["messages"].append(ToolMessage(content=json.dumps(result), tool_call_id=call["id"]))
                 update["trace"].append({"event": "tool_returned", "name": call["name"], "call_id": call["id"]})
             except Exception as error:
+                if isinstance(error, DischargeSelectionOutOfRange):
+                    update["selection_diagnostic"] = str(error)
                 return {**update, "status": "failed", "stop_reason": "tool_error",
                         "trace": [*update["trace"], {"event": "tool_error", "name": call["name"],
                                                    "error_type": type(error).__name__, "detail": str(error)}]}
@@ -269,9 +280,22 @@ def build_investigation_graph(
                     HumanMessage(content=json.dumps(payload)),
                 ])
             decision = checked_structured_response(response, FollowUpDecision)
+            decision_fields = decision.model_dump()
+            if (mentions_end_of_life(state["request"]["question"])
+                    and documented_capacity_endpoint(state["protocol"]) is not None):
+                if decision.action == "inspect_discharge_traces":
+                    decision_fields["reason"] = (
+                        "Trace inspection provides measured conditions for review. "
+                        "The selected percentage alone cannot establish end of life."
+                    )
+                else:
+                    decision_fields["reason"] = (
+                        "The selected percentage alone cannot establish end of life. "
+                        "Applying the documented criterion requires verified test conditions."
+                    )
             return {
-                "model_attempts": attempts, "follow_up": decision.model_dump(),
-                "trace": [*state["trace"], {"event": "follow_up_selected", **decision.model_dump(),
+                "model_attempts": attempts, "follow_up": decision_fields,
+                "trace": [*state["trace"], {"event": "follow_up_selected", **decision_fields,
                                            "usage": response["raw"].usage_metadata}],
             }
         except Exception as error:
@@ -322,12 +346,25 @@ def build_investigation_graph(
         guidance = None
         try:
             evidence = state["trace_evidence"]
+            capacity_endpoint = documented_capacity_endpoint(state["protocol"])
+            question = state["request"]["question"]
+            endpoint_question = capacity_endpoint is not None and mentions_end_of_life(question)
+            impedance_evidence_id = None
             guidance = select_recommendation_guidance(
                 state["protocol"]["status"], state["follow_up"]["action"], state["follow_up"]["question_scope"],
                 active_load=evidence.get("active_load") if evidence else None,
             )
+            if endpoint_question:
+                guidance = {"focus": "assess_documented_capacity_endpoint", "next_check_hint": ENDPOINT_NEXT_CHECK}
+            elif mentions_physical_mechanism(question):
+                impedance_evidence_id = documented_impedance_evidence_id(state["protocol"])
+                if impedance_evidence_id is not None:
+                    guidance = {"focus": "compare_impedance_records", "next_check_hint": IMPEDANCE_NEXT_CHECK,
+                                "evidence_id": impedance_evidence_id}
             payload = {key: state[key] for key in ("request", "comparison", "protocol", "follow_up", "trace_evidence")}
             payload["recommendation_guidance"] = guidance
+            if capacity_endpoint is not None:
+                payload["documented_capacity_endpoint"] = capacity_endpoint
             messages = [
                 SystemMessage(content=prompts["findings"]),
                 HumanMessage(content=json.dumps(payload)),
@@ -339,7 +376,14 @@ def build_investigation_graph(
             raw = response["raw"]
             findings = checked_structured_response(response, InvestigationFindings)
             validate_citations(findings, state["protocol"], state["request"]["battery_id"])
-            validate_next_check(findings.next_check)
+            finalized = finalize_findings(
+                findings, state["protocol"]["status"],
+                capacity_endpoint=capacity_endpoint, endpoint_question=endpoint_question,
+            )
+            if impedance_evidence_id is not None:
+                finalized["next_check"] = IMPEDANCE_NEXT_CHECK
+                finalized["recommendation_evidence_id"] = impedance_evidence_id
+            validate_next_check(finalized["next_check"])
             expected_id = state["trace_evidence"]["evidence_id"] if state["trace_evidence"] else None
             if findings.trace_evidence_id != expected_id:
                 raise ValueError("Findings must reference exactly the accepted trace evidence, or null if none ran")
@@ -348,7 +392,8 @@ def build_investigation_graph(
             else:
                 reason = "comparability_assessment_pending" if state["trace_evidence"] else "selected_trace_check_pending"
             return {
-                "model_attempts": attempts, "findings": finalize_findings(findings, state["protocol"]["status"]),
+                "model_attempts": attempts,
+                "findings": finalized,
                 "recommendation_guidance": guidance,
                 "status": "partial", "stop_reason": reason,
                 "trace": [*state["trace"], {"event": "citation_references_checked", "usage": raw.usage_metadata,
