@@ -1,0 +1,908 @@
+{
+  "evaluation_id": "portfolio-final-local-20261110",
+  "case_set": "evaluations/portfolio-cases.json",
+  "case_set_sha256": "16cf6d6367e2d3cfb53216f4d2e60bb0739f2a2aa29fd35348f27e7496f5b5aa",
+  "rubric_sha256": "9407a652fcb78886c7990520e30bb77699179ef5109e389058b380281f26827e",
+  "frozen_plan_sha256": "d13ee55c38fc8191eca8448af86e3241f8125904364f563be7b9a1a6e0a119e7",
+  "collection_sha256": "fdb214c1aca1bffa74dc22685a357471b35c43030171fd399b425839bff32ff9",
+  "source_audit_sha256": "b345884abc0eb6b222ee2caac58e6cb0b25a4e0e1a810c8d43b5dade6abf23f9",
+  "model": {
+    "model": "qwen3.8:27b-q4_K_M",
+    "model_digest": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+    "ollama_version": "0.40.11",
+    "settings": {
+      "temperature": 0,
+      "reasoning": false,
+      "num_ctx": 8192,
+      "num_predict": 1024,
+      "keep_alive": "2m"
+    }
+  },
+  "reserved_runs_per_case_per_runtime": 1,
+  "retries": 0,
+  "prior_records_checked_for_reserved_requests": 381,
+  "execution_order": "Cases in frozen order; alternate baseline-first and candidate-first by case.",
+  "preload_seconds": 7.343,
+  "shared_input_hashes": {
+    "data/manifests/protocol-sources.json": "08e0b028aa4291253706517a5a76d6c9bde70d4b216fdb46be7ef79b09474804",
+    "data/raw/nasa/package-1/B0005.mat": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+    "data/raw/nasa/protocols/package-1/README.txt": "2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90",
+    "data/raw/nasa/protocols/package-3/README_33_34_36.txt": "4a5e394c8ec0f4bd35bad27ee18183c22736439c979fc0997501c30290035f2c",
+    "data/raw/nasa/protocols/package-5/README_49_50_51_52.txt": "86e1f8102153708c5df4c568138b652866ee04d030314f3c41ad3b634a9440eb",
+    "outputs/portfolio-baseline/20261107-a1/fixtures/missing.json": "cd1835228484694f5912fa1fbaf0df62205629e01cb63a8759a3127cc71ec7b1"
+  },
+  "semantic_review": {
+    "reviewer": "delegated_source_review",
+    "owner_labels_supplied": false,
+    "method": "Direct source and report review supplies the reserved semantic scores."
+  },
+  "judge_pilot": {
+    "reference_reviewer": "delegated_source_review",
+    "owner_labels_supplied": false,
+    "plan_sha256": "677927abd2c39a0b5fee78a2be15e4cb5a59f071d2ad28c65a090ca39061c631",
+    "agreement": 5,
+    "items": 6,
+    "by_criterion": {
+      "task_fulfilment": {
+        "agrees": 2,
+        "items": 2
+      },
+      "limits_and_recommendation": {
+        "agrees": 1,
+        "items": 2
+      },
+      "citation_support": {
+        "agrees": 2,
+        "items": 2
+      }
+    },
+    "decisions": [
+      {
+        "item": "A1",
+        "criterion": "task_fulfilment",
+        "reference": "fail",
+        "judge": "fail",
+        "agrees": true
+      },
+      {
+        "item": "A2",
+        "criterion": "task_fulfilment",
+        "reference": "pass",
+        "judge": "pass",
+        "agrees": true
+      },
+      {
+        "item": "B1",
+        "criterion": "limits_and_recommendation",
+        "reference": "fail",
+        "judge": "pass",
+        "agrees": false
+      },
+      {
+        "item": "B2",
+        "criterion": "limits_and_recommendation",
+        "reference": "pass",
+        "judge": "pass",
+        "agrees": true
+      },
+      {
+        "item": "C1",
+        "criterion": "citation_support",
+        "reference": "pass",
+        "judge": "pass",
+        "agrees": true
+      },
+      {
+        "item": "C2",
+        "criterion": "citation_support",
+        "reference": "not_applicable",
+        "judge": "not_applicable",
+        "agrees": true
+      }
+    ],
+    "manual_criteria": [
+      "limits_and_recommendation"
+    ],
+    "split": "development",
+    "model": {
+      "model": "qwen3.8:27b-q4_K_M",
+      "model_digest": "25b843619e944cd0ae6069f94ff4e5e26a16e109ccbc0a66a0f05979ed70098e",
+      "ollama_version": "0.40.11",
+      "settings": {
+        "temperature": 0,
+        "reasoning": false,
+        "num_ctx": 8192,
+        "num_predict": 256,
+        "keep_alive": "2m"
+      }
+    },
+    "review_labels_sha256": "ccc8c507b13d6a9454380348cfc782f086a082d2f74e59cda449a01c6c905d71",
+    "judge_output_sha256": "2badc3c19abede60b54e8cb75bea429067408db1e51fb54a1369f1c3d0763426",
+    "disagreement": "B1 missed that one baseline limitation named the 1.4 Ah threshold as the rated capacity.",
+    "use_in_final_scores": "None. The small pilot informs whether to automate later."
+  },
+  "interpretation": [
+    "Development scores reproduce the published provisional references. Reserved scores use the same criteria and direct evidence review.",
+    "The B1 pilot found a semantic issue in the historical baseline D09 labels. The historical baseline stays frozen, and D09 already failed full-case scoring.",
+    "Reserved cases vary wording and discharge pairs within B0005. These counts describe one run per case per runtime.",
+    "Local runs carry no per-request provider API fee. Electricity and hardware costs were not measured."
+  ],
+  "runtimes": {
+    "baseline": {
+      "checkout": "d7e314fecc1abb967cf81c689500db8b800afcc6",
+      "runtime_hashes": {
+        "data/manifests/B0005.json": "56735681d7699475aaeb7294bc7959ba36f9987a4f609976e576ca77f84aec2d",
+        "data/manifests/protocol-sources.json": "08e0b028aa4291253706517a5a76d6c9bde70d4b216fdb46be7ef79b09474804",
+        "requirements-agent-lock.txt": "102bfb55f9a80c13d53488d3f068a1177371fa770b3d14052133654d36c0c1dc",
+        "requirements-agent.txt": "5d25fea51305074c9f71e35ac8a34cfe9b277c3f4c983dcaf98b34a4c51db885",
+        "requirements-dev.txt": "8636f9ab1a075be9f3039e2a6471837259c4f36b625bcaf7a3d9a1edd2419c6d",
+        "requirements-lock.txt": "73c0eaa78a058b20c7584bf4931f583668d0cf6494fd36b760f2bd3fa280dd17",
+        "requirements.txt": "76d69c9e6d52e5cce035699ac97aba5b53a9a72f1f645f522535235161ec1dd2",
+        "scripts/__init__.py": "7c2828b14562698ce32d9af0a7c68665376362b870acae7bfa5857e29c2f5509",
+        "scripts/check_model_connection.py": "a1ff78d3a9c7d1bf7faee4aac92633168519cf1ce0df2ef86d44e54dc977585f",
+        "scripts/evaluate_follow_up.py": "56d4c9b879eca064e3b21ea19060808ae449d7315a75fc35f704e48c1640d54f",
+        "scripts/fetch_protocols.py": "eca06841fdc70343206ef8690ee30950ca92b7fba2c534dea9277369f282470c",
+        "scripts/fetch_sample.py": "2cdf90fb9419cf3ef499262bdbd28526f563d8aefab193054214e54c3a54ed6f",
+        "scripts/inspect_sample.py": "2cc2df0b52f1d1c9c2dd21b9173213c0098220981a4ae3991868941eeab3f135",
+        "scripts/inspect_selected_traces.py": "ac9cf9b697a296a9d3f0273b897bacaf3a7e7ac7f7a2b5a4b2f469e85c653238",
+        "scripts/investigation_findings.py": "6f3b918a1279fed1bc8de65d911bdb3ff52d13e2e9df1caf83469921b7f1c941",
+        "scripts/investigation_graph.py": "bd56af0fd0e1397b07cfbce2269e700c2d2486ef48c097c2535ddc2552a25aa2",
+        "scripts/investigation_report.py": "d6fce0344ab6fad53bfcb9932fc900a760fd4f58994b7b3743f3f465c8f51c0f",
+        "scripts/investigation_state.py": "d402389f600a5c9554155f232da09af1f049171301603153d9f1edbd9c6e20ac",
+        "scripts/investigation_tools.py": "c32c77b177b56c85a0153bdbb247b4ec4d4dac9c81ee2a1967d2ca006b779514",
+        "scripts/local_model.py": "41f3a807fe23be62b65d4e41651cde343fbec66b4ca3987ead5f8fc01a490af2",
+        "scripts/model_tools.py": "1e7835ca08528a60327bd28652696a3d5626c405c67c94b0794b65dffc83c127",
+        "scripts/protocol_evidence.py": "ef5bbff15c37e9e891094f80ebda90342517a6642784ac18ba74747427c65629",
+        "scripts/run_agent_investigation.py": "0c7f87ce319c66ca231f45f9db0626fda44f9c979c575a4dbc59b08e0eeab4a2",
+        "scripts/run_investigation.py": "f619a0b6b4a02e67fdb56a697163c0a0be9a938783166e243ed39191f9edc5e3",
+        "scripts/trace_inspection.py": "e7398efd3229e122b7c1b588827e828d8e0296e31bcc68432592691311b5ab7f"
+      },
+      "development_reference": "evaluations/baselines/portfolio-d7e314f-20261107.json",
+      "development_reference_sha256": "dcfcde5da689078e308781bf3b9cf64d6cbbf75580203c633ec5c286a9a0c0bb",
+      "development": {
+        "cases": 24,
+        "execution_passes": 19,
+        "full_case_passes": 18
+      },
+      "reserved": {
+        "cases": 6,
+        "per_criterion": {
+          "execution": {
+            "pass": 5,
+            "fail": 1,
+            "not_applicable": 0
+          },
+          "numerical_accuracy": {
+            "pass": 5,
+            "fail": 0,
+            "not_applicable": 1
+          },
+          "citation_support": {
+            "pass": 4,
+            "fail": 0,
+            "not_applicable": 2
+          },
+          "task_fulfilment": {
+            "pass": 6,
+            "fail": 0,
+            "not_applicable": 0
+          },
+          "limits_and_recommendation": {
+            "pass": 5,
+            "fail": 0,
+            "not_applicable": 1
+          }
+        },
+        "full_case_passes": 5,
+        "source_checks": {
+          "comparisons": 5,
+          "literal_quotes": 7,
+          "trace_pairs": 2,
+          "extrema_locations": 24
+        },
+        "performance": {
+          "inference_cases": 5,
+          "median_cli_seconds": 22.428,
+          "nearest_rank_p95_cli_seconds": 26.742,
+          "observed_prompt_tokens": 31327,
+          "observed_completion_tokens": 2711
+        }
+      },
+      "combined_provisional": {
+        "cases": 30,
+        "execution_passes": 24,
+        "full_case_passes": 23
+      },
+      "reserved_cases": [
+        {
+          "case_id": "R25-capacity",
+          "process_exit": 0,
+          "wall_seconds": 22.757,
+          "run_id": "0ffc217ae80a40cdbaf88ec77287bcf8",
+          "artifact_hashes": {
+            "stdout_sha256": "3d1e1b829410b1a1d94d278e74478d23e02fdcffa69509bac12f7844364b1d42",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "e818acbc07b0f8a921fb791912b51edd77b66497dfbfe3582e97f324330c159c",
+            "report_sha256": "f598fdf1134162dbd9840311e3e2aa04f3318b14e8d781d0dbd00ff2b1176232"
+          },
+          "status": "partial",
+          "stop_reason": "selected_trace_check_pending",
+          "execution_failures": [],
+          "graph_seconds": 21.448842999998305,
+          "usage": [
+            {
+              "input_tokens": 613,
+              "output_tokens": 93,
+              "total_tokens": 706
+            },
+            {
+              "input_tokens": 2057,
+              "output_tokens": 52,
+              "total_tokens": 2109
+            },
+            {
+              "input_tokens": 2362,
+              "output_tokens": 497,
+              "total_tokens": 2859
+            }
+          ],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": 1,
+            "citation_support": 1,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 0,
+            "extrema_locations": 0,
+            "load_windows": 0,
+            "literal_quotes": 2
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "stop_with_partial",
+          "question_scope": "reported_capacity",
+          "review": "The signed change and percentage use the earlier measured discharge as the reference. The recommendation closes the narrow calculation and retains comparability and cause limits. Both B0005 protocol claims match their sources."
+        },
+        {
+          "case_id": "R26-extrema",
+          "process_exit": 0,
+          "wall_seconds": 26.742,
+          "run_id": "31a7417131ea4400ab0f2d6a15e3fa33",
+          "artifact_hashes": {
+            "stdout_sha256": "45e5eda8fe6bd825369bc51b1df448cd607e48b6de854e9a93cb6f16836437a0",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "5923bff1659b01adea4f2d41e85f451be90f71f761d527b09f4997c028822f8a",
+            "report_sha256": "ea2f3ab66fff7b46b540d58901eeb0ca6764026b8e70d1c69506f67a6224769b"
+          },
+          "status": "partial",
+          "stop_reason": "comparability_assessment_pending",
+          "execution_failures": [],
+          "graph_seconds": 25.449485499997536,
+          "usage": [
+            {
+              "input_tokens": 612,
+              "output_tokens": 93,
+              "total_tokens": 705
+            },
+            {
+              "input_tokens": 2056,
+              "output_tokens": 54,
+              "total_tokens": 2110
+            },
+            {
+              "input_tokens": 6437,
+              "output_tokens": 528,
+              "total_tokens": 6965
+            }
+          ],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": 1,
+            "citation_support": 1,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 1,
+            "extrema_locations": 12,
+            "load_windows": 0,
+            "literal_quotes": 2
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "inspect_discharge_traces",
+          "question_scope": "recorded_extrema",
+          "review": "Both records supply the 12 requested extrema values with original sample positions and times. The findings leave comparability and cause unresolved, and the protocol claims preserve the source mapping."
+        },
+        {
+          "case_id": "R27-protocol",
+          "process_exit": 0,
+          "wall_seconds": 19.126,
+          "run_id": "1917f37098884be5a05ec404d7b9c6d4",
+          "artifact_hashes": {
+            "stdout_sha256": "c3c5afeda2b770b614f07e4818556b768298df364a4c5470cba43acb3398fecd",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "6861419fb16eecb86e68c87b2b1f8f6e5c49f750a0d1c407cb5f451442918683",
+            "report_sha256": "deec3083ee2c98a819f1509e04204f51e158e8597c09b8b4ff1ac0d7bc303d33"
+          },
+          "status": "partial",
+          "stop_reason": "selected_trace_check_pending",
+          "execution_failures": [
+            "expected_scope"
+          ],
+          "graph_seconds": 17.794890500001202,
+          "usage": [
+            {
+              "input_tokens": 615,
+              "output_tokens": 93,
+              "total_tokens": 708
+            },
+            {
+              "input_tokens": 2065,
+              "output_tokens": 68,
+              "total_tokens": 2133
+            },
+            {
+              "input_tokens": 2363,
+              "output_tokens": 315,
+              "total_tokens": 2678
+            }
+          ],
+          "scores": {
+            "execution": 0,
+            "numerical_accuracy": 1,
+            "citation_support": 1,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 0,
+            "extrema_locations": 0,
+            "load_windows": 0,
+            "literal_quotes": 1
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "stop_with_partial",
+          "question_scope": "test_conditions",
+          "review": "The report quotes the applicable group passage and maps 2 A and 2.7 V to B0005. The narrow lookup is answered and recorded-condition compliance remains unresolved. The frozen execution check separately flags the declared scope."
+        },
+        {
+          "case_id": "R28-missing-conditions",
+          "process_exit": 0,
+          "wall_seconds": 15.191,
+          "run_id": "87de2af97f8f4f1e94d02a64d11dcbf4",
+          "artifact_hashes": {
+            "stdout_sha256": "62821c95c78966785f6c0fdaa1554d62c909725f936700ef6bb45b6e0222fc37",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "4355ecc03ae1919d3c9ca9e94a6bd95cf008e93f4be6fb0d2d98d33f4120eab9",
+            "report_sha256": "1ad8d03bdeb007c0f439176de6bcb09e92a8a9fe93724d34740d0561f38ac324"
+          },
+          "status": "partial",
+          "stop_reason": "protocol_evidence_incomplete",
+          "execution_failures": [],
+          "graph_seconds": 13.862909800001944,
+          "usage": [
+            {
+              "input_tokens": 607,
+              "output_tokens": 93,
+              "total_tokens": 700
+            },
+            {
+              "input_tokens": 1063,
+              "output_tokens": 56,
+              "total_tokens": 1119
+            },
+            {
+              "input_tokens": 5474,
+              "output_tokens": 146,
+              "total_tokens": 5620
+            }
+          ],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": 1,
+            "citation_support": null,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 1,
+            "extrema_locations": 12,
+            "load_windows": 0,
+            "literal_quotes": 0
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "inspect_discharge_traces",
+          "question_scope": "test_conditions",
+          "review": "Both selected recorded traces were checked before the partial result. The report explains the absent intended protocol and recommends recovering it before assessing compliance. No sourced claim is made."
+        },
+        {
+          "case_id": "R29-missing-pair",
+          "process_exit": 0,
+          "wall_seconds": 1.305,
+          "run_id": "6b2f41d6a2ff4e12a7c102be8fc29c8f",
+          "artifact_hashes": {
+            "stdout_sha256": "117903f27c6c2d6adb8872ec44ab62e7ef3be0fa1d0894fd6e60e2d144b0b13c",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "abc576c20ed72c11fd0063c423734baa564c87c16fb2d86e11d9b3beba94d5d6",
+            "report_sha256": "9e5a7be483404d23595e7b4034fc565d2d0311633aa6f75fef6857dfb44d4b93"
+          },
+          "status": "needs_clarification",
+          "stop_reason": "missing_selection",
+          "execution_failures": [],
+          "graph_seconds": 0.0027623000023595523,
+          "usage": [],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": null,
+            "citation_support": null,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": null
+          },
+          "source_checks": {
+            "comparisons": 0,
+            "trace_pairs": 0,
+            "extrema_locations": 0,
+            "load_windows": 0,
+            "literal_quotes": 0
+          },
+          "numeric_errors": [],
+          "model_calls": 0,
+          "action": null,
+          "question_scope": null,
+          "review": "The report asks for both missing discharge selections before invoking the model or reading evidence."
+        },
+        {
+          "case_id": "R30-cause",
+          "process_exit": 0,
+          "wall_seconds": 22.428,
+          "run_id": "38104d57953a4512b1325b7d6aaead2c",
+          "artifact_hashes": {
+            "stdout_sha256": "9398f93d8ad094e4680e5ce43bcca618c1368b9280a2fa38c6805de0b7c6e332",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "6ee51c6917c3ed54a9b946264a15be2b5c1cd2e82cbebccbdb67ecb2225bc4a3",
+            "report_sha256": "407448ff2be24de282f473d1cd29beb5665d6b5597de56b69be27087298f0b17"
+          },
+          "status": "partial",
+          "stop_reason": "selected_trace_check_pending",
+          "execution_failures": [],
+          "graph_seconds": 21.148392499999318,
+          "usage": [
+            {
+              "input_tokens": 609,
+              "output_tokens": 94,
+              "total_tokens": 703
+            },
+            {
+              "input_tokens": 2057,
+              "output_tokens": 50,
+              "total_tokens": 2107
+            },
+            {
+              "input_tokens": 2337,
+              "output_tokens": 479,
+              "total_tokens": 2816
+            }
+          ],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": 1,
+            "citation_support": 1,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 0,
+            "extrema_locations": 0,
+            "load_windows": 0,
+            "literal_quotes": 2
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "stop_with_partial",
+          "question_scope": "other",
+          "review": "The report leaves physical cause unresolved and proposes obtaining and comparing impedance spectra or internal resistance near the selected records. The original protocol supports the cited impedance context. Alignment of impedance operations to discharges still requires verification."
+        }
+      ]
+    },
+    "candidate": {
+      "checkout": "984367e5991585558716400daacd2f220f65d3e6",
+      "runtime_hashes": {
+        "data/manifests/B0005.json": "56735681d7699475aaeb7294bc7959ba36f9987a4f609976e576ca77f84aec2d",
+        "data/manifests/protocol-sources.json": "08e0b028aa4291253706517a5a76d6c9bde70d4b216fdb46be7ef79b09474804",
+        "requirements-agent-lock.txt": "102bfb55f9a80c13d53488d3f068a1177371fa770b3d14052133654d36c0c1dc",
+        "requirements-agent.txt": "5d25fea51305074c9f71e35ac8a34cfe9b277c3f4c983dcaf98b34a4c51db885",
+        "requirements-dev.txt": "8636f9ab1a075be9f3039e2a6471837259c4f36b625bcaf7a3d9a1edd2419c6d",
+        "requirements-lock.txt": "73c0eaa78a058b20c7584bf4931f583668d0cf6494fd36b760f2bd3fa280dd17",
+        "requirements.txt": "76d69c9e6d52e5cce035699ac97aba5b53a9a72f1f645f522535235161ec1dd2",
+        "scripts/__init__.py": "7c2828b14562698ce32d9af0a7c68665376362b870acae7bfa5857e29c2f5509",
+        "scripts/check_model_connection.py": "a1ff78d3a9c7d1bf7faee4aac92633168519cf1ce0df2ef86d44e54dc977585f",
+        "scripts/collect_portfolio_baseline.py": "46169de19d7a3938ee4056e6150ee9cf7e457a65e4955c759dd614b4aa05462a",
+        "scripts/collect_portfolio_candidate.py": "ad50c116950bd8a0ade9f515b4b0f8983ee9350c8c913b585ca3163d5d6ff619",
+        "scripts/evaluate_follow_up.py": "56d4c9b879eca064e3b21ea19060808ae449d7315a75fc35f704e48c1640d54f",
+        "scripts/fetch_protocols.py": "eca06841fdc70343206ef8690ee30950ca92b7fba2c534dea9277369f282470c",
+        "scripts/fetch_sample.py": "2cdf90fb9419cf3ef499262bdbd28526f563d8aefab193054214e54c3a54ed6f",
+        "scripts/inspect_sample.py": "2cc2df0b52f1d1c9c2dd21b9173213c0098220981a4ae3991868941eeab3f135",
+        "scripts/inspect_selected_traces.py": "ac9cf9b697a296a9d3f0273b897bacaf3a7e7ac7f7a2b5a4b2f469e85c653238",
+        "scripts/investigation_findings.py": "25b8302c9cb85d656205ac149e6f0157f8fac6489bcf57c20c45273675a4c9ea",
+        "scripts/investigation_graph.py": "f3dcdb84c55e94e8af23208f0d5e74628bc4e9c8569a0b6b6f0db28e4758fc8d",
+        "scripts/investigation_report.py": "0ce9a142b8f34afa9f4e07da429d285dfdc8b83501f3d553a3ca0ea85f512971",
+        "scripts/investigation_resume.py": "50580d1529fc5d127a376b7be07cb8645a179ec794b66bb73c38e061be63af89",
+        "scripts/investigation_state.py": "58f950954ca662aa5ebe6363f67fb29e6ea1f026caeaa3cf329c486495583c57",
+        "scripts/investigation_tools.py": "c32c77b177b56c85a0153bdbb247b4ec4d4dac9c81ee2a1967d2ca006b779514",
+        "scripts/local_model.py": "41f3a807fe23be62b65d4e41651cde343fbec66b4ca3987ead5f8fc01a490af2",
+        "scripts/model_tools.py": "4326681352b3cdf2a6e91456f2b2d8a3b2dd7cd3274954e4a51463cef7d6c41a",
+        "scripts/protocol_evidence.py": "48d898bea2c084e0b28853a7c0a0c2f41abd873533b650e0dc219034f984ca67",
+        "scripts/run_agent_investigation.py": "c390483ae3fb78bad321fe37bd88991dc25a32618ca4762f377bae577d739389",
+        "scripts/run_investigation.py": "f619a0b6b4a02e67fdb56a697163c0a0be9a938783166e243ed39191f9edc5e3",
+        "scripts/trace_inspection.py": "f8fe56e2fd81731be7a6fcda8d9dcf36badb60cc9f786c2ecfb94fa892c583f8"
+      },
+      "development_reference": "evaluations/experiments/portfolio-v23-20261110.json",
+      "development_reference_sha256": "b3e7d5b37e55092cd4d2cbc4d8cfa24dc96eee5d01c39a9a54e745d45eb85ebb",
+      "development": {
+        "cases": 24,
+        "execution_passes": 23,
+        "full_case_passes": 23
+      },
+      "reserved": {
+        "cases": 6,
+        "per_criterion": {
+          "execution": {
+            "pass": 5,
+            "fail": 1,
+            "not_applicable": 0
+          },
+          "numerical_accuracy": {
+            "pass": 5,
+            "fail": 0,
+            "not_applicable": 1
+          },
+          "citation_support": {
+            "pass": 4,
+            "fail": 0,
+            "not_applicable": 2
+          },
+          "task_fulfilment": {
+            "pass": 6,
+            "fail": 0,
+            "not_applicable": 0
+          },
+          "limits_and_recommendation": {
+            "pass": 5,
+            "fail": 0,
+            "not_applicable": 1
+          }
+        },
+        "full_case_passes": 5,
+        "source_checks": {
+          "comparisons": 5,
+          "literal_quotes": 7,
+          "trace_pairs": 2,
+          "extrema_locations": 24,
+          "load_windows": 4
+        },
+        "performance": {
+          "inference_cases": 5,
+          "median_cli_seconds": 22.997,
+          "nearest_rank_p95_cli_seconds": 27.897,
+          "observed_prompt_tokens": 34597,
+          "observed_completion_tokens": 2814
+        }
+      },
+      "combined_provisional": {
+        "cases": 30,
+        "execution_passes": 28,
+        "full_case_passes": 28
+      },
+      "reserved_cases": [
+        {
+          "case_id": "R25-capacity",
+          "process_exit": 0,
+          "wall_seconds": 22.997,
+          "run_id": "1ecaaed73a6c4272949f8a75d7190430",
+          "artifact_hashes": {
+            "stdout_sha256": "786b10aa334eeed01f4c2c6150c033775d640dcba54008401d9b7091a88d6130",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "aa63a3da470d4ee4b077aa7090cfe449871327dfd9e7db7d3d1a6c552c4b35b7",
+            "report_sha256": "cd57a6131d2437d66be820ce83b4a341e30695363c888dc1a15ce973f7dc8f1e"
+          },
+          "status": "partial",
+          "stop_reason": "selected_trace_check_pending",
+          "execution_failures": [],
+          "graph_seconds": 21.655880199999956,
+          "usage": [
+            {
+              "input_tokens": 613,
+              "output_tokens": 93,
+              "total_tokens": 706
+            },
+            {
+              "input_tokens": 2129,
+              "output_tokens": 55,
+              "total_tokens": 2184
+            },
+            {
+              "input_tokens": 2629,
+              "output_tokens": 499,
+              "total_tokens": 3128
+            }
+          ],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": 1,
+            "citation_support": 1,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 0,
+            "extrema_locations": 0,
+            "load_windows": 0,
+            "literal_quotes": 2
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "stop_with_partial",
+          "question_scope": "reported_capacity",
+          "review": "The signed loss and its earlier-record percentage reference are explicit. The separate documented rated-capacity section preserves the two bases. The recommendation stays within the calculation."
+        },
+        {
+          "case_id": "R26-extrema",
+          "process_exit": 0,
+          "wall_seconds": 27.897,
+          "run_id": "51f61b0890bd41b2beee5577545b8651",
+          "artifact_hashes": {
+            "stdout_sha256": "1640c5a7aa241b5fffc273509a1dcdfe4a9128d071f470f8b670297ce7dd932b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "15034c632abbf4174c2a6d47114a17df68eeb8561f95b518d4449aed076161a7",
+            "report_sha256": "c723f5b494fbe47317a841081be55064c2df125ab8ac5cfab74c24cb986ac5a3"
+          },
+          "status": "partial",
+          "stop_reason": "comparability_assessment_pending",
+          "execution_failures": [],
+          "graph_seconds": 26.62939859999824,
+          "usage": [
+            {
+              "input_tokens": 612,
+              "output_tokens": 93,
+              "total_tokens": 705
+            },
+            {
+              "input_tokens": 2128,
+              "output_tokens": 67,
+              "total_tokens": 2195
+            },
+            {
+              "input_tokens": 7572,
+              "output_tokens": 525,
+              "total_tokens": 8097
+            }
+          ],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": 1,
+            "citation_support": 1,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 1,
+            "extrema_locations": 12,
+            "load_windows": 2,
+            "literal_quotes": 2
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "inspect_discharge_traces",
+          "question_scope": "recorded_extrema",
+          "review": "Both whole-record traces supply all 12 extrema and source positions. The report keeps observed load-window evidence separate and recommends no further check for the narrow question."
+        },
+        {
+          "case_id": "R27-protocol",
+          "process_exit": 0,
+          "wall_seconds": 18.418,
+          "run_id": "a1374a1c0a4c44e0948b2a9e5aa3bec3",
+          "artifact_hashes": {
+            "stdout_sha256": "ecdc961f7415341dbc7a629e3421c73d2c3e75b048428abcb8d41ed3dcf8c3d5",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "7b3142c064d9316ce2ac41dadacb7648f86e2350881672126ab8ee5c812996ad",
+            "report_sha256": "078fc96a75ce92e3ef395bc019db903493622029d4d2e14d916538e52f056cf4"
+          },
+          "status": "partial",
+          "stop_reason": "selected_trace_check_pending",
+          "execution_failures": [
+            "expected_scope"
+          ],
+          "graph_seconds": 17.144479200000205,
+          "usage": [
+            {
+              "input_tokens": 615,
+              "output_tokens": 93,
+              "total_tokens": 708
+            },
+            {
+              "input_tokens": 2137,
+              "output_tokens": 63,
+              "total_tokens": 2200
+            },
+            {
+              "input_tokens": 2622,
+              "output_tokens": 311,
+              "total_tokens": 2933
+            }
+          ],
+          "scores": {
+            "execution": 0,
+            "numerical_accuracy": 1,
+            "citation_support": 1,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 0,
+            "extrema_locations": 0,
+            "load_windows": 0,
+            "literal_quotes": 1
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "stop_with_partial",
+          "question_scope": "test_conditions",
+          "review": "The report quotes the source and gives the correct B0005 mapping. The statement that the requested check is complete is specific to the protocol lookup. The frozen execution check separately flags the declared scope."
+        },
+        {
+          "case_id": "R28-missing-conditions",
+          "process_exit": 0,
+          "wall_seconds": 16.715,
+          "run_id": "94a24bfc5b0f4301afcb39889dcda58c",
+          "artifact_hashes": {
+            "stdout_sha256": "9f4cc705c2d4336b9d07b8b7d76b0d2ac8615f6ddbe88704f88c5ef38b26b3fe",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "7c4576846d3cde18afb3cbb313ce4acc4112d8b4cda68b127e085e4d51ff5b0f",
+            "report_sha256": "d34651e04da1be792f157106a85ea55e76926f393593f377becd579156b359cd"
+          },
+          "status": "partial",
+          "stop_reason": "protocol_evidence_incomplete",
+          "execution_failures": [],
+          "graph_seconds": 15.388151300001482,
+          "usage": [
+            {
+              "input_tokens": 607,
+              "output_tokens": 93,
+              "total_tokens": 700
+            },
+            {
+              "input_tokens": 1135,
+              "output_tokens": 53,
+              "total_tokens": 1188
+            },
+            {
+              "input_tokens": 6458,
+              "output_tokens": 168,
+              "total_tokens": 6626
+            }
+          ],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": 1,
+            "citation_support": null,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 1,
+            "extrema_locations": 12,
+            "load_windows": 2,
+            "literal_quotes": 0
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "inspect_discharge_traces",
+          "question_scope": "test_conditions",
+          "review": "The report includes both trace summaries, explains the missing-document gap, and recommends recovering the original protocol before a compliance assessment."
+        },
+        {
+          "case_id": "R29-missing-pair",
+          "process_exit": 0,
+          "wall_seconds": 1.326,
+          "run_id": "db54a02de8a54dabb3c229cd1b587177",
+          "artifact_hashes": {
+            "stdout_sha256": "798249a121d00301cbd2c3aa3c4e43310b62dfdecaf3abe381a0afde394bb54e",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "cf25df31950997a6d6c2dd64e1af4bf9158a444e122ee5b79c69a459eec119f9",
+            "report_sha256": "1adde8e5e7e198885c5ff5053cc6ab09ffdf075f7df0fc5aa0c65438e911b206"
+          },
+          "status": "needs_clarification",
+          "stop_reason": "missing_selection",
+          "execution_failures": [],
+          "graph_seconds": 0.0034582000007503666,
+          "usage": [],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": null,
+            "citation_support": null,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": null
+          },
+          "source_checks": {
+            "comparisons": 0,
+            "trace_pairs": 0,
+            "extrema_locations": 0,
+            "load_windows": 0,
+            "literal_quotes": 0
+          },
+          "numeric_errors": [],
+          "model_calls": 0,
+          "action": null,
+          "question_scope": null,
+          "review": "The report asks for both missing discharge selections before invoking the model or reading evidence."
+        },
+        {
+          "case_id": "R30-cause",
+          "process_exit": 0,
+          "wall_seconds": 25.229,
+          "run_id": "99de2571fc974fa3931dbcca06e48121",
+          "artifact_hashes": {
+            "stdout_sha256": "8f68cdacf5615c201ccfaa535593969d3fcf5bdf48ec5accf23abc1cdc73b9a5",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "record_sha256": "6b88cac4b1b3ac8a550f1a38849be2a7a88bb8db27353ea2adc24b34dfcc6684",
+            "report_sha256": "52e814df9fc4a955ae62ff1d8d8a220f88f64bc0b81d971a6cf1070f449cac4e"
+          },
+          "status": "partial",
+          "stop_reason": "selected_trace_check_pending",
+          "execution_failures": [],
+          "graph_seconds": 23.96867679999923,
+          "usage": [
+            {
+              "input_tokens": 609,
+              "output_tokens": 94,
+              "total_tokens": 703
+            },
+            {
+              "input_tokens": 2129,
+              "output_tokens": 51,
+              "total_tokens": 2180
+            },
+            {
+              "input_tokens": 2602,
+              "output_tokens": 556,
+              "total_tokens": 3158
+            }
+          ],
+          "scores": {
+            "execution": 1,
+            "numerical_accuracy": 1,
+            "citation_support": 1,
+            "task_fulfilment": 1,
+            "limits_and_recommendation": 1
+          },
+          "source_checks": {
+            "comparisons": 1,
+            "trace_pairs": 0,
+            "extrema_locations": 0,
+            "load_windows": 0,
+            "literal_quotes": 2
+          },
+          "numeric_errors": [],
+          "model_calls": 3,
+          "action": "stop_with_partial",
+          "question_scope": "other",
+          "review": "The report leaves physical cause unresolved and proposes reviewing impedance or internal resistance. The recommendation suggests possible mechanisms for further investigation without diagnosing one. It does not specify how to align or match conditions for the impedance comparison."
+        }
+      ]
+    }
+  }
+}
