@@ -4,7 +4,7 @@ A battery test engineer comparing two discharge records needs to know how much c
 
 In the NASA B0005 records, reported capacity fell from 1.856487 Ah on discharge 1 to 1.325079 Ah on discharge 168. That's a change of **−0.531408 Ah (−28.624%)** relative to discharge 1. The percentage alone cannot establish that the tests were comparable, explain the capacity loss, or show that the later record met the experiment's end-of-life criterion. [Source checks and sample outputs](examples/README.md)
 
-The project runs locally on Windows with Python 3.12. A public demo is planned.
+The investigator runs locally on Windows with Python 3.12 and Ollama. The [browser demo plan](#browser-demo) builds on the local benchmark.
 
 ## How an investigation runs
 
@@ -26,14 +26,14 @@ Python enforces the selected pair and caps each run at four model attempts and t
 
 ## Results
 
-The local benchmark compares the original agent baseline (`d7e314f`) with v23 (`984367e`) on 30 B0005 cases. Both versions ran the six reserved cases once with the same model, data, and protocol fixtures. [Cases and scoring rubric](evaluations/README.md#benchmark-method)
+The local benchmark compares the original agent baseline (`d7e314f`) with v23 (`984367e`) on 30 B0005 cases. Both versions ran the six reserved cases once with the same Qwen 3.8 27B model, data, and protocol fixtures. The median times cover five cases that used inference per version. [Cases and scoring rubric](evaluations/README.md#benchmark-method)
 
 | Measure | Baseline | v23 |
 | --- | ---: | ---: |
 | Development cases meeting all applicable criteria | 18/24 | 23/24 |
 | Reserved cases meeting all applicable criteria | 5/6 | 5/6 |
 | All cases meeting the execution criteria | 24/30 | 28/30 |
-| All cases meeting every applicable criterion | 23/30 | 28/30 |
+| All cases meeting every applicable criterion (provisional) | 23/30 | 28/30 |
 | Median CLI time on reserved cases with inference | 22.43 s | 23.00 s |
 
 The gain came from the development cases. On the reserved protocol question, both versions quoted the right source for B0005's 2 A current and 2.7 V cutoff, but both labelled the request as a test-conditions assessment where the rubric expected a document lookup. The reserved cases vary the wording and selected discharges within one battery. [Final benchmark](evaluations/experiments/portfolio-final-local-20261110.json)
@@ -98,6 +98,12 @@ $runId = '<saved comparison run ID>'
 ```
 
 The benchmark checkout passed 354 tests with the optional model dependencies installed. See the [test suite](tests/) and [evaluation guide](evaluations/README.md) for the checks and saved results.
+
+## Browser demo
+
+Three saved runs are ready for the first browser demo. The capacity case shows why the workflow stopped after the comparison. The trace case shows the original sample positions and times. The clarification case shows what the workflow asks for when the discharge pair is missing. These examples will replay the saved reports without making API calls. [Benchmark records](evaluations/experiments/portfolio-final-local-20261110.json)
+
+The next live check will run the same capacity and trace cases on a hosted model. It will compare tool decisions and citations against the saved local runs and measure response time and token use before a provider is chosen.
 
 ## Data source
 
