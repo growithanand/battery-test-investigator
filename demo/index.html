@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>Capacity replay | Battery Test Investigator</title>
+  <style>
+    :root {
+      font: 1rem/1.6 "Source Sans 3", system-ui, sans-serif;
+      color: #192e2d;
+      background: #f5f7f3;
+    }
+
+    body { margin: 0; }
+    main { max-width: 48rem; margin: auto; padding: clamp(1.25rem, 5vw, 3.5rem); }
+    h1, h2, p { margin: 0; }
+    h1 { font-size: clamp(2rem, 6vw, 3.3rem); line-height: 1.05; letter-spacing: -0.045em; }
+    h2 { font-size: 1.15rem; }
+    .intro { margin-top: 0.85rem; color: #395451; }
+    .mode { display: inline-block; margin-bottom: 0.8rem; padding: 0.12rem 0.55rem; color: #174d42; background: #deece4; font-weight: 650; }
+    .section { margin-top: 1.8rem; }
+    blockquote { margin: 0.4rem 0 0; padding-left: 1rem; border-left: 3px solid #65887a; }
+    .comparison { padding: clamp(0.8rem, 3vw, 1.5rem); border: 1px solid #b9cac1; background: white; }
+    .change { margin: 0.2rem 0; font-size: clamp(1.3rem, 4vw, 2rem); font-weight: 700; font-variant-numeric: tabular-nums; }
+    table { width: 100%; margin-top: 0.8rem; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { padding: 0.55rem 0.25rem; border-bottom: 1px solid #dbe5df; text-align: left; }
+    th:last-child, td:last-child { text-align: right; }
+    details { margin-top: 1.5rem; padding-top: 0.9rem; border-top: 1px solid #b9cac1; }
+    summary { cursor: pointer; font-weight: 650; }
+    details p { margin-top: 0.5rem; }
+    footer { margin-top: 1.5rem; font-size: 0.9rem; }
+    a { color: #1c6154; text-underline-offset: 0.2em; }
+    a:focus-visible, summary:focus-visible { outline: 2px solid #1c6154; outline-offset: 0.2rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="mode">Replay</p>
+      <h1>Battery Test Investigator</h1>
+      <p class="intro">Saved NASA B0005 investigation · Discharges 33 and 166</p>
+    </header>
+
+    <section class="section" aria-labelledby="question">
+      <h2 id="question">Investigation question</h2>
+      <blockquote>For these selected records, report the signed loss of supplied capacity and the percentage with its actual reference. Keep the requested answer within that calculation.</blockquote>
+    </section>
+
+    <section class="section comparison" aria-labelledby="capacity">
+      <h2 id="capacity">Reported capacity change</h2>
+      <p class="change">−0.532451587 Ah (−29.257123%)</p>
+      <p>The percentage uses the reported capacity of discharge 33 as its reference.</p>
+      <table aria-label="Selected discharge records">
+        <thead>
+          <tr><th scope="col">Discharge</th><th scope="col">Source operation</th><th scope="col">Capacity (Ah)</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">33</th><td>94</td><td>1.819904109</td></tr>
+          <tr><th scope="row">166</th><td>608</td><td>1.287452522</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" aria-labelledby="decision">
+      <h2 id="decision">Why the workflow stopped</h2>
+      <p>The signed loss and percentage are fully computed from reported capacities, so no trace inspection is needed to answer this capacity-only question.</p>
+      <p class="intro">Test-condition comparability and physical cause remain unresolved.</p>
+    </section>
+
+    <details>
+      <summary>Run and source details</summary>
+      <p>The workflow compared capacity and retrieved the battery protocol before saving partial findings.</p>
+      <p>Local benchmark case <code>R25-capacity</code>, workflow v23. The source manifest identifies the original MATLAB file and its checksum.</p>
+    </details>
+
+    <footer>
+      <a href="../evaluations/experiments/portfolio-final-local-20261110.json">Benchmark record</a>
+      · <a href="../data/manifests/B0005.json">B0005 source manifest</a>
+    </footer>
+  </main>
+</body>
+</html>

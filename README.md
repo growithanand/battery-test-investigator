@@ -101,7 +101,9 @@ The benchmark checkout passed 354 tests with the optional model dependencies ins
 
 ## Browser demo
 
-Three saved runs are ready for the first browser demo. The capacity case shows why the workflow stopped after the comparison. The trace case shows the original sample positions and times. The clarification case shows what the workflow asks for when the discharge pair is missing. These examples will replay the saved reports without making API calls. [Benchmark records](evaluations/experiments/portfolio-final-local-20261110.json)
+Open [the replay page](demo/index.html) from a local checkout in your browser. It shows the saved B0005 capacity comparison for discharges 33 and 166 and explains the workflow's decision to stop. The page works offline. [Benchmark record](evaluations/experiments/portfolio-final-local-20261110.json)
+
+Saved trace and clarification runs are available for future replay examples.
 
 The next live check will run the same capacity and trace cases on a hosted model. It will compare tool decisions and citations against the saved local runs and measure response time and token use before a provider is chosen.
 
