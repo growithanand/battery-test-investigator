@@ -21,6 +21,8 @@
     .intro { margin-top: 0.85rem; color: #395451; }
     .mode { display: inline-block; margin-bottom: 0.8rem; padding: 0.12rem 0.55rem; color: #174d42; background: #deece4; font-weight: 650; }
     .section { margin-top: 1.8rem; }
+    nav { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-top: 1.25rem; }
+    nav [aria-current="page"] { font-weight: 700; }
     blockquote { margin: 0.4rem 0 0; padding-left: 1rem; border-left: 3px solid #65887a; }
     .comparison { padding: clamp(0.8rem, 3vw, 1.5rem); border: 1px solid #b9cac1; background: white; }
     .change { margin: 0.2rem 0; font-size: clamp(1.3rem, 4vw, 2rem); font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -42,6 +44,11 @@
       <h1>Battery Test Investigator</h1>
       <p class="intro">Saved NASA B0005 investigation · Discharges 33 and 166</p>
     </header>
+
+    <nav aria-label="Saved investigations">
+      <a href="index.html" aria-current="page">Capacity comparison</a>
+      <a href="traces.html">Trace inspection</a>
+    </nav>
 
     <section class="section" aria-labelledby="question">
       <h2 id="question">Investigation question</h2>

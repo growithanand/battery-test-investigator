@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>Trace replay | Battery Test Investigator</title>
+  <style>
+    :root {
+      font: 1rem/1.6 "Source Sans 3", system-ui, sans-serif;
+      color: #192e2d;
+      background: #f5f7f3;
+    }
+
+    body { margin: 0; }
+    main { max-width: 48rem; margin: auto; padding: clamp(1.25rem, 5vw, 3.5rem); }
+    h1, h2, p { margin: 0; }
+    h1 { font-size: clamp(2rem, 6vw, 3.3rem); line-height: 1.05; letter-spacing: -0.045em; }
+    h2 { font-size: 1.15rem; }
+    .intro { margin-top: 0.85rem; color: #395451; }
+    .mode { display: inline-block; margin-bottom: 0.8rem; padding: 0.12rem 0.55rem; color: #174d42; background: #deece4; font-weight: 650; }
+    .section { margin-top: 1.8rem; }
+    nav { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-top: 1.25rem; }
+    nav [aria-current="page"] { font-weight: 700; }
+    blockquote { margin: 0.4rem 0 0; padding-left: 1rem; border-left: 3px solid #65887a; }
+    .comparison { padding: clamp(0.8rem, 3vw, 1.5rem); border: 1px solid #b9cac1; background: white; }
+    .change { margin: 0.2rem 0; font-size: clamp(1.3rem, 4vw, 2rem); font-weight: 700; font-variant-numeric: tabular-nums; }
+    table { width: 100%; margin-top: 0.8rem; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { padding: 0.55rem 0.25rem; border-bottom: 1px solid #dbe5df; text-align: left; }
+    th:last-child, td:last-child { text-align: right; }
+    details { margin-top: 1.5rem; padding-top: 0.9rem; border-top: 1px solid #b9cac1; }
+    summary { cursor: pointer; font-weight: 650; }
+    details p { margin-top: 0.5rem; }
+    footer { margin-top: 1.5rem; font-size: 0.9rem; }
+    a { color: #1c6154; text-underline-offset: 0.2em; }
+    a:focus-visible, summary:focus-visible { outline: 2px solid #1c6154; outline-offset: 0.2rem; }
+
+    .table-scroll { overflow-x: auto; margin-top: 0.8rem; }
+    .table-scroll table { min-width: 35rem; margin-top: 0; }
+    caption { text-align: left; font-weight: 650; margin-bottom: 0.3rem; }
+    code { overflow-wrap: anywhere; }
+    .scroll-hint { display: none; }
+    @media (max-width: 640px) { .scroll-hint { display: block; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="mode">Replay</p>
+      <h1>Battery Test Investigator</h1>
+      <p class="intro">Saved NASA B0005 investigation · Discharges 11 and 156</p>
+    </header>
+
+    <nav aria-label="Saved investigations">
+      <a href="index.html">Capacity comparison</a>
+      <a href="traces.html" aria-current="page">Trace inspection</a>
+    </nav>
+
+    <section class="section" aria-labelledby="question">
+      <h2 id="question">Investigation question</h2>
+      <blockquote>Locate the smallest and largest recorded current, voltage and temperature in each full trace. Include the original row and time for every value.</blockquote>
+    </section>
+
+    <section class="section" aria-labelledby="decision">
+      <h2 id="decision">Why the workflow inspected the traces</h2>
+      <p>Trace inspection supplies whole-record current, voltage and temperature statistics and located extrema/current steps, which directly addresses the request for smallest and largest recorded values with row and time.</p>
+    </section>
+
+    <section class="section" aria-labelledby="readings">
+      <h2 id="readings">Recorded minima and maxima</h2>
+      <p>The tables show the lowest and highest readings across each complete recording. Source rows start at 1. Time is measured in seconds within the source record.</p>
+      <p class="intro scroll-hint">Scroll each table to see the source rows and times.</p>
+
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Discharge 11 · Source operation 22">
+        <table>
+          <caption>Discharge 11 · Source operation 22</caption>
+          <thead>
+            <tr><th scope="col">Signal</th><th scope="col">Reading</th><th scope="col">Value</th><th scope="col">Source row</th><th scope="col">Time (s)</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Current (A)</th><td>minimum</td><td>-2.01607138634</td><td>69</td><td>1240.75</td></tr>
+            <tr><th scope="row">Current (A)</th><td>maximum</td><td>0.00262640018994</td><td>182</td><td>3389.234</td></tr>
+            <tr><th scope="row">Voltage (V)</th><td>minimum</td><td>2.47244830185</td><td>177</td><td>3290.234</td></tr>
+            <tr><th scope="row">Voltage (V)</th><td>maximum</td><td>4.18891605591</td><td>1</td><td>0</td></tr>
+            <tr><th scope="row">Temperature (°C)</th><td>minimum</td><td>24.4312850955</td><td>2</td><td>16.672</td></tr>
+            <tr><th scope="row">Temperature (°C)</th><td>maximum</td><td>38.541434066</td><td>178</td><td>3310.016</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Discharge 156 · Source operation 568">
+        <table>
+          <caption>Discharge 156 · Source operation 568</caption>
+          <thead>
+            <tr><th scope="col">Signal</th><th scope="col">Reading</th><th scope="col">Value</th><th scope="col">Source row</th><th scope="col">Time (s)</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Current (A)</th><td>minimum</td><td>-2.01627484165</td><td>120</td><td>1116.141</td></tr>
+            <tr><th scope="row">Current (A)</th><td>maximum</td><td>0.0012910201456</td><td>280</td><td>2624.625</td></tr>
+            <tr><th scope="row">Voltage (V)</th><td>minimum</td><td>2.69679141439</td><td>253</td><td>2363.906</td></tr>
+            <tr><th scope="row">Voltage (V)</th><td>maximum</td><td>4.19579728648</td><td>1</td><td>0</td></tr>
+            <tr><th scope="row">Temperature (°C)</th><td>minimum</td><td>23.7524404699</td><td>1</td><td>0</td></tr>
+            <tr><th scope="row">Temperature (°C)</th><td>maximum</td><td>40.8263251809</td><td>254</td><td>2373.703</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="recommendation">
+      <h2 id="recommendation">Recorded recommendation</h2>
+      <p>No further check is needed for the requested extrema and source locations; broader comparability and physical cause remain unresolved.</p>
+      <p class="intro">Current keeps the sign recorded in the source. Startup and post-load samples are included in these readings.</p>
+    </section>
+
+    <details>
+      <summary>Run and source details</summary>
+      <p>The workflow compared capacity, retrieved the battery protocol and inspected the selected traces before saving partial findings.</p>
+      <p>Local benchmark case <code>R26-extrema</code>, workflow v23.</p>
+      <p>Saved run <code>51f61b0890bd41b2beee5577545b8651</code>.</p>
+      <p>Trace evidence <code>traces-24c47aadbe2a80fc</code>. The benchmark records the saved run's checksum.</p>
+    </details>
+
+    <footer>
+      <a href="../evaluations/experiments/portfolio-final-local-20261110.json">Benchmark record</a>
+      · <a href="../data/manifests/B0005.json">B0005 source manifest</a>
+    </footer>
+  </main>
+</body>
+</html>

@@ -101,9 +101,9 @@ The benchmark checkout passed 354 tests with the optional model dependencies ins
 
 ## Browser demo
 
-Open [the replay page](demo/index.html) from a local checkout in your browser. It shows the saved B0005 capacity comparison for discharges 33 and 166 and explains the workflow's decision to stop. The page works offline. [Benchmark record](evaluations/experiments/portfolio-final-local-20261110.json)
+Open [the replay page](demo/index.html) from a local checkout in your browser. The capacity example shows the saved comparison for B0005 discharges 33 and 166 and explains why the workflow stopped. The [trace example](demo/traces.html) shows the other decision, with the minimum and maximum current, voltage and temperature for discharges 11 and 156, including each reading's source row and time. Both pages work offline. [Benchmark record](evaluations/experiments/portfolio-final-local-20261110.json)
 
-Saved trace and clarification runs are available for future replay examples.
+A saved clarification run is available for a future replay example.
 
 The next live check will run the same capacity and trace cases on a hosted model. It will compare tool decisions and citations against the saved local runs and measure response time and token use before a provider is chosen.
 
