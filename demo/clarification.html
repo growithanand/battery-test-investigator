@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>Clarification replay | Battery Test Investigator</title>
+  <style>
+    :root {
+      font: 1rem/1.6 "Source Sans 3", system-ui, sans-serif;
+      color: #192e2d;
+      background: #f5f7f3;
+    }
+
+    body { margin: 0; }
+    main { max-width: 48rem; margin: auto; padding: clamp(1.25rem, 5vw, 3.5rem); }
+    h1, h2, p { margin: 0; }
+    h1 { font-size: clamp(2rem, 6vw, 3.3rem); line-height: 1.05; letter-spacing: -0.045em; }
+    h2 { font-size: 1.15rem; }
+    .intro { margin-top: 0.85rem; color: #395451; }
+    .mode { display: inline-block; margin-bottom: 0.8rem; padding: 0.12rem 0.55rem; color: #174d42; background: #deece4; font-weight: 650; }
+    .section { margin-top: 1.8rem; }
+    nav { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-top: 1.25rem; }
+    nav [aria-current="page"] { font-weight: 700; }
+    blockquote { margin: 0.4rem 0 0; padding-left: 1rem; border-left: 3px solid #65887a; }
+    .comparison { padding: clamp(0.8rem, 3vw, 1.5rem); border: 1px solid #b9cac1; background: white; }
+    table { width: 100%; margin-top: 0.8rem; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { padding: 0.55rem 0.25rem; border-bottom: 1px solid #dbe5df; text-align: left; }
+    th:last-child, td:last-child { text-align: right; }
+    details { margin-top: 1.5rem; padding-top: 0.9rem; border-top: 1px solid #b9cac1; }
+    summary { cursor: pointer; font-weight: 650; }
+    details p { margin-top: 0.5rem; }
+    footer { margin-top: 1.5rem; font-size: 0.9rem; }
+    a { color: #1c6154; text-underline-offset: 0.2em; }
+    a:focus-visible, summary:focus-visible { outline: 2px solid #1c6154; outline-offset: 0.2rem; }
+      code { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="mode">Replay</p>
+      <h1>Battery Test Investigator</h1>
+      <p class="intro">Saved NASA B0005 investigation · Waiting for discharge selections</p>
+    </header>
+
+    <nav aria-label="Saved investigations">
+      <a href="index.html">Capacity comparison</a>
+      <a href="traces.html">Trace inspection</a>
+      <a href="clarification.html" aria-current="page">Missing selections</a>
+    </nav>
+
+    <section class="section" aria-labelledby="question">
+      <h2 id="question">Investigation question</h2>
+      <blockquote>Help me investigate this battery after resolving the two unspecified discharge selections.</blockquote>
+    </section>
+
+    <section class="section comparison" aria-labelledby="clarification">
+      <h2 id="clarification">What the investigator asked</h2>
+      <blockquote>Please specify: early, late.</blockquote>
+      <p class="intro">The earlier and later discharge numbers identify the two records to compare.</p>
+      <table aria-label="Selections supplied in the request">
+        <thead>
+          <tr><th scope="col">Selection</th><th scope="col">Supplied value</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Battery</th><td>B0005</td></tr>
+          <tr><th scope="row">Earlier discharge</th><td>Unspecified</td></tr>
+          <tr><th scope="row">Later discharge</th><td>Unspecified</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" aria-labelledby="activity">
+      <h2 id="activity">What happened in this run</h2>
+      <p>Python checked the request and returned the clarification before loading the battery measurements or contacting the model.</p>
+      <p class="intro">This run made 0 model calls and 0 tool calls.</p>
+    </section>
+
+    <details>
+      <summary>Run and source details</summary>
+      <p>Local benchmark case <code>R29-missing-pair</code>, workflow v23.</p>
+      <p>Saved run <code>db54a02de8a54dabb3c229cd1b587177</code>.</p>
+      <p>The benchmark records this run's checksum and its <code>needs_clarification</code> result.</p>
+    </details>
+
+    <footer>
+      <a href="../evaluations/experiments/portfolio-final-local-20261110.json">Benchmark record</a>
+      · <a href="../data/manifests/B0005.json">B0005 source manifest</a>
+    </footer>
+  </main>
+</body>
+</html>
