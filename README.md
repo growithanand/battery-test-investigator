@@ -78,6 +78,17 @@ Install the model dependencies, prepare the protocol files, and start Ollama wit
 
 Open the Markdown report and its linked JSON run record under `outputs/agent-investigations/`. The JSON records the selections, evidence, decisions, stopping reason, model configuration, timing, and token counts. The workflow uses the local Ollama endpoint. Provider API fees were $0 for the benchmark. Electricity and hardware costs were unmeasured.
 
+### Prepare the Gemini key
+
+For the hosted-model experiment, copy [.env.example](.env.example) to `.env` in the project root and fill in `GEMINI_API_KEY`. An environment variable takes priority over the file. Git ignores the local `.env` file.
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-agent-lock.txt
+.\.venv\Scripts\python.exe -m scripts.gemini_config
+```
+
+The check reports whether the key is available to Python. Gemini access, response time and token usage will be measured in the first live investigation.
+
 ### Resume or revise a run
 
 Start with one missing discharge, then use the ID printed after `Local run record` to supply the missing selection. To revise a completed comparison, use its run ID and supply one or both changed indices. Both operations carry forward the saved question and verify the registered source.
