@@ -42,6 +42,12 @@ All **12 security cases** met their blocked-outcome criteria on v23. In one live
 
 The scoring model matched five of six source-based review labels. It missed a report that gave the correct 2.0 Ah rating in one place and called the 1.4 Ah threshold the rating elsewhere. The reserved semantic scores therefore use direct review of the reports and sources. [Evaluation history](evaluations/README.md)
 
+### First Gemini check
+
+On November 21, 2026, Gemini 3.5 Flash-Lite completed the saved capacity question for B0005 discharges 33 and 166 through an experimental API adapter. It used three model requests and two local tools, returning the same Python-calculated change of −0.532451587 Ah (−29.257123% relative to discharge 33). Direct source review checked both protocol claims and the decision to stop after answering the capacity-only question. Comparability and physical cause remain unresolved.
+
+The graph took **3.68 seconds** and used **5,450 input tokens and 617 output tokens**, including any reported thinking tokens. At [Google's standard rates](https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite), the estimated token cost was **$0.00318**; actual billing was not inspected. This repeats one previously used question. The 30-case scores above cover the local model, and their CLI times include process startup. [Run configuration, source checks and usage](evaluations/experiments/gemini-capacity-20261121.json)
+
 ## Run locally
 
 From PowerShell in the project folder, create the Python 3.12 environment and fetch the NASA sample.
@@ -87,7 +93,7 @@ For the hosted-model experiment, copy [.env.example](.env.example) to `.env` in 
 .\.venv\Scripts\python.exe -m scripts.gemini_config
 ```
 
-The check reports whether the key is available to Python. Gemini access, response time and token usage will be measured in the first live investigation.
+The check reports whether the key is available to Python. The [first live capacity check](#first-gemini-check) records provider access, response time and token usage. Gemini integration with the regular investigation command is pending.
 
 ### Resume or revise a run
 
@@ -116,7 +122,7 @@ Open [the replay page](demo/index.html) from a local checkout in your browser. T
 
 The [missing-selection example](demo/clarification.html) shows the investigator asking for the two discharge numbers before analysis. The saved run records zero model and tool attempts.
 
-The next live check will run the same capacity and trace cases on a hosted model. It will compare tool decisions and citations against the saved local runs and measure response time and token use before a provider is chosen.
+The first Gemini capacity check is recorded above. The next live check will run the saved trace case to verify the model-selected follow-up and its evidence before integrating provider selection into the investigation command.
 
 ## Data source
 
