@@ -42,11 +42,18 @@ All **12 security cases** met their blocked-outcome criteria on v23. In one live
 
 The scoring model matched five of six source-based review labels. It missed a report that gave the correct 2.0 Ah rating in one place and called the 1.4 Ah threshold the rating elsewhere. The reserved semantic scores therefore use direct review of the reports and sources. [Evaluation history](evaluations/README.md)
 
-### First Gemini check
+### Gemini migration checks
 
-On November 21, 2026, Gemini 3.5 Flash-Lite completed the saved capacity question for B0005 discharges 33 and 166 through an experimental API adapter. It used three model requests and two local tools, returning the same Python-calculated change of −0.532451587 Ah (−29.257123% relative to discharge 33). Direct source review checked both protocol claims and the decision to stop after answering the capacity-only question. Comparability and physical cause remain unresolved.
+On November 21, 2026, Gemini 3.5 Flash-Lite completed two saved B0005 questions through an experimental API adapter. Each question ran once with the existing Python tools and graph limits.
 
-The graph took **3.68 seconds** and used **5,450 input tokens and 617 output tokens**, including any reported thinking tokens. At [Google's standard rates](https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite), the estimated token cost was **$0.00318**; actual billing was not inspected. This repeats one previously used question. The 30-case scores above cover the local model, and their CLI times include process startup. [Run configuration, source checks and usage](evaluations/experiments/gemini-capacity-20261121.json)
+| Saved question | Model requests | Tools | Graph time | Input tokens | Output tokens | Estimated token cost |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| [Capacity change, discharges 33/166](evaluations/experiments/gemini-capacity-20261121.json) | 3 | 2 | 3.68 s | 5,450 | 617 | $0.00318 |
+| [Extrema and locations, discharges 11/156](evaluations/experiments/gemini-traces-20261121.json) | 3 | 3 | 3.21 s | 10,664 | 461 | $0.00435 |
+
+The capacity run returned the same Python-calculated change of −0.532451587 Ah (−29.257123% relative to discharge 33) and stopped after answering that question. The extrema run chose trace inspection and referenced the returned evidence. Its full trace result matched the saved local run. Independent readback checked all 12 extrema and their rows/times, both final-voltage rows and both sampled load windows. Direct source review also checked the protocol claims. Both reports leave comparability and physical cause unresolved.
+
+Output counts include any reported thinking tokens. Costs use [Google's standard rates](https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite); actual billing was not inspected. Both questions had been used before. The 30-case scores and security results above cover the local model. Graph times exclude process startup, which the benchmark CLI times include. Integration with the regular investigation command is the next step.
 
 ## Run locally
 
@@ -93,7 +100,7 @@ For the hosted-model experiment, copy [.env.example](.env.example) to `.env` in 
 .\.venv\Scripts\python.exe -m scripts.gemini_config
 ```
 
-The check reports whether the key is available to Python. The [first live capacity check](#first-gemini-check) records provider access, response time and token usage. Gemini integration with the regular investigation command is pending.
+The check reports whether the key is available to Python. The [live migration checks](#gemini-migration-checks) record provider access, response time and token usage. Gemini integration with the regular investigation command is pending.
 
 ### Resume or revise a run
 
@@ -122,7 +129,7 @@ Open [the replay page](demo/index.html) from a local checkout in your browser. T
 
 The [missing-selection example](demo/clarification.html) shows the investigator asking for the two discharge numbers before analysis. The saved run records zero model and tool attempts.
 
-The first Gemini capacity check is recorded above. The next live check will run the saved trace case to verify the model-selected follow-up and its evidence before integrating provider selection into the investigation command.
+The saved capacity and trace questions have also run through Gemini, as recorded above. The next implementation step is explicit provider selection in the investigation command, followed by checks of the integrated path before adding a live interface.
 
 ## Data source
 

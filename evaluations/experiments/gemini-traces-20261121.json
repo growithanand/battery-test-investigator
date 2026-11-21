@@ -1,0 +1,454 @@
+{
+  "evaluation_id": "gemini-traces-20261121",
+  "scope": "One exploratory migration run of the previously used R26 extrema question. This is not held-out evaluation or a new 30-case benchmark.",
+  "workflow_checkout": "e93e825381500fc1cda1d56110e0901231451f7b",
+  "provider_integration": "Local experimental REST adapter; regular investigation CLI integration is pending.",
+  "case_id": "R26-extrema",
+  "request": {
+    "question": "Locate the smallest and largest recorded current, voltage and temperature in each full trace. Include the original row and time for every value.",
+    "battery_id": "B0005",
+    "early": 11,
+    "late": 156
+  },
+  "reference": {
+    "run_id": "51f61b0890bd41b2beee5577545b8651",
+    "record_sha256": "15034c632abbf4174c2a6d47114a17df68eeb8561f95b518d4449aed076161a7",
+    "benchmark": "evaluations/experiments/portfolio-final-local-20261110.json"
+  },
+  "model": {
+    "requested": "gemini-3.5-flash-lite",
+    "reported_versions": [
+      "gemini-3.5-flash-lite"
+    ],
+    "settings": {
+      "temperature": 0,
+      "maxOutputTokens": 1024,
+      "thinkingLevel": "minimal"
+    }
+  },
+  "limits": {
+    "model_attempts": 4,
+    "tool_attempts": 3,
+    "recursion_limit": 12,
+    "automatic_retries": 0
+  },
+  "live_runs": 1,
+  "automatic_retries": 0,
+  "packages": {
+    "httpx": "0.28.1",
+    "langchain": "1.4.7",
+    "langgraph": "1.2.16",
+    "pydantic": "2.14.1",
+    "python-dotenv": "1.2.4"
+  },
+  "input_hashes": {
+    "data/raw/nasa/package-1/B0005.mat": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+    "data/manifests/B0005.json": "56735681d7699475aaeb7294bc7959ba36f9987a4f609976e576ca77f84aec2d",
+    "data/manifests/protocol-sources.json": "08e0b028aa4291253706517a5a76d6c9bde70d4b216fdb46be7ef79b09474804",
+    "data/raw/nasa/protocols/package-1/README.txt": "2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90"
+  },
+  "runtime_hashes": {
+    "outputs/hosted-demo/20261111-a1/collect_gemini.py": "6e8cba37055aa50af870ae81c8baf83f0b29dd1d39ecbba7bf3f4e0c965431e9",
+    "outputs/hosted-demo/20261111-a1/gemini_probe.py": "0121a597070dd4bc2795896105bfa0ba5261051771f778a6d431354f8f083efc",
+    "outputs/hosted-demo/20261111-a1/probe.py": "ba6ae98e52f5314a46d5aab7745c8564e4552629053df7359edc93e83099bdc8",
+    "requirements-agent-lock.txt": "7d8b8afd9d193dbc1292cb7f058fb043545bff8ee24b3c0aaec874901b931941",
+    "requirements-agent.txt": "c4e6f344117f4369e1c9f29ff2a61bba87a4bd25c65cbdbfb7ebc5fbf2667bc3",
+    "requirements-dev.txt": "8636f9ab1a075be9f3039e2a6471837259c4f36b625bcaf7a3d9a1edd2419c6d",
+    "requirements-lock.txt": "73c0eaa78a058b20c7584bf4931f583668d0cf6494fd36b760f2bd3fa280dd17",
+    "requirements.txt": "76d69c9e6d52e5cce035699ac97aba5b53a9a72f1f645f522535235161ec1dd2",
+    "scripts/__init__.py": "7c2828b14562698ce32d9af0a7c68665376362b870acae7bfa5857e29c2f5509",
+    "scripts/check_model_connection.py": "a1ff78d3a9c7d1bf7faee4aac92633168519cf1ce0df2ef86d44e54dc977585f",
+    "scripts/collect_portfolio_baseline.py": "46169de19d7a3938ee4056e6150ee9cf7e457a65e4955c759dd614b4aa05462a",
+    "scripts/collect_portfolio_candidate.py": "ad50c116950bd8a0ade9f515b4b0f8983ee9350c8c913b585ca3163d5d6ff619",
+    "scripts/evaluate_follow_up.py": "56d4c9b879eca064e3b21ea19060808ae449d7315a75fc35f704e48c1640d54f",
+    "scripts/fetch_protocols.py": "eca06841fdc70343206ef8690ee30950ca92b7fba2c534dea9277369f282470c",
+    "scripts/fetch_sample.py": "2cdf90fb9419cf3ef499262bdbd28526f563d8aefab193054214e54c3a54ed6f",
+    "scripts/gemini_config.py": "23699a6a3c4bf5d9c402993233c35ad5609f3f921a16e957f04782ca25a8ac03",
+    "scripts/inspect_sample.py": "2cc2df0b52f1d1c9c2dd21b9173213c0098220981a4ae3991868941eeab3f135",
+    "scripts/inspect_selected_traces.py": "ac9cf9b697a296a9d3f0273b897bacaf3a7e7ac7f7a2b5a4b2f469e85c653238",
+    "scripts/investigation_findings.py": "25b8302c9cb85d656205ac149e6f0157f8fac6489bcf57c20c45273675a4c9ea",
+    "scripts/investigation_graph.py": "f3dcdb84c55e94e8af23208f0d5e74628bc4e9c8569a0b6b6f0db28e4758fc8d",
+    "scripts/investigation_report.py": "0ce9a142b8f34afa9f4e07da429d285dfdc8b83501f3d553a3ca0ea85f512971",
+    "scripts/investigation_resume.py": "50580d1529fc5d127a376b7be07cb8645a179ec794b66bb73c38e061be63af89",
+    "scripts/investigation_state.py": "58f950954ca662aa5ebe6363f67fb29e6ea1f026caeaa3cf329c486495583c57",
+    "scripts/investigation_tools.py": "c32c77b177b56c85a0153bdbb247b4ec4d4dac9c81ee2a1967d2ca006b779514",
+    "scripts/local_model.py": "41f3a807fe23be62b65d4e41651cde343fbec66b4ca3987ead5f8fc01a490af2",
+    "scripts/model_tools.py": "4326681352b3cdf2a6e91456f2b2d8a3b2dd7cd3274954e4a51463cef7d6c41a",
+    "scripts/protocol_evidence.py": "48d898bea2c084e0b28853a7c0a0c2f41abd873533b650e0dc219034f984ca67",
+    "scripts/run_agent_investigation.py": "c390483ae3fb78bad321fe37bd88991dc25a32618ca4762f377bae577d739389",
+    "scripts/run_investigation.py": "f619a0b6b4a02e67fdb56a697163c0a0be9a938783166e243ed39191f9edc5e3",
+    "scripts/trace_inspection.py": "f8fe56e2fd81731be7a6fcda8d9dcf36badb60cc9f786c2ecfb94fa892c583f8",
+    "outputs/hosted-demo/20261111-a1/collect_gemini_traces.py": "df8679b614c7702d045d6196aceb77d9fa605cd17721a9c1009f642725d75895"
+  },
+  "result": {
+    "run_id": "1e52ebe2584549a8a67138013fdb0833",
+    "created_at": "2026-11-21T22:48:19.855960+00:00",
+    "status": "partial",
+    "stop_reason": "comparability_assessment_pending",
+    "elapsed_seconds": 3.2118961000005584,
+    "timing_scope": "Whole in-process graph invocation including local tools and three provider calls; excludes interpreter startup and artifact writing.",
+    "model_attempts": 3,
+    "tool_attempts": 3,
+    "comparison": {
+      "earlier": {
+        "operation_index": 22,
+        "discharge_index": 11,
+        "sample_count": 189,
+        "recording_duration_s": 3530.25,
+        "reported_capacity_Ah": 1.8246195526864504,
+        "ambient_temperature_C": 24.0,
+        "median_current_A": -2.0122197617260444,
+        "maximum_temperature_C": 38.54143406601644
+      },
+      "later": {
+        "operation_index": 568,
+        "discharge_index": 156,
+        "sample_count": 301,
+        "recording_duration_s": 2829.625,
+        "reported_capacity_Ah": 1.3134751321324272,
+        "ambient_temperature_C": 24.0,
+        "median_current_A": -2.012301863553561,
+        "maximum_temperature_C": 40.8263251809212
+      },
+      "capacity_change_Ah": -0.5111444205540232,
+      "capacity_change_percent": -28.01375332197047,
+      "percentage_reference": "earlier selected discharge's reported capacity",
+      "ambient_temperature_change_C": 0.0,
+      "median_current_change_A": -8.210182751655637e-05,
+      "comparability": {
+        "status": "not_established",
+        "reason": "Protocol verification and detailed load-profile matching are not implemented. Ambient-temperature metadata and median current alone do not establish comparable conditions."
+      }
+    },
+    "follow_up": {
+      "action": "inspect_discharge_traces",
+      "question_scope": "recorded_extrema",
+      "reason": "Trace inspection supplies the located extrema and source locations for current, voltage, and temperature."
+    },
+    "trace_evidence_id": "traces-24c47aadbe2a80fc",
+    "recommendation": "No further check is needed for the requested extrema and source locations; broader comparability and physical cause remain unresolved.",
+    "usage": {
+      "complete": true,
+      "input_tokens": 10664,
+      "output_including_thoughts": 461,
+      "total_tokens": 11125,
+      "estimated_cost_usd_at_standard_rates": 0.0043517
+    },
+    "provider_responses": [
+      {
+        "http_status": 200,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "promptTokenCount": 471,
+          "candidatesTokenCount": 59,
+          "totalTokenCount": 530
+        },
+        "finish_reasons": [
+          "STOP"
+        ]
+      },
+      {
+        "http_status": 200,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "promptTokenCount": 2229,
+          "candidatesTokenCount": 51,
+          "totalTokenCount": 2280
+        },
+        "finish_reasons": [
+          "STOP"
+        ]
+      },
+      {
+        "http_status": 200,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "promptTokenCount": 7964,
+          "candidatesTokenCount": 351,
+          "totalTokenCount": 8315
+        },
+        "finish_reasons": [
+          "STOP"
+        ]
+      }
+    ],
+    "per_call_seconds": [
+      0.615,
+      0.768,
+      1.318
+    ],
+    "automated_checks": {
+      "capacity_matches_reference": true,
+      "expected_action_and_scope": true,
+      "full_trace_matches_reference": true,
+      "accepted_findings_reference_traces": true,
+      "within_limits": true
+    }
+  },
+  "pricing": {
+    "source_url": "https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite",
+    "checked_on": "2026-11-21",
+    "currency": "USD",
+    "input_per_million": 0.3,
+    "output_including_thoughts_per_million": 2.5,
+    "basis": "Standard list-price estimate; actual billing and free quota may differ."
+  },
+  "source_review": {
+    "method": "Independent SciPy object readback, Python min/max position searches and Decimal arithmetic; parsed report-row checks, literal quotation checks and direct comparison of report claims with the applicable NASA README. Review labels are not a blind user assessment.",
+    "extrema_values_and_locations": {
+      "checked": 12,
+      "outcome": "pass",
+      "readings": [
+        {
+          "record": "earlier",
+          "discharge_index": 11,
+          "operation_index": 22,
+          "signal": "current_A",
+          "reading": "minimum",
+          "value": -2.0160713863396573,
+          "sample_index": 69,
+          "source_time_s": 1240.75,
+          "elapsed_s": 1240.75
+        },
+        {
+          "record": "earlier",
+          "discharge_index": 11,
+          "operation_index": 22,
+          "signal": "current_A",
+          "reading": "maximum",
+          "value": 0.002626400189938571,
+          "sample_index": 182,
+          "source_time_s": 3389.234,
+          "elapsed_s": 3389.234
+        },
+        {
+          "record": "earlier",
+          "discharge_index": 11,
+          "operation_index": 22,
+          "signal": "voltage_V",
+          "reading": "minimum",
+          "value": 2.4724483018527317,
+          "sample_index": 177,
+          "source_time_s": 3290.234,
+          "elapsed_s": 3290.234
+        },
+        {
+          "record": "earlier",
+          "discharge_index": 11,
+          "operation_index": 22,
+          "signal": "voltage_V",
+          "reading": "maximum",
+          "value": 4.188916055911241,
+          "sample_index": 1,
+          "source_time_s": 0.0,
+          "elapsed_s": 0.0
+        },
+        {
+          "record": "earlier",
+          "discharge_index": 11,
+          "operation_index": 22,
+          "signal": "temperature_C",
+          "reading": "minimum",
+          "value": 24.43128509546442,
+          "sample_index": 2,
+          "source_time_s": 16.672000000000004,
+          "elapsed_s": 16.672000000000004
+        },
+        {
+          "record": "earlier",
+          "discharge_index": 11,
+          "operation_index": 22,
+          "signal": "temperature_C",
+          "reading": "maximum",
+          "value": 38.54143406601644,
+          "sample_index": 178,
+          "source_time_s": 3310.016,
+          "elapsed_s": 3310.016
+        },
+        {
+          "record": "later",
+          "discharge_index": 156,
+          "operation_index": 568,
+          "signal": "current_A",
+          "reading": "minimum",
+          "value": -2.016274841649268,
+          "sample_index": 120,
+          "source_time_s": 1116.141,
+          "elapsed_s": 1116.141
+        },
+        {
+          "record": "later",
+          "discharge_index": 156,
+          "operation_index": 568,
+          "signal": "current_A",
+          "reading": "maximum",
+          "value": 0.0012910201456034266,
+          "sample_index": 280,
+          "source_time_s": 2624.625,
+          "elapsed_s": 2624.625
+        },
+        {
+          "record": "later",
+          "discharge_index": 156,
+          "operation_index": 568,
+          "signal": "voltage_V",
+          "reading": "minimum",
+          "value": 2.696791414385091,
+          "sample_index": 253,
+          "source_time_s": 2363.906,
+          "elapsed_s": 2363.906
+        },
+        {
+          "record": "later",
+          "discharge_index": 156,
+          "operation_index": 568,
+          "signal": "voltage_V",
+          "reading": "maximum",
+          "value": 4.195797286482793,
+          "sample_index": 1,
+          "source_time_s": 0.0,
+          "elapsed_s": 0.0
+        },
+        {
+          "record": "later",
+          "discharge_index": 156,
+          "operation_index": 568,
+          "signal": "temperature_C",
+          "reading": "minimum",
+          "value": 23.75244046991811,
+          "sample_index": 1,
+          "source_time_s": 0.0,
+          "elapsed_s": 0.0
+        },
+        {
+          "record": "later",
+          "discharge_index": 156,
+          "operation_index": 568,
+          "signal": "temperature_C",
+          "reading": "maximum",
+          "value": 40.8263251809212,
+          "sample_index": 254,
+          "source_time_s": 2373.703,
+          "elapsed_s": 2373.703
+        }
+      ]
+    },
+    "report_rows": {
+      "extrema": 12,
+      "final_voltage": 2,
+      "outcome": "pass"
+    },
+    "active_load_windows": {
+      "checked": 2,
+      "outcome": "pass",
+      "evidence": {
+        "analysis_version": "b0005-active-load-v1",
+        "current_threshold_A": -1.0,
+        "selection": {
+          "battery_id": "B0005",
+          "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+          "early": 11,
+          "late": 156,
+          "early_operation_index": 22,
+          "late_operation_index": 568,
+          "revision": 1
+        },
+        "interpretation_limit": "The brackets describe sampled transitions across the trial threshold. The observed span runs from the first to the last on-load sample. Test-condition comparability remains unresolved.",
+        "earlier": {
+          "status": "observed",
+          "on_load_sample_count": 175,
+          "observed_span_s": 3254.64,
+          "load_on_bracket": {
+            "before": {
+              "sample_index": 2,
+              "source_time_s": 16.672000000000004,
+              "elapsed_s": 16.672000000000004,
+              "current_A": -0.0005918771429829462
+            },
+            "after": {
+              "sample_index": 3,
+              "source_time_s": 35.594,
+              "elapsed_s": 35.594,
+              "current_A": -2.011520442419838
+            }
+          },
+          "load_off_bracket": {
+            "before": {
+              "sample_index": 177,
+              "source_time_s": 3290.234,
+              "elapsed_s": 3290.234,
+              "current_A": -2.0092825187644068
+            },
+            "after": {
+              "sample_index": 178,
+              "source_time_s": 3310.016,
+              "elapsed_s": 3310.016,
+              "current_A": -0.0028218271011653546
+            }
+          }
+        },
+        "later": {
+          "status": "observed",
+          "on_load_sample_count": 251,
+          "observed_span_s": 2344.375,
+          "load_on_bracket": {
+            "before": {
+              "sample_index": 2,
+              "source_time_s": 9.390999999999998,
+              "elapsed_s": 9.390999999999998,
+              "current_A": -0.0007348146135703924
+            },
+            "after": {
+              "sample_index": 3,
+              "source_time_s": 19.531,
+              "elapsed_s": 19.531,
+              "current_A": -2.0120513419975774
+            }
+          },
+          "load_off_bracket": {
+            "before": {
+              "sample_index": 253,
+              "source_time_s": 2363.906,
+              "elapsed_s": 2363.906,
+              "current_A": -2.013627465314221
+            },
+            "after": {
+              "sample_index": 254,
+              "source_time_s": 2373.703,
+              "elapsed_s": 2373.703,
+              "current_A": 0.00010355610390916968
+            }
+          }
+        }
+      }
+    },
+    "raw_capacity_arithmetic_and_operation_locations": "pass",
+    "protocol_claims": [
+      {
+        "claim": "The documented battery 5 discharge uses 2 A and a 2.7 V cutoff.",
+        "support": "pass",
+        "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2"
+      }
+    ],
+    "question_coverage": "pass; all requested extrema have original sample positions and times.",
+    "engineering_limits": "pass; recorded extrema and sampled load-window estimates do not establish the active-discharge cutoff, comparable conditions or a physical cause.",
+    "recommendation": "pass; no further check is requested for the answered extrema-and-locations question."
+  },
+  "recorder_offline_checks": [
+    "Successful tool, trace follow-up and structured-output round trip",
+    "HTTP 429 retained with unknown cost",
+    "Truncated response rejected while retaining returned token usage"
+  ],
+  "artifacts": {
+    "outputs/gemini-migration/20261121-a2/1e52ebe2584549a8a67138013fdb0833-plan.json": "f1e369c06b5db41791a842741006b7ba0067ed58474d6ddeb8b808c692b8f891",
+    "outputs/gemini-migration/20261121-a2/1e52ebe2584549a8a67138013fdb0833.json": "d37e3c80a4d84d9553f6890fdd3a9034328abbdca3546b2818f8ed625de53c8a",
+    "outputs/gemini-migration/20261121-a2/1e52ebe2584549a8a67138013fdb0833.md": "fbebc44991c8ef395e70f2a90e4e2ce743edcf1495c9820c5d50db326a1cf19a"
+  },
+  "limitations": [
+    "Single previously used question on one battery; provider reliability and broader task quality are unmeasured.",
+    "Elapsed time is not directly comparable with benchmark CLI timing, which includes process startup.",
+    "List-price token estimate is not a billing statement; quota and account charges were not inspected.",
+    "Live Gemini coverage is limited to one capacity case and one extrema case; the security benchmark remains local-model evidence."
+  ],
+  "next_step": "Integrate explicit Ollama/Gemini provider selection into the regular investigation command, with mocked transport tests for tool calls, structured output, usage and safe errors."
+}
