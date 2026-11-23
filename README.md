@@ -4,7 +4,7 @@ A battery test engineer comparing two discharge records needs to know how much c
 
 In the NASA B0005 records, reported capacity fell from 1.856487 Ah on discharge 1 to 1.325079 Ah on discharge 168. That's a change of **−0.531408 Ah (−28.624%)** relative to discharge 1. The percentage alone cannot establish that the tests were comparable, explain the capacity loss, or show that the later record met the experiment's end-of-life criterion. [Source checks and sample outputs](examples/README.md)
 
-The investigator runs locally on Windows with Python 3.12 and Ollama. The [browser demo plan](#browser-demo) builds on the local benchmark.
+The investigator runs on Windows with Python 3.12. Ollama is the default model provider; Gemini is available through explicit selection. The [browser demo plan](#browser-demo) builds on the local benchmark.
 
 ## How an investigation runs
 
@@ -18,7 +18,7 @@ flowchart LR
     E --> F
 ```
 
-Python reads the MATLAB file and does the calculations. It keeps the discharge number and original operation number together, so a reader can find the same record in the source. LangChain exposes the calculation, protocol lookup, and trace inspection as tools. LangGraph runs the workflow and lets the local Ollama model choose one follow-up after the capacity comparison and protocol lookup.
+Python reads the MATLAB file and does the calculations. It keeps the discharge number and original operation number together, so a reader can find the same record in the source. LangChain exposes the calculation, protocol lookup, and trace inspection as tools. LangGraph runs the workflow and lets the selected model choose one follow-up after the capacity comparison and protocol lookup.
 
 The retrieval step uses a catalog of three original experiment notes. It filters by battery and returns passages with line numbers for retrieval-augmented generation (RAG). The workflow checks that a citation applies to the selected battery and that its quote matches the source. Review is still needed to tell whether the quote supports the whole claim.
 
@@ -53,7 +53,7 @@ On November 21, 2026, Gemini 3.5 Flash-Lite completed two saved B0005 questions 
 
 The capacity run returned the same Python-calculated change of −0.532451587 Ah (−29.257123% relative to discharge 33) and stopped after answering that question. The extrema run chose trace inspection and referenced the returned evidence. Its full trace result matched the saved local run. Independent readback checked all 12 extrema and their rows/times, both final-voltage rows and both sampled load windows. Direct source review also checked the protocol claims. Both reports leave comparability and physical cause unresolved.
 
-Output counts include any reported thinking tokens. Costs use [Google's standard rates](https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite); actual billing was not inspected. Both questions had been used before. The 30-case scores and security results above cover the local model. Graph times exclude process startup, which the benchmark CLI times include. Integration with the regular investigation command is the next step.
+Output counts include any reported thinking tokens. Costs use [Google's standard rates](https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite); actual billing was not inspected. Both questions had been used before. The 30-case scores and security results above cover the local model. Graph times exclude process startup, which the benchmark CLI times include. These two checks used the experimental adapter; the regular command now has explicit provider selection.
 
 ## Run locally
 
@@ -100,7 +100,23 @@ For the hosted-model experiment, copy [.env.example](.env.example) to `.env` in 
 .\.venv\Scripts\python.exe -m scripts.gemini_config
 ```
 
-The check reports whether the key is available to Python. The [live migration checks](#gemini-migration-checks) record provider access, response time and token usage. Gemini integration with the regular investigation command is pending.
+The check reports whether the key is available to Python. The [live migration checks](#gemini-migration-checks) record provider access, response time and token usage.
+
+### Run with Gemini
+
+After preparing the sample, protocol files and local key, select Gemini explicitly:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.run_agent_investigation --provider gemini --model gemini-3.5-flash-lite --battery-id B0005 --early 33 --late 166 --question "Report only the capacity change in Ah and percent relative to the earlier discharge."
+```
+
+This sends the question, selected measurement summaries and applicable protocol passages to Google's API. The complete MATLAB file is processed locally. API usage may be billable. Ollama remains the default when `--provider` is omitted; `--provider ollama` selects it explicitly. Each command requires a model ID, and a failed request stops with a saved failure record.
+
+The Gemini adapter uses the existing HTTP dependency for [function calling](https://aistudio.google.com/docs/function-calling?generate-content=true) and [structured JSON output](https://aistudio.google.com/docs/structured-output?generate-content=true). It returns Google's opaque [tool-call signatures](https://aistudio.google.com/docs/thinking?generate-content=true#signatures) with subsequent tool replies. Raw model messages and signatures stay in memory. Saved JSON includes the provider, requested model, reported model versions, per-request timing and token counts, including reported thinking tokens. Missing usage is marked incomplete. Keys and provider error bodies are excluded from reports.
+
+The four-model/three-tool attempt limits apply to either provider. Missing selections reach clarification before source access, key loading or model calls. The Gemini settings match the migration checks: temperature 0, minimal thinking and 1,024 output tokens per request, with a 40-second request timeout and no automatic retries. Other model IDs may need different settings and separate verification. The same resume/revision commands accept `--provider gemini` with a Gemini model ID.
+
+On November 23, the regular command completed the saved capacity question with three Gemini requests and two tools. It took 4.43 seconds end to end, including 3.14 seconds in the graph, and reported 5,456 input and 653 output tokens. The estimated standard token cost was $0.00327. Source review matched the capacity calculation, both protocol claims and the provider/usage fields in the saved report. This is one integration check; broader Gemini evaluation is pending. [CLI check and source review](evaluations/experiments/gemini-cli-20261123.json)
 
 ### Resume or revise a run
 
@@ -121,7 +137,7 @@ $runId = '<saved comparison run ID>'
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The benchmark checkout passed 354 tests with the optional model dependencies installed. See the [test suite](tests/) and [evaluation guide](evaluations/README.md) for the checks and saved results.
+The provider integration passed 417 tests with the optional model dependencies installed, including 49 new checks for API translation, provider selection, usage and failures. The historical benchmark checkout passed 354 tests. See the [test suite](tests/) and [evaluation guide](evaluations/README.md) for the checks and saved results.
 
 ## Browser demo
 
@@ -129,7 +145,7 @@ Open [the replay page](demo/index.html) from a local checkout in your browser. T
 
 The [missing-selection example](demo/clarification.html) shows the investigator asking for the two discharge numbers before analysis. The saved run records zero model and tool attempts.
 
-The saved capacity and trace questions have also run through Gemini, as recorded above. The next implementation step is explicit provider selection in the investigation command, followed by checks of the integrated path before adding a live interface.
+The saved capacity and trace questions have also run through Gemini, as recorded above. Provider selection is available in the investigation command. Broader Gemini quality and security evaluation, followed by a live interface with usage limits, remain ahead.
 
 ## Data source
 

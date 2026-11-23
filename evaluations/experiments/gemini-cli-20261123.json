@@ -1,0 +1,250 @@
+{
+  "evaluation_id": "gemini-cli-20261123",
+  "purpose": "One live integration check of explicit Gemini provider selection in the regular investigation CLI.",
+  "case_id": "R25-capacity",
+  "request": {
+    "question": "For these selected records, report the signed loss of supplied capacity and the percentage with its actual reference. Keep the requested answer within that calculation.",
+    "battery_id": "B0005",
+    "early": 33,
+    "late": 166
+  },
+  "checkout": "429d1e000dac885c42b26cf96ec1c59d0e8b35ef",
+  "uncommitted_candidate": true,
+  "python_version": "3.12.14",
+  "verification": {
+    "tests_passed": 417,
+    "new_tests": 49,
+    "pip_check": "pass"
+  },
+  "runtime_test_dependency_hashes": {
+    "scripts/__init__.py": "7c2828b14562698ce32d9af0a7c68665376362b870acae7bfa5857e29c2f5509",
+    "scripts/check_model_connection.py": "a1ff78d3a9c7d1bf7faee4aac92633168519cf1ce0df2ef86d44e54dc977585f",
+    "scripts/collect_portfolio_baseline.py": "46169de19d7a3938ee4056e6150ee9cf7e457a65e4955c759dd614b4aa05462a",
+    "scripts/collect_portfolio_candidate.py": "ad50c116950bd8a0ade9f515b4b0f8983ee9350c8c913b585ca3163d5d6ff619",
+    "scripts/evaluate_follow_up.py": "56d4c9b879eca064e3b21ea19060808ae449d7315a75fc35f704e48c1640d54f",
+    "scripts/fetch_protocols.py": "eca06841fdc70343206ef8690ee30950ca92b7fba2c534dea9277369f282470c",
+    "scripts/fetch_sample.py": "2cdf90fb9419cf3ef499262bdbd28526f563d8aefab193054214e54c3a54ed6f",
+    "scripts/gemini_config.py": "23699a6a3c4bf5d9c402993233c35ad5609f3f921a16e957f04782ca25a8ac03",
+    "scripts/gemini_model.py": "1c8da63880fb44f76da2bc040817e713a632ce95f4af5ae0a63d4b50d3a90aeb",
+    "scripts/inspect_sample.py": "2cc2df0b52f1d1c9c2dd21b9173213c0098220981a4ae3991868941eeab3f135",
+    "scripts/inspect_selected_traces.py": "ac9cf9b697a296a9d3f0273b897bacaf3a7e7ac7f7a2b5a4b2f469e85c653238",
+    "scripts/investigation_findings.py": "25b8302c9cb85d656205ac149e6f0157f8fac6489bcf57c20c45273675a4c9ea",
+    "scripts/investigation_graph.py": "f3dcdb84c55e94e8af23208f0d5e74628bc4e9c8569a0b6b6f0db28e4758fc8d",
+    "scripts/investigation_report.py": "b4fcfb1e821840a6555e86ef3a753e02958b66c1d66e9bef97b2876bc9f3e34f",
+    "scripts/investigation_resume.py": "50580d1529fc5d127a376b7be07cb8645a179ec794b66bb73c38e061be63af89",
+    "scripts/investigation_state.py": "58f950954ca662aa5ebe6363f67fb29e6ea1f026caeaa3cf329c486495583c57",
+    "scripts/investigation_tools.py": "c32c77b177b56c85a0153bdbb247b4ec4d4dac9c81ee2a1967d2ca006b779514",
+    "scripts/local_model.py": "41f3a807fe23be62b65d4e41651cde343fbec66b4ca3987ead5f8fc01a490af2",
+    "scripts/model_tools.py": "4326681352b3cdf2a6e91456f2b2d8a3b2dd7cd3274954e4a51463cef7d6c41a",
+    "scripts/model_usage.py": "4a2b15011622615cb5dce1f4cc9002b885fc1f7f19c8531e39445fb5339929c5",
+    "scripts/protocol_evidence.py": "48d898bea2c084e0b28853a7c0a0c2f41abd873533b650e0dc219034f984ca67",
+    "scripts/run_agent_investigation.py": "e31788dd7ab736f7de161b3718b8d9800aec81a9b6df9b44525e6b4fe3b2fa78",
+    "scripts/run_investigation.py": "f619a0b6b4a02e67fdb56a697163c0a0be9a938783166e243ed39191f9edc5e3",
+    "scripts/trace_inspection.py": "f8fe56e2fd81731be7a6fcda8d9dcf36badb60cc9f786c2ecfb94fa892c583f8",
+    "tests/test_follow_up_evaluation.py": "0405d4fd2a7af971b9fcdee7d1ec151916a9d15c75d33fec121bfd8497fe6d9c",
+    "tests/test_gemini_config.py": "1f3df2bf0622530c5f1845d6f65a8bb40afdd1aae20fd298094a7a335eba4b02",
+    "tests/test_gemini_model.py": "a5f142248f917cd671b09f579a09a502043feff48332992f1223cc5a7ec400aa",
+    "tests/test_inspection.py": "70508c6a449586cd4bc403a8ea84610218ec2228915203e214bf4dc3d435f197",
+    "tests/test_investigation.py": "a74797f90b50196d9fe8164a4d86b3c6ed67d54d94360467c2837bb5527413cd",
+    "tests/test_investigation_graph.py": "87cfea563792fb9cf0ef77a63721db92ae14f317c3bdeac188ba307db1d134a4",
+    "tests/test_investigation_provider.py": "8f029d7d627858996df3e030da416e1250fe1be8383e9edd995d09fc78d34407",
+    "tests/test_investigation_resume.py": "50063c5aaaca03a095c03669f353b7fe8de66cdcb5d876817ac1583a0488f4cc",
+    "tests/test_investigation_state.py": "a3126bd6213fbff09ec13752a2d4417761208669f732528effc470a5133787c3",
+    "tests/test_investigation_tools.py": "9ac6d7b120e020de07fb333a999b3c82bc06a956a8e66dbe06722087dacc7f38",
+    "tests/test_local_model.py": "628b282c49c85b687904d1236d33cd4b4eff8eef59f409f42627209ddbbb77a8",
+    "tests/test_model_connection.py": "3aa508c9a2d8135c1b2339d141d15bcdddea115b34693bd673f0e3fa278562ef",
+    "tests/test_portfolio_candidate.py": "7a0756cf4d36c8f0a6fcb8f9c01d17414670d15e53a96c270fd143173f59bbf0",
+    "tests/test_portfolio_collection.py": "e5da6773b5840b0defc23e72036ecae26c7f3dcdda131a18d5644cc4d90b970b",
+    "tests/test_protocol_evidence.py": "b4380232db8756f6b042d564fe82e1766035cc23ac6194d6cd3479da33af0a60",
+    "tests/test_trace_inspection.py": "f162906a71887f3c6aeb921ec8cbeb136029b64e9876f3a994d82481208f551a",
+    "requirements-agent-lock.txt": "7d8b8afd9d193dbc1292cb7f058fb043545bff8ee24b3c0aaec874901b931941",
+    "requirements-agent.txt": "c4e6f344117f4369e1c9f29ff2a61bba87a4bd25c65cbdbfb7ebc5fbf2667bc3",
+    "requirements-dev.txt": "8636f9ab1a075be9f3039e2a6471837259c4f36b625bcaf7a3d9a1edd2419c6d",
+    "requirements-lock.txt": "73c0eaa78a058b20c7584bf4931f583668d0cf6494fd36b760f2bd3fa280dd17",
+    "requirements.txt": "76d69c9e6d52e5cce035699ac97aba5b53a9a72f1f645f522535235161ec1dd2"
+  },
+  "source_hashes": {
+    "data/raw/nasa/package-1/B0005.mat": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+    "data/raw/nasa/protocols/package-1/README.txt": "2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90",
+    "data/manifests/protocol-sources.json": "08e0b028aa4291253706517a5a76d6c9bde70d4b216fdb46be7ef79b09474804"
+  },
+  "configuration": {
+    "workflow_version": "trace-follow-up-v23",
+    "provider": "gemini",
+    "model_requested": "gemini-3.5-flash-lite",
+    "trace_analysis_version": "whole-record-traces-v2",
+    "active_load_analysis_version": "b0005-active-load-v1",
+    "model_used": {
+      "provider": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "settings": {
+        "temperature": 0,
+        "maxOutputTokens": 1024,
+        "thinkingConfig": {
+          "thinkingLevel": "minimal"
+        }
+      },
+      "timeout_seconds": 40.0,
+      "automatic_retries": 0
+    },
+    "limits": {
+      "model_limit": 4,
+      "tool_limit": 3
+    },
+    "prompt_hashes": {
+      "tools": "3e47d30aa1492e27db6cc97eac4476f984d39e5142f929cdd99ca45e354434ec",
+      "follow_up": "9b0c17d8a3b8621efd67b0b1fec2db7221754af6dfbcaacf9401731e9e915852",
+      "findings": "427bbb777a6da49a73b0b44ab0cb083561eb663cd4df9fc835180a4f3fa09787"
+    },
+    "follow_up_schema_sha256": "db2acd1a07cdf1506ecb2c5981f32db6f8bca2536f15a4b2329bc8d3c5485d3b",
+    "findings_schema_sha256": "18547abf1d074c285b5c38e27565933360d4153bd184eae2b27d8244b2e35da6",
+    "packages": {
+      "langchain": "1.4.7",
+      "langgraph": "1.2.16",
+      "langchain-ollama": "1.1.0",
+      "pydantic": "2.14.1",
+      "httpx": "0.28.1"
+    }
+  },
+  "input_configuration_sha256": "b01ed957f812eff5b72453bbceea2f91e4438271e659053ed7e4d76618ef85d0",
+  "result": {
+    "run_id": "8be780a7fb204d1db8b579211e6ca91d",
+    "status": "partial",
+    "stop_reason": "selected_trace_check_pending",
+    "model_attempts": 3,
+    "tool_attempts": 2,
+    "comparison": {
+      "earlier": {
+        "operation_index": 94,
+        "discharge_index": 33,
+        "sample_count": 363,
+        "recording_duration_s": 3395.219,
+        "reported_capacity_Ah": 1.8199041089501267,
+        "ambient_temperature_C": 24.0,
+        "median_current_A": -2.012367359829717,
+        "maximum_temperature_C": 38.31473393357882
+      },
+      "later": {
+        "operation_index": 608,
+        "discharge_index": 166,
+        "sample_count": 297,
+        "recording_duration_s": 2792.485,
+        "reported_capacity_Ah": 1.2874525221379407,
+        "ambient_temperature_C": 24.0,
+        "median_current_A": -2.0123225758994394,
+        "maximum_temperature_C": 41.06375085817118
+      },
+      "capacity_change_Ah": -0.532451586812186,
+      "capacity_change_percent": -29.2571231744374,
+      "percentage_reference": "earlier selected discharge's reported capacity",
+      "ambient_temperature_change_C": 0.0,
+      "median_current_change_A": 4.478393027751437e-05,
+      "comparability": {
+        "status": "not_established",
+        "reason": "Protocol verification and detailed load-profile matching are not implemented. Ambient-temperature metadata and median current alone do not establish comparable conditions."
+      }
+    },
+    "follow_up": {
+      "action": "stop_with_partial",
+      "question_scope": "reported_capacity",
+      "reason": "The capacity comparison already provides the requested reported-capacity values, so no further tool action is needed."
+    },
+    "next_check": "No further check is needed for the reported-capacity comparison; broader comparability and physical cause remain unresolved.",
+    "model_requests": [
+      {
+        "http_status": 200,
+        "seconds": 0.626012,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "input_tokens": 472,
+          "output_tokens": 59,
+          "total_tokens": 531
+        },
+        "finish_reason": "STOP"
+      },
+      {
+        "http_status": 200,
+        "seconds": 0.620086,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "input_tokens": 2230,
+          "output_tokens": 53,
+          "total_tokens": 2283
+        },
+        "finish_reason": "STOP"
+      },
+      {
+        "http_status": 200,
+        "seconds": 1.596564,
+        "model_version": "gemini-3.5-flash-lite",
+        "usage": {
+          "input_tokens": 2754,
+          "output_tokens": 541,
+          "total_tokens": 3295
+        },
+        "finish_reason": "STOP"
+      }
+    ],
+    "model_usage": {
+      "complete": true,
+      "requests_with_usage": 3,
+      "model_attempts": 3,
+      "input_tokens": 5456,
+      "output_tokens": 653,
+      "total_tokens": 6109
+    },
+    "graph_seconds": 3.1436155999999755,
+    "cli_wall_seconds": 4.433114500000556,
+    "timing_scope": "Graph timing is the runner's recorded elapsed time. CLI wall time includes Python startup and report writing; neither is a latency distribution.",
+    "checks": {
+      "successful_exit": true,
+      "provider": true,
+      "capacity": true,
+      "action_and_scope": true,
+      "findings": true,
+      "no_trace_follow_up": true,
+      "usage_complete": true,
+      "within_limits": true
+    }
+  },
+  "estimated_cost": {
+    "standard_list_usd": 0.0032693,
+    "input_usd_per_million": 0.3,
+    "output_usd_per_million_including_thoughts": 2.5,
+    "source": "https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite",
+    "checked_on": "2026-11-23",
+    "scope": "Token estimate only; actual billing and quota were not inspected."
+  },
+  "source_review": {
+    "method": "Independent SciPy object readback and Decimal arithmetic; literal quote checks and direct report/source review. Labels are not a blind user assessment.",
+    "capacity_values_operation_indices_and_percentage_reference": "pass",
+    "protocol_claims": [
+      {
+        "statement": "For battery B0005, discharge was carried out at a constant current level of 2A until the battery voltage fell to 2.7V.",
+        "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+        "support": "pass"
+      },
+      {
+        "statement": "The experiments were stopped when the batteries reached end-of-life criteria, defined as a 30% fade in rated capacity from 2Ahr to 1.4Ahr.",
+        "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+        "support": "pass"
+      }
+    ],
+    "question_coverage": "pass; signed capacity change and its earlier measured reference are reported.",
+    "engineering_limits": "pass; documented conditions are distinguished from demonstrated compliance, and comparability and physical cause remain unresolved.",
+    "recommendation": "pass; no further check is required for this capacity-only question.",
+    "provider_and_usage_in_json_and_report": "pass"
+  },
+  "artifacts": {
+    "outputs/provider-integration/20261123-a1/plan.json": "7b38b31e1330ce30b0df665c313119bca0a2815643aa936e3e31abbe64118602",
+    "outputs/provider-integration/20261123-a1/check.json": "6793f784136afd35edc12b6c3ca6f276cea206ecac71f710d2294de20bcd06c5",
+    "outputs/agent-investigations/8be780a7fb204d1db8b579211e6ca91d.json": "36f496f5381cc666ff2f08c893a56b21ca6986a24b684532cccff37690a536cc",
+    "outputs/agent-investigations/8be780a7fb204d1db8b579211e6ca91d.md": "bc30dde02fe90aded93d337db62015d1039179db9837e57aa42ca788582bfefe"
+  },
+  "limitations": [
+    "One previously used capacity question on B0005; this does not establish broader Gemini task accuracy.",
+    "Integrated trace routing, separate tool rounds, resume, missing selections and failure cases use simulated API responses in the test suite.",
+    "The 30-case benchmark and 12-case security results remain local-model evidence."
+  ],
+  "next_step": "Expand Gemini evaluation through the integrated CLI, including the trace route and provider-specific security checks, before a public live interface."
+}

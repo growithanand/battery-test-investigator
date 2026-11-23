@@ -45,8 +45,18 @@ def render_investigation_report(result: dict) -> str:
         f"- Status: `{result['status']}`",
         f"- Stop reason: `{result['stop_reason']}`",
         f"- Model attempts: {result['model_attempts']}. Tool attempts: {result['tool_attempts']}.",
-        "", "## Request", "", f"> {_prose(request['question'])}", "",
+        "",
     ])
+    configuration = result.get("configuration", {})
+    if provider := configuration.get("provider"):
+        lines.extend([f"Model provider: {_prose(provider)}. Requested model: {_prose(configuration['model_requested'])}.", ""])
+    if usage := result.get("model_usage"):
+        lines.extend([f"Reported model usage: {usage['input_tokens']} input tokens and {usage['output_tokens']} output tokens "
+                      "(including thinking tokens when reported by the provider).",
+                      f"Usage available for {usage['requests_with_usage']} of {usage['model_attempts']} model attempts.", ""])
+        if not usage["complete"]:
+            lines.extend(["Token usage is incomplete; the displayed counts cover only requests with returned usage.", ""])
+    lines.extend(["## Request", "", f"> {_prose(request['question'])}", ""])
     battery = request["battery_id"] or "unspecified"
     early = request["early"] if request["early"] is not None else "unspecified"
     late = request["late"] if request["late"] is not None else "unspecified"

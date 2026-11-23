@@ -1,4 +1,4 @@
-"""Run a bounded local cited investigation with one model-selected trace follow-up."""
+"""Run a bounded cited investigation with an explicitly selected model provider."""
 
 import argparse
 from dataclasses import asdict
@@ -17,7 +17,9 @@ from scripts.investigation_graph import WORKFLOW_VERSION, build_investigation_gr
 from scripts.investigation_report import format_capacity_bases, render_investigation_report
 from scripts.investigation_resume import resume_investigation
 from scripts.investigation_state import resolve_selection
+from scripts.gemini_model import create_gemini_model
 from scripts.local_model import create_local_model
+from scripts.model_usage import summarize_model_usage
 from scripts.model_tools import make_comparison_tool, make_protocol_tool, make_trace_tool
 from scripts.protocol_evidence import CATALOG_PATH
 from scripts.trace_inspection import ACTIVE_LOAD_ANALYSIS_VERSION, ANALYSIS_VERSION, format_trace_extrema
@@ -41,7 +43,9 @@ def _write_artifact(path: Path, content: str) -> None:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model", required=True, help="Exact installed local tool-capable Ollama tag")
+    parser.add_argument("--provider", choices=["ollama", "gemini"], default="ollama",
+                        help="Model provider; Gemini sends investigation context to the Google API")
+    parser.add_argument("--model", required=True, help="Exact installed Ollama tag or Gemini model ID")
     question = parser.add_mutually_exclusive_group()
     question.add_argument("--question", help="Investigation question for a new run")
     question.add_argument("--resume", metavar="RUN_ID", help="Complete a saved clarification or revise its discharge pair")
@@ -87,7 +91,10 @@ def main():
         # A missing selection reaches clarification without file reads or model preflight.
         if not runtime:
             verify_source()
-            runtime.append(create_local_model(args.model, MODEL_SETTINGS))
+            if args.provider == "gemini":
+                runtime.append(create_gemini_model(args.model))
+            else:
+                runtime.append(create_local_model(args.model, MODEL_SETTINGS))
         return runtime[0][0]
 
     limits = {"model_limit": 4, "tool_limit": 3}
@@ -100,15 +107,19 @@ def main():
     )
     started = perf_counter()
     # Disable hosted tracing for the graph itself as well as the model/tool nodes.
-    with langsmith.tracing_context(enabled=False):
-        state = graph.invoke({"request": request}, {"recursion_limit": 12})
+    try:
+        with langsmith.tracing_context(enabled=False):
+            state = graph.invoke({"request": request}, {"recursion_limit": 12})
+    finally:
+        if args.provider == "gemini" and runtime:
+            runtime[0][0].close()
     # Never serialize raw AI messages or private reasoning content.
     result = {key: value for key, value in state.items() if key != "messages"}
     result.update({
         "run_id": uuid4().hex, "created_at": datetime.now(timezone.utc).isoformat(),
         "elapsed_seconds": perf_counter() - started,
         "configuration": {
-            "workflow_version": WORKFLOW_VERSION, "model_requested": args.model,
+            "workflow_version": WORKFLOW_VERSION, "provider": args.provider, "model_requested": args.model,
             "trace_analysis_version": ANALYSIS_VERSION,
             "active_load_analysis_version": ACTIVE_LOAD_ANALYSIS_VERSION,
             "model_used": runtime[0][1] if runtime else None, "limits": limits,
@@ -121,10 +132,15 @@ def main():
                 InvestigationFindings.model_json_schema(),
                 sort_keys=True,
             ).encode("utf-8")).hexdigest(),
-            "packages": {name: version(name) for name in ("langchain", "langgraph", "langchain-ollama", "pydantic")},
+            "packages": {name: version(name) for name in ("langchain", "langgraph", "langchain-ollama", "pydantic", "httpx")},
         },
         "citation_check_scope": "Source ID, applicability and literal quote only; semantic support needs review.",
     })
+    requests = None
+    if args.provider == "gemini":
+        requests = runtime[0][0].calls if runtime else []
+    result["model_requests"] = requests
+    result["model_usage"] = summarize_model_usage(state, requests)
     identity = {"request": result["request"], "configuration": result["configuration"],
                 "selection": result["comparison"]["selection"] if result["comparison"] else None,
                 "catalog_sha256": result["protocol"]["catalog_sha256"] if result["protocol"] else None}
