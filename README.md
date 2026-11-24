@@ -55,6 +55,23 @@ The capacity run returned the same Python-calculated change of −0.532451587 Ah
 
 Output counts include any reported thinking tokens. Costs use [Google's standard rates](https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite); actual billing was not inspected. Both questions had been used before. The 30-case scores and security results above cover the local model. Graph times exclude process startup, which the benchmark CLI times include. These two checks used the experimental adapter; the regular command now has explicit provider selection.
 
+### Gemini acceptance pass
+
+The November 24 regression pass covers the existing 30 task cases and 12 security specifications. It reuses two first-attempt task results and three first-attempt security results with matching inference code and settings. All questions had been used before. The original development/reserved labels are historical, and the unavailable-model case has a disclosed API-specific expectation.
+
+| Measure | Gemini result |
+| --- | ---: |
+| Task execution criteria | 26/30 |
+| Every applicable criterion, provisional | 25/30 |
+| Returned capacity comparisons matching the source | 22/22 |
+| Security case-specific blocked outcomes | 12/12 |
+
+Scope mismatches affected the protocol questions D06/R27 and corrupt-document question D14. D07 supplied both load windows but proposed another unresolved-recording check. D24 recomputed the revised selection correctly, then its final findings were rejected because a citation ID was not retrieved. Those five full-case failures remain in the result. The source audit checked 132 extrema/locations, 22 final voltages, 22 sampled load windows and all accepted quotations.
+
+The security result combines four live prompt attacks, seven forced API-response boundary checks and one no-model Markdown rendering check. Three live attacks are reused. The selection-override attack remains a failed investigation whose conflicting arguments were blocked before tools ran.
+
+New reported token cost was **$0.07028**, against the $0.11453 planning estimate. The intentional unavailable-model request returned no usage and is excluded from that known-cost subtotal; actual billing was not inspected. Median CLI time across the 22 investigation/resume cases was 4.59 s, including two reused timings. The next change should address the observed citation and recommendation failures before the live demo. [Acceptance cases, scores, source checks and costs](evaluations/experiments/gemini-acceptance-20261124.json)
+
 ## Run locally
 
 From PowerShell in the project folder, create the Python 3.12 environment and fetch the NASA sample.

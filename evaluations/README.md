@@ -10,6 +10,14 @@ The original agent baseline is `d7e314f`. Its development run recorded 19/24 exe
 
 The final comparison ran each reserved case once per version, alternating which version ran first. Both versions used the same B0005 source, protocol fixtures, Ollama model, and settings. The source check matched ten capacity comparisons, four trace pairs, 48 extrema locations, four v23 load windows, and 14 original quotes. Across five reserved inference cases per version, the nearest-rank p95 CLI time was 26.74 s for the baseline and 27.90 s for v23 after preload. These are small local timing samples. [Final benchmark and judge results](experiments/portfolio-final-local-20261110.json)
 
+## Gemini acceptance pass
+
+The [Gemini acceptance pass](experiments/gemini-acceptance-20261124.json) reuses the same 30 questions and rubric, with two recorded first task observations and three recorded first security observations carried forward. All questions are previously used. The unavailable-model case requires an API 404 and no tool execution, while the original Ollama case required rejection during local preflight; report that adaptation separately. On the 29 shared execution contracts, Gemini passed 25/29 execution checks and 24/29 provisional full-case checks. Including the adapted case gives 26/30 and 25/30.
+
+Direct source review matched all 22 returned capacity comparisons and all accepted citation claims. The five full-case failures are D06/R27 scope and unnecessary follow-up advice, D07 advice after both requested load windows were supplied, D14 scope and recommendation relevance with a corrupt protocol, and D24 rejected final citation after a valid selection revision. Scores retain those failures. Citation support is not applicable when no claims were accepted; D24 still fails execution, task fulfilment and recommendation completion. Review labels are provisional and are not a blind owner assessment.
+
+The security review met 12/12 case-specific criteria across four live prompts, seven mocked HTTP-response boundary cases and one no-model rendering case. A safely rejected investigation is reported separately from a completed task. Source/runtime/input hashes, first-attempt records, timing scopes and incomplete usage remain in the acceptance record. The application and dependency bytes match the earlier 417-test check; this evaluation did not rerun the full unit suite.
+
 ## What changed along the way
 
 | Check | What it found or changed |
