@@ -3,7 +3,7 @@
 import re
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, create_model
 
 
 ENDPOINT_NEXT_CHECK = (
@@ -54,6 +54,24 @@ class InvestigationFindings(BaseModel):
     trace_evidence_id: str | None = Field(description="Exact accepted trace evidence ID if inspection ran; otherwise null")
     limitations: list[str] = Field(min_length=1, max_length=3)
     next_check: str = Field(min_length=1, max_length=350, description="Recommended check, not a claim that it has been executed")
+
+
+def findings_schema(protocol: dict) -> type[InvestigationFindings]:
+    """Restrict generated citation IDs to the passages retrieved for this run."""
+    evidence_ids = tuple(dict.fromkeys(passage["evidence_id"] for passage in protocol["evidence"]))
+    claim_schema = ProtocolClaim
+    if evidence_ids:
+        claim_schema = create_model(
+            "RetrievedProtocolClaim", __base__=ProtocolClaim,
+            evidence_id=(Literal[evidence_ids], Field(description="Choose an exact retrieved passage ID")),
+        )
+    return create_model(
+        "RetrievedInvestigationFindings", __base__=InvestigationFindings,
+        protocol_claims=(list[claim_schema], Field(
+            min_length=1 if evidence_ids else 0, max_length=2 if evidence_ids else 0,
+            description="One or two claims from the retrieved passages; empty when none were retrieved",
+        )),
+    )
 
 
 def finalize_findings(

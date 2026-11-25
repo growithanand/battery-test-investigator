@@ -13,7 +13,7 @@ from langchain.tools import tool
 from langchain_core.messages import AIMessage
 from pydantic import ValidationError
 
-from scripts.investigation_findings import FollowUpDecision, InvestigationFindings, validate_citations
+from scripts.investigation_findings import FollowUpDecision, InvestigationFindings, findings_schema, validate_citations
 from scripts.investigation_graph import build_investigation_graph
 from scripts.model_tools import ComparisonArguments, ProtocolArguments
 
@@ -62,7 +62,7 @@ def findings_response(protocol=PROTOCOL, **changes):
 
 class StubModel:
     def __init__(self, *responses):
-        self.responses, self.calls, self.bindings = list(responses), [], []
+        self.responses, self.calls, self.bindings, self.schemas = list(responses), [], [], []
 
     def bind_tools(self, tools):
         self.mode = "tools"
@@ -70,8 +70,10 @@ class StubModel:
         return self
 
     def with_structured_output(self, schema, **kwargs):
-        assert schema in (InvestigationFindings, FollowUpDecision) and kwargs == {"method": "json_schema", "include_raw": True}
-        self.mode = "findings" if schema is InvestigationFindings else "follow_up"
+        assert (issubclass(schema, InvestigationFindings) or schema is FollowUpDecision)
+        assert kwargs == {"method": "json_schema", "include_raw": True}
+        self.mode = "findings" if issubclass(schema, InvestigationFindings) else "follow_up"
+        self.schemas.append(schema)
         return self
 
     def invoke(self, messages):
@@ -775,6 +777,49 @@ def test_bad_citation_rejected_without_retry(evidence_tools, changes):
     state = invoke(model, evidence_tools)
     assert state["status"] == "failed" and state["stop_reason"] == "findings_error"
     assert state["findings"] is None and len(model.calls) == 3
+
+
+@pytest.mark.parametrize("count", [0, 1, 2])
+def test_findings_schema_accepts_only_current_passage_ids_and_claim_counts(count):
+    protocol = deepcopy(PROTOCOL)
+    protocol["evidence"] = [
+        {**PROTOCOL["evidence"][0], "evidence_id": f"current-passage-{index}"} for index in range(count)
+    ]
+    before = deepcopy(protocol)
+    schema = findings_schema(protocol)
+    values = findings_response(protocol)["parsed"].model_dump()
+    if count:
+        values["protocol_claims"][0]["evidence_id"] = "current-passage-0"
+    assert schema.model_validate(values).model_dump() == values
+    if count:
+        values["protocol_claims"][0]["evidence_id"] = f"current-passage-{count - 1}"
+        schema.model_validate(values)
+        values["protocol_claims"][0]["evidence_id"] = "previous-run-passage"
+    else:
+        values["protocol_claims"] = findings_response()["parsed"].model_dump()["protocol_claims"]
+    with pytest.raises(ValidationError):
+        schema.model_validate(values)
+    if count:
+        values["protocol_claims"] = []
+        with pytest.raises(ValidationError):
+            schema.model_validate(values)
+    assert protocol == before
+    assert "enum" not in InvestigationFindings.model_json_schema()["$defs"]["ProtocolClaim"]["properties"]["evidence_id"]
+
+
+def test_graph_binds_findings_schema_to_evidence_from_this_invocation(evidence_tools):
+    protocol = evidence_tools[2]["protocol"]
+    protocol["evidence"][0]["evidence_id"] = "new-selection-passage"
+    response = findings_response(protocol)
+    response["parsed"].protocol_claims[0].evidence_id = "new-selection-passage"
+    model = StubModel(AIMessage(content="", tool_calls=[COMPARISON_CALL, PROTOCOL_CALL]), decision_response(), response)
+    state = invoke(model, evidence_tools)
+    assert state["findings"] is not None
+    values = response["parsed"].model_dump()
+    model.schemas[-1].model_validate(values)
+    values["protocol_claims"][0]["evidence_id"] = PROTOCOL["evidence"][0]["evidence_id"]
+    with pytest.raises(ValidationError):
+        model.schemas[-1].model_validate(values)
 
 
 def test_schema_refuses_established_comparability_or_cause():

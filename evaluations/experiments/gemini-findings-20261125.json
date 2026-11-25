@@ -1,0 +1,643 @@
+{
+  "experiment_id": "gemini-findings-v24-20261125",
+  "date": "2026-11-25",
+  "base_commit": "6b3dfe344719ad30e31dc9cc73689ebc8e6c3ea3",
+  "uncommitted_candidate_at_collection": true,
+  "workflow_version": "trace-follow-up-v24",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "purpose": "Check the five observed citation, scope and recommendation failures after a focused correction.",
+  "changes": [
+    "Build the findings schema from current retrieved passage IDs, with one or two claims when evidence exists and no claims otherwise.",
+    "Retain strict Python citation identity, battery applicability and literal-quote checks; do not repair invalid IDs or retry.",
+    "Distinguish intended-protocol lookups from recorded-condition assessment and make completed narrow load-window requests stop.",
+    "Save the schema hash for the current retrieved evidence rather than the unconstrained base schema."
+  ],
+  "design": "One first candidate observation per previously failed acceptance question. Same source, fixtures, model/settings, budgets and saved D24 parent. No retries or changes during collection. R27 is a previously used reserved question, not held-out evidence.",
+  "previous_acceptance_record": "evaluations/experiments/gemini-acceptance-20261124.json",
+  "plan_sha256": "1a55e84f762ed670136b88b639cfa5ccd5474c24499f1e0b04326a626ed75c7d",
+  "collection_sha256": "bce227b7b88b2d2d88f9b4e4494b2a796cf324dea349f3d293e71ab8dcfb7e3e",
+  "collector_sha256": "40acf556078b3df8db9b80c1722625c495bbbe62cb264177312da2de5eb2ca06",
+  "review_helper_sha256": "e01c78dedce2afe4878170b6506ebe6c6b8c5155824a5a695f6b5166bcc3cbd6",
+  "runtime_test_dependency_hashes": {
+    "requirements-agent-lock.txt": "7d8b8afd9d193dbc1292cb7f058fb043545bff8ee24b3c0aaec874901b931941",
+    "requirements-agent.txt": "c4e6f344117f4369e1c9f29ff2a61bba87a4bd25c65cbdbfb7ebc5fbf2667bc3",
+    "requirements-dev.txt": "8636f9ab1a075be9f3039e2a6471837259c4f36b625bcaf7a3d9a1edd2419c6d",
+    "requirements-lock.txt": "73c0eaa78a058b20c7584bf4931f583668d0cf6494fd36b760f2bd3fa280dd17",
+    "requirements.txt": "76d69c9e6d52e5cce035699ac97aba5b53a9a72f1f645f522535235161ec1dd2",
+    "scripts/__init__.py": "7c2828b14562698ce32d9af0a7c68665376362b870acae7bfa5857e29c2f5509",
+    "scripts/check_model_connection.py": "a1ff78d3a9c7d1bf7faee4aac92633168519cf1ce0df2ef86d44e54dc977585f",
+    "scripts/collect_portfolio_baseline.py": "46169de19d7a3938ee4056e6150ee9cf7e457a65e4955c759dd614b4aa05462a",
+    "scripts/collect_portfolio_candidate.py": "ad50c116950bd8a0ade9f515b4b0f8983ee9350c8c913b585ca3163d5d6ff619",
+    "scripts/evaluate_follow_up.py": "56d4c9b879eca064e3b21ea19060808ae449d7315a75fc35f704e48c1640d54f",
+    "scripts/fetch_protocols.py": "eca06841fdc70343206ef8690ee30950ca92b7fba2c534dea9277369f282470c",
+    "scripts/fetch_sample.py": "2cdf90fb9419cf3ef499262bdbd28526f563d8aefab193054214e54c3a54ed6f",
+    "scripts/gemini_config.py": "23699a6a3c4bf5d9c402993233c35ad5609f3f921a16e957f04782ca25a8ac03",
+    "scripts/gemini_model.py": "1c8da63880fb44f76da2bc040817e713a632ce95f4af5ae0a63d4b50d3a90aeb",
+    "scripts/inspect_sample.py": "2cc2df0b52f1d1c9c2dd21b9173213c0098220981a4ae3991868941eeab3f135",
+    "scripts/inspect_selected_traces.py": "ac9cf9b697a296a9d3f0273b897bacaf3a7e7ac7f7a2b5a4b2f469e85c653238",
+    "scripts/investigation_findings.py": "b72715ee79feeba23a8a343a29c4900a6b7e8111bcaa800433aea7f301b85056",
+    "scripts/investigation_graph.py": "9fc70d59387d8787f1e2184ec74d0bf6633a04a476537a04f32f9218eb8e096e",
+    "scripts/investigation_report.py": "b4fcfb1e821840a6555e86ef3a753e02958b66c1d66e9bef97b2876bc9f3e34f",
+    "scripts/investigation_resume.py": "50580d1529fc5d127a376b7be07cb8645a179ec794b66bb73c38e061be63af89",
+    "scripts/investigation_state.py": "58f950954ca662aa5ebe6363f67fb29e6ea1f026caeaa3cf329c486495583c57",
+    "scripts/investigation_tools.py": "c32c77b177b56c85a0153bdbb247b4ec4d4dac9c81ee2a1967d2ca006b779514",
+    "scripts/local_model.py": "41f3a807fe23be62b65d4e41651cde343fbec66b4ca3987ead5f8fc01a490af2",
+    "scripts/model_tools.py": "4326681352b3cdf2a6e91456f2b2d8a3b2dd7cd3274954e4a51463cef7d6c41a",
+    "scripts/model_usage.py": "4a2b15011622615cb5dce1f4cc9002b885fc1f7f19c8531e39445fb5339929c5",
+    "scripts/protocol_evidence.py": "48d898bea2c084e0b28853a7c0a0c2f41abd873533b650e0dc219034f984ca67",
+    "scripts/run_agent_investigation.py": "19e1c9ca308d0130eccfa7c0b212de9415a716b8f722e96723098644f0b407f9",
+    "scripts/run_investigation.py": "f619a0b6b4a02e67fdb56a697163c0a0be9a938783166e243ed39191f9edc5e3",
+    "scripts/trace_inspection.py": "f8fe56e2fd81731be7a6fcda8d9dcf36badb60cc9f786c2ecfb94fa892c583f8",
+    "tests/test_follow_up_evaluation.py": "0405d4fd2a7af971b9fcdee7d1ec151916a9d15c75d33fec121bfd8497fe6d9c",
+    "tests/test_gemini_config.py": "1f3df2bf0622530c5f1845d6f65a8bb40afdd1aae20fd298094a7a335eba4b02",
+    "tests/test_gemini_model.py": "a5f142248f917cd671b09f579a09a502043feff48332992f1223cc5a7ec400aa",
+    "tests/test_inspection.py": "70508c6a449586cd4bc403a8ea84610218ec2228915203e214bf4dc3d435f197",
+    "tests/test_investigation.py": "a74797f90b50196d9fe8164a4d86b3c6ed67d54d94360467c2837bb5527413cd",
+    "tests/test_investigation_graph.py": "ae1b5a5514b5b0fd58b0457df67ae2d5aaac5b99d60bfa05defe523ebae56d71",
+    "tests/test_investigation_provider.py": "2829bbee1c13f682a81dad4055b0fd2e1b9e15bd708a95204e5da90492b01a35",
+    "tests/test_investigation_resume.py": "50063c5aaaca03a095c03669f353b7fe8de66cdcb5d876817ac1583a0488f4cc",
+    "tests/test_investigation_state.py": "a3126bd6213fbff09ec13752a2d4417761208669f732528effc470a5133787c3",
+    "tests/test_investigation_tools.py": "9ac6d7b120e020de07fb333a999b3c82bc06a956a8e66dbe06722087dacc7f38",
+    "tests/test_local_model.py": "628b282c49c85b687904d1236d33cd4b4eff8eef59f409f42627209ddbbb77a8",
+    "tests/test_model_connection.py": "3aa508c9a2d8135c1b2339d141d15bcdddea115b34693bd673f0e3fa278562ef",
+    "tests/test_portfolio_candidate.py": "7a0756cf4d36c8f0a6fcb8f9c01d17414670d15e53a96c270fd143173f59bbf0",
+    "tests/test_portfolio_collection.py": "e5da6773b5840b0defc23e72036ecae26c7f3dcdda131a18d5644cc4d90b970b",
+    "tests/test_protocol_evidence.py": "b4380232db8756f6b042d564fe82e1766035cc23ac6194d6cd3479da33af0a60",
+    "tests/test_trace_inspection.py": "f162906a71887f3c6aeb921ec8cbeb136029b64e9876f3a994d82481208f551a"
+  },
+  "input_and_original_evidence_hashes": {
+    "data/manifests/protocol-sources.json": "08e0b028aa4291253706517a5a76d6c9bde70d4b216fdb46be7ef79b09474804",
+    "outputs/portfolio-baseline/20261107-a1/fixtures/missing.json": "cd1835228484694f5912fa1fbaf0df62205629e01cb63a8759a3127cc71ec7b1",
+    "outputs/portfolio-baseline/20261107-a1/fixtures/partial.json": "56910c46b123cc4aae6b6ec838107a958a80212d40d36cb9ee58fbcc2b2f7122",
+    "outputs/portfolio-baseline/20261107-a1/fixtures/corrupt.json": "b44b179af0a3b182fd0644c2bfb12edceff126b55194434681f55a3d6c1d2b12",
+    "outputs/portfolio-baseline/20261107-a1/fixtures/wrong_experiment.json": "b97e3ffe3ae79e6289729eba8d3e9be87223c2f092da4da73218b1d1886bf101",
+    "data/raw/nasa/evaluation-fixtures/15f30c911d90/corrupt.txt": "2d4e0057f8a16fa872cac36adb72155b15deaf5d4dd1a6c20e29e626e88c2f06",
+    "data/raw/nasa/package-1/B0005.mat": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+    "evaluations/baselines/portfolio-d7e314f-20261107.json": "dcfcde5da689078e308781bf3b9cf64d6cbbf75580203c633ec5c286a9a0c0bb",
+    "evaluations/portfolio-cases.json": "16cf6d6367e2d3cfb53216f4d2e60bb0739f2a2aa29fd35348f27e7496f5b5aa",
+    "evaluations/portfolio-rubric.json": "9407a652fcb78886c7990520e30bb77699179ef5109e389058b380281f26827e",
+    "outputs/portfolio-baseline/20261107-a1/plan.json": "d271dd3a03be09cef245ba18f0c6d160edd5cbffedd65afc17075e87b89b84ba",
+    "data/raw/nasa/protocols/package-1/README.txt": "2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90",
+    "data/raw/nasa/protocols/package-3/README_33_34_36.txt": "4a5e394c8ec0f4bd35bad27ee18183c22736439c979fc0997501c30290035f2c",
+    "data/raw/nasa/protocols/package-5/README_49_50_51_52.txt": "86e1f8102153708c5df4c568138b652866ee04d030314f3c41ad3b634a9440eb",
+    "evaluations/security-cases.json": "ef0d732fde0633b23c45e9e3f904277d91b95c5742443337cf878dcb7519bced",
+    "outputs/security-review/20261110-a1/catalog.json": "6b87ea074b054c88709ec7c6a12b28f3cb4a77b1beb59c23a3cee50548fa3904",
+    "data/raw/nasa/security-review/20261110-a1/synthetic-B0005.txt": "48168043106eb832f7d5c541c53b5d5a6aa04a6c5bbb5b18ca3ca55ba2137fec",
+    "data/raw/nasa/security-review/20261110-a1/synthetic-B0033.txt": "2a0acafdf5bafeef76b12129c290076cb61d7c02597bc716220082016d2d2ffd",
+    "evaluations/experiments/gemini-cli-20261123.json": "aa51c0acd2f395d24f6b8a8b60b138f1ce7bf310f8c30aec38ed3fdb35674eb9",
+    "evaluations/experiments/gemini-trace-security-20261124.json": "4dc51e0b6ee272ebebbfe62f956b081d5b65e8278dccd7aea2639fb9bde4ab8e",
+    "outputs/agent-investigations/8be780a7fb204d1db8b579211e6ca91d.json": "36f496f5381cc666ff2f08c893a56b21ca6986a24b684532cccff37690a536cc",
+    "outputs/agent-investigations/8be780a7fb204d1db8b579211e6ca91d.md": "bc30dde02fe90aded93d337db62015d1039179db9837e57aa42ca788582bfefe",
+    "outputs/agent-investigations/cb86ff3177c9408ca8a7458fba71e7c0.json": "30c0fed5839367bd62fab7852433f53657d058193deb2a901c988f0dcf663045",
+    "outputs/agent-investigations/cb86ff3177c9408ca8a7458fba71e7c0.md": "22db5a8ad8a92a70e6847daf484349750e3de56e8af160a49e054ff4e6e03042",
+    "outputs/agent-investigations/95d2a07862774523b054bdbc4d745755.json": "37dcba4d5ecd0087ef11dc296a3f37428a2df4cffdecc90609cd0e88ef8a26f8",
+    "outputs/agent-investigations/95d2a07862774523b054bdbc4d745755.md": "f8b02a6f432e674044753889eb208c67668c5e4d5b99be416fc677debcb2e0a0",
+    "outputs/agent-investigations/753aee788f834334bf1b671e5d5e32a1.json": "cffae15b1f3a2a5bca5693e5d017f3a9ee00d931c3e71ef04c450d7b46e3ecdd",
+    "outputs/agent-investigations/753aee788f834334bf1b671e5d5e32a1.md": "80fce869fe732b627cf4e6174f71b0d05658f5615f79481d12d28ea788e593dd",
+    "outputs/agent-investigations/1f310837ecdd40d7944926f305bc5f64.json": "01aaba0de0c4d471195b6f2e7c0b6bf0bc5bafa2e2964a199533f9e1e7731ce0",
+    "outputs/agent-investigations/1f310837ecdd40d7944926f305bc5f64.md": "0e3ece907db1e4e3ed7cd9e5f8d82bc3f4f9144189a15bd54a44fd76d441db65",
+    "outputs/agent-investigations/df7921c9f35544e19a9d6daf7eacebca.json": "e770a1e58eace898e718abf37fbbd7db338d760343989f5a4bd7d64f179ad89f",
+    "outputs/agent-investigations/df7921c9f35544e19a9d6daf7eacebca.md": "7a8fce492373d27585fcd878d2d315cdab3811796a82df638da9bc6116706ffd",
+    "outputs/agent-investigations/5878519c2d2f42c89a5416843103dd75.json": "18021b775f640dbaedac67a9edd677235fe1f54c17b00359b07b32dc7bb6c7d4",
+    "outputs/agent-investigations/5878519c2d2f42c89a5416843103dd75.md": "7c1df301f3aa9530f668ea01e1c415e0fe8f06d0da462ad87e146616904c4d28",
+    "outputs/agent-investigations/145717b86d044bbaab02eef278d7831d.json": "191da00ba40e357b4f900aae192b17e52785341b4095bfcf4320f45cfe5c2613",
+    "outputs/agent-investigations/145717b86d044bbaab02eef278d7831d.md": "a966691c6dfd4aca125153b8d5045957f229382cc5cb1ebef3d8e516d229986b",
+    "outputs/agent-investigations/9c6728a03cce45a5801c4c29e6fd3c99.json": "526f9f0d2cf00aebc4d71edca4549e37bc3f11149bf85614e75936404496be20",
+    "outputs/agent-investigations/9c6728a03cce45a5801c4c29e6fd3c99.md": "d510d8f439ff36551193703527164da162efec809dfae0a5c1ba8775e352ce24",
+    "outputs/agent-investigations/843e89c9975543ccad87ad745807d084.json": "b172d9e506ca3825675b59ae73773e45b243f7fbf3e6b2592453d77b3a3199d1",
+    "outputs/agent-investigations/843e89c9975543ccad87ad745807d084.md": "c1b979e7b55fece1b6fc8fb4e2bd48bd647533c2b192bc62af435db000c3f479",
+    "outputs/agent-investigations/19e54ad5609d4d9298752f36b86cf288.json": "db582ec2962dab43966da3b2a5c84505cb97b4bebf4288a80f3700db064d5ad8",
+    "outputs/agent-investigations/19e54ad5609d4d9298752f36b86cf288.md": "db8fd624548ba8d1c75b2d20d81bb450558670c884e5121a7fa9e6a04580197e"
+  },
+  "verification": {
+    "unit_tests_passed": 424,
+    "dependency_check": "pass",
+    "whitespace_check": "pass",
+    "source_review_method": "Independent SciPy object readback and Decimal capacity arithmetic; independent trace extrema/window and report-row checks; original source hashes, applicability, literal quotes and direct claim/task/next-step review. Not blind owner scoring."
+  },
+  "totals": {
+    "execution_passes": 5,
+    "targeted_criteria_met": 5,
+    "cases": 5,
+    "capacity_comparisons_source_checked": 5,
+    "trace_pairs_source_checked": 2,
+    "extrema_and_locations_checked": 24,
+    "final_voltage_rows_checked": 4,
+    "load_windows_checked": 4,
+    "literal_quotations_checked": 5,
+    "new_api_requests": 15,
+    "usage": {
+      "input_tokens": 36147,
+      "output_tokens": 2212,
+      "total_tokens": 38359
+    },
+    "estimated_standard_token_cost_usd": 0.0163741
+  },
+  "cost": {
+    "forecast_usd": "0.02382015",
+    "estimate_usd": "0.0163741",
+    "input_usd_per_million": ".30",
+    "output_usd_per_million_including_thoughts": "2.50",
+    "source": "https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite",
+    "verified_date": "2026-11-25",
+    "billing_note": "Known reported token estimate only. Actual billing, EUR exchange rates, tax and account usage not inspected."
+  },
+  "cases": [
+    {
+      "case_id": "D06-protocol",
+      "run_id": "87120b10380d457cb41e90e4dddc1cb0",
+      "record_path": "outputs/agent-investigations/87120b10380d457cb41e90e4dddc1cb0.json",
+      "record_sha256": "c59e33176943d57514a21fb8b237f773ad62f38968978765d3ac0e5218906d27",
+      "report_sha256": "84a330f130312f4be54d12e641af91ac85f2d31848e96b14f668a092ad649b6b",
+      "process_exit": 0,
+      "cli_seconds": 4.482531399999971,
+      "graph_seconds": 2.9458857999998145,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "model_usage": {
+        "complete": true,
+        "requests_with_usage": 3,
+        "model_attempts": 3,
+        "input_tokens": 5577,
+        "output_tokens": 417,
+        "total_tokens": 5994
+      },
+      "execution_failures": [],
+      "previous_run_id": "df7921c9f35544e19a9d6daf7eacebca",
+      "request": {
+        "question": "What constant-current setting and voltage endpoint does the original applicable experiment description intend for B0005? Name the battery and cite the original passage.",
+        "battery_id": "B0005",
+        "early": 30,
+        "late": 160
+      },
+      "resumed_from_run_id": null,
+      "configuration_schema_sha256": "457a780795fba6ca0e5b6d2d3263006992b9c5c7ff52e560b333a01f309c75cb",
+      "comparison": {
+        "selection": {
+          "battery_id": "B0005",
+          "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+          "early": 30,
+          "late": 160,
+          "early_operation_index": 82,
+          "late_operation_index": 584,
+          "revision": 1
+        },
+        "comparison": {
+          "earlier": {
+            "operation_index": 82,
+            "discharge_index": 30,
+            "sample_count": 182,
+            "recording_duration_s": 3392.719,
+            "reported_capacity_Ah": 1.804077040117352,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.0124990493755295,
+            "maximum_temperature_C": 38.194201649765226
+          },
+          "later": {
+            "operation_index": 584,
+            "discharge_index": 160,
+            "sample_count": 299,
+            "recording_duration_s": 2811.485,
+            "reported_capacity_Ah": 1.3033573559038205,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.0123357584231902,
+            "maximum_temperature_C": 40.946993847659506
+          },
+          "capacity_change_Ah": -0.5007196842135315,
+          "capacity_change_percent": -27.754894778826106,
+          "percentage_reference": "earlier selected discharge's reported capacity",
+          "ambient_temperature_change_C": 0.0,
+          "median_current_change_A": 0.00016329095233924562,
+          "comparability": {
+            "status": "not_established",
+            "reason": "Protocol verification and detailed load-profile matching are not implemented. Ambient-temperature metadata and median current alone do not establish comparable conditions."
+          }
+        }
+      },
+      "follow_up": {
+        "action": "stop_with_partial",
+        "question_scope": "other",
+        "reason": "The question asks what the protocol documentation states about test parameters and does not require trace inspection."
+      },
+      "protocol_status": "available",
+      "recommendation": "No further check is needed for the requested protocol facts; measured compliance remains unresolved.",
+      "limitations": [
+        "Documentation describes intended experiment conditions, not proof that each record followed them.",
+        "The selected percentage fade alone does not decide end of life without verifying the recorded conditions."
+      ],
+      "trace_source_checks": null,
+      "protocol_claims": [
+        {
+          "statement": "For battery 5, discharge was carried out at a constant current level of 2A until the battery voltage fell to 2.7V.",
+          "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+          "quote": "Discharge was carried out at a constant current (CC) level of 2A until the battery voltage fell to 2.7V, 2.5V, 2.2V and 2.5V for batteries 5 6 7 and 18 respectively.",
+          "source_identity_applicability_and_literal_quote": "pass",
+          "full_claim_source_review": "pass"
+        }
+      ],
+      "targeted_criteria_met": true,
+      "direct_review": "B0005 is mapped to the intended 2 A discharge and 2.7 V endpoint in the original passage. Scope is other; protocol-fact lookup needs no further check and measured compliance stays unresolved."
+    },
+    {
+      "case_id": "D07-agent-window",
+      "run_id": "9758f582277f46dfabf90bfe52f828c3",
+      "record_path": "outputs/agent-investigations/9758f582277f46dfabf90bfe52f828c3.json",
+      "record_sha256": "43c8f2bdb945448589b15e06a21a06fbeb95f7449f0bbb13e111d01bb1d8999d",
+      "report_sha256": "e63f8732f18a41ff3f67b4f4224f1ed4f9c2de9a4cb4616e1c96b2c1d475cdd7",
+      "process_exit": 0,
+      "cli_seconds": 4.708245699999679,
+      "graph_seconds": 3.399934800000665,
+      "status": "partial",
+      "stop_reason": "comparability_assessment_pending",
+      "model_usage": {
+        "complete": true,
+        "requests_with_usage": 3,
+        "model_attempts": 3,
+        "input_tokens": 10748,
+        "output_tokens": 445,
+        "total_tokens": 11193
+      },
+      "execution_failures": [],
+      "previous_run_id": "5878519c2d2f42c89a5416843103dd75",
+      "request": {
+        "question": "Find the observed on-load sample window for each discharge and give the two transition brackets and the first-to-last on-load span.",
+        "battery_id": "B0005",
+        "early": 13,
+        "late": 157
+      },
+      "resumed_from_run_id": null,
+      "configuration_schema_sha256": "457a780795fba6ca0e5b6d2d3263006992b9c5c7ff52e560b333a01f309c75cb",
+      "comparison": {
+        "selection": {
+          "battery_id": "B0005",
+          "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+          "early": 13,
+          "late": 157,
+          "early_operation_index": 27,
+          "late_operation_index": 572,
+          "revision": 1
+        },
+        "comparison": {
+          "earlier": {
+            "operation_index": 27,
+            "discharge_index": 13,
+            "sample_count": 186,
+            "recording_duration_s": 3470.281,
+            "reported_capacity_Ah": 1.8137521577549054,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.0123282929711634,
+            "maximum_temperature_C": 38.582485834057856
+          },
+          "later": {
+            "operation_index": 572,
+            "discharge_index": 157,
+            "sample_count": 300,
+            "recording_duration_s": 2819.437,
+            "reported_capacity_Ah": 1.3132020634442203,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.012197066422532,
+            "maximum_temperature_C": 40.90308836809665
+          },
+          "capacity_change_Ah": -0.5005500943106851,
+          "capacity_change_percent": -27.597491320438998,
+          "percentage_reference": "earlier selected discharge's reported capacity",
+          "ambient_temperature_change_C": 0.0,
+          "median_current_change_A": 0.0001312265486315134,
+          "comparability": {
+            "status": "not_established",
+            "reason": "Protocol verification and detailed load-profile matching are not implemented. Ambient-temperature metadata and median current alone do not establish comparable conditions."
+          }
+        }
+      },
+      "follow_up": {
+        "action": "inspect_discharge_traces",
+        "question_scope": "other",
+        "reason": "Active load inspection is available to inspect B0005 sampled load windows, transition brackets and on-load spans."
+      },
+      "protocol_status": "available",
+      "recommendation": "No further check is needed for the requested windows, brackets and spans.",
+      "limitations": [
+        "Documentation describes intended experiment conditions, not proof that each record followed them.",
+        "No further check is needed for the requested windows, brackets and spans.",
+        "Broader comparability remains unresolved."
+      ],
+      "trace_source_checks": {
+        "outcome": "pass",
+        "extrema_and_locations_checked": 12,
+        "final_voltage_rows_checked": 2,
+        "active_load_windows_checked": 2
+      },
+      "protocol_claims": [
+        {
+          "statement": "Discharge for battery 5 was carried out at a constant current level of 2A until the battery voltage fell to 2.7V.",
+          "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+          "quote": "Discharge was carried out at a constant current (CC) level of 2A until the battery voltage fell to 2.7V, 2.5V, 2.2V and 2.5V for batteries 5 6 7 and 18 respectively.",
+          "source_identity_applicability_and_literal_quote": "pass",
+          "full_claim_source_review": "pass"
+        }
+      ],
+      "targeted_criteria_met": true,
+      "direct_review": "Both sampled load windows, transition brackets and on-load spans match the source arrays and displayed report. The recommendation ends the narrow request and broader comparability remains unresolved."
+    },
+    {
+      "case_id": "D14-corrupt-protocol",
+      "run_id": "3fee20644fb748c9bbfc3fbdad411a8c",
+      "record_path": "outputs/agent-investigations/3fee20644fb748c9bbfc3fbdad411a8c.json",
+      "record_sha256": "ebf2b5ce71964e71a4802c817efb0a74048bc851febca73354d93485fb4ba8df",
+      "report_sha256": "038440a0900ac3bd61ae271dbf2311ae0a5db5942e598e8733ef07d4716754de",
+      "process_exit": 0,
+      "cli_seconds": 4.478716600000553,
+      "graph_seconds": 3.2563233000000764,
+      "status": "partial",
+      "stop_reason": "protocol_evidence_incomplete",
+      "model_usage": {
+        "complete": true,
+        "requests_with_usage": 3,
+        "model_attempts": 3,
+        "input_tokens": 8549,
+        "output_tokens": 256,
+        "total_tokens": 8805
+      },
+      "execution_failures": [],
+      "previous_run_id": "145717b86d044bbaab02eef278d7831d",
+      "request": {
+        "question": "Inspect both recordings and describe the evidence limits if the applicable protocol file fails its source verification.",
+        "battery_id": "B0005",
+        "early": 18,
+        "late": 162
+      },
+      "resumed_from_run_id": null,
+      "configuration_schema_sha256": "8eb6108f26cf8945f4d573eda2d433e2b7cc9a943ea5cd8c761bf4bab8cececd",
+      "comparison": {
+        "selection": {
+          "battery_id": "B0005",
+          "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+          "early": 18,
+          "late": 162,
+          "early_operation_index": 37,
+          "late_operation_index": 592,
+          "revision": 1
+        },
+        "comparison": {
+          "earlier": {
+            "operation_index": 37,
+            "discharge_index": 18,
+            "sample_count": 182,
+            "recording_duration_s": 3390.422,
+            "reported_capacity_Ah": 1.8030683142834096,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.012656060279654,
+            "maximum_temperature_C": 38.4787542519308
+          },
+          "later": {
+            "operation_index": 592,
+            "discharge_index": 162,
+            "sample_count": 298,
+            "recording_duration_s": 2801.625,
+            "reported_capacity_Ah": 1.2978870806495706,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.0120893040106145,
+            "maximum_temperature_C": 41.02476444658572
+          },
+          "capacity_change_Ah": -0.505181233633839,
+          "capacity_change_percent": -28.017864305635715,
+          "percentage_reference": "earlier selected discharge's reported capacity",
+          "ambient_temperature_change_C": 0.0,
+          "median_current_change_A": 0.000566756269039459,
+          "comparability": {
+            "status": "not_established",
+            "reason": "Protocol verification and detailed load-profile matching are not implemented. Ambient-temperature metadata and median current alone do not establish comparable conditions."
+          }
+        }
+      },
+      "follow_up": {
+        "action": "inspect_discharge_traces",
+        "question_scope": "test_conditions",
+        "reason": "Assess recorded test conditions and available trace statistics before addressing evidence limits."
+      },
+      "protocol_status": "unavailable",
+      "recommendation": "Recover and verify the unavailable applicable protocol documentation before assessing compliance.",
+      "limitations": [
+        "Battery B0005 protocol documentation source hash mismatch makes compliance checks unavailable.",
+        "No further check is needed for the requested windows, brackets and spans. Broader comparability remains unresolved.",
+        "Sample statistics are unweighted and include startup and post-load readings."
+      ],
+      "trace_source_checks": {
+        "outcome": "pass",
+        "extrema_and_locations_checked": 12,
+        "final_voltage_rows_checked": 2,
+        "active_load_windows_checked": 2
+      },
+      "protocol_claims": [],
+      "targeted_criteria_met": true,
+      "direct_review": "Both trace records are supplied, the protocol hash mismatch remains explicit, no unsupported protocol claim is accepted and the next step recovers verified documentation before compliance assessment."
+    },
+    {
+      "case_id": "D24-restart-selection",
+      "run_id": "c7e2e9827341413fbf8f6faf39acfbf4",
+      "record_path": "outputs/agent-investigations/c7e2e9827341413fbf8f6faf39acfbf4.json",
+      "record_sha256": "b257f119c5a3bba7969abe8fba732be28b55431de814dbc3548886c87b341ad1",
+      "report_sha256": "a7e0d16e184f004f54c6df713a9a1d4c45be7c1130f245630bff8f66d7747c7d",
+      "process_exit": 0,
+      "cli_seconds": 4.42432959999951,
+      "graph_seconds": 3.0528697999998258,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "model_usage": {
+        "complete": true,
+        "requests_with_usage": 3,
+        "model_attempts": 3,
+        "input_tokens": 5694,
+        "output_tokens": 607,
+        "total_tokens": 6301
+      },
+      "execution_failures": [],
+      "previous_run_id": "9c6728a03cce45a5801c4c29e6fd3c99",
+      "request": {
+        "question": "Compare these two later-life records using their supplied capacities. Explain which selected capacity is the denominator and keep the experiment's rated-capacity endpoint separate.",
+        "battery_id": "B0005",
+        "early": 8,
+        "late": 155
+      },
+      "resumed_from_run_id": "843e89c9975543ccad87ad745807d084",
+      "configuration_schema_sha256": "457a780795fba6ca0e5b6d2d3263006992b9c5c7ff52e560b333a01f309c75cb",
+      "comparison": {
+        "selection": {
+          "battery_id": "B0005",
+          "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+          "early": 8,
+          "late": 155,
+          "early_operation_index": 16,
+          "late_operation_index": 564,
+          "revision": 2
+        },
+        "comparison": {
+          "earlier": {
+            "operation_index": 16,
+            "discharge_index": 8,
+            "sample_count": 191,
+            "recording_duration_s": 3572.453,
+            "reported_capacity_Ah": 1.8257567905665537,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.012705452409922,
+            "maximum_temperature_C": 38.51713023385634
+          },
+          "later": {
+            "operation_index": 564,
+            "discharge_index": 155,
+            "sample_count": 301,
+            "recording_duration_s": 2829.843,
+            "reported_capacity_Ah": 1.318633896753293,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.0120799108813503,
+            "maximum_temperature_C": 40.85270645265791
+          },
+          "capacity_change_Ah": -0.5071228938132608,
+          "capacity_change_percent": -27.776037664682306,
+          "percentage_reference": "earlier selected discharge's reported capacity",
+          "ambient_temperature_change_C": 0.0,
+          "median_current_change_A": 0.0006255415285716381,
+          "comparability": {
+            "status": "not_established",
+            "reason": "Protocol verification and detailed load-profile matching are not implemented. Ambient-temperature metadata and median current alone do not establish comparable conditions."
+          }
+        }
+      },
+      "follow_up": {
+        "action": "stop_with_partial",
+        "question_scope": "reported_capacity",
+        "reason": "The capacity comparison is complete with earlier capacity as denominator, keeping rated capacity separate."
+      },
+      "protocol_status": "available",
+      "recommendation": "No further check is needed for the reported-capacity comparison; broader comparability and physical cause remain unresolved.",
+      "limitations": [
+        "Documentation describes intended protocol rather than proof that selected records followed it.",
+        "The selected percentage alone cannot decide an end-of-life condition."
+      ],
+      "trace_source_checks": null,
+      "protocol_claims": [
+        {
+          "statement": "For battery B0005, discharge was carried out at a constant current level of 2A until the battery voltage fell to 2.7V.",
+          "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+          "quote": "Discharge was carried out at a constant current (CC) level of 2A until the battery voltage fell to 2.7V, 2.5V, 2.2V and 2.5V for batteries 5 6 7 and 18 respectively.",
+          "source_identity_applicability_and_literal_quote": "pass",
+          "full_claim_source_review": "pass"
+        },
+        {
+          "statement": "The experiments for battery B0005 were stopped when the batteries reached end-of-life criteria defined as a 30% fade in rated capacity from 2Ahr to 1.4Ahr.",
+          "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+          "quote": "The experiments were stopped when the batteries reached end-of-life (EOL) criteria, which was a 30% fade in rated capacity (from 2Ahr to 1.4Ahr).",
+          "source_identity_applicability_and_literal_quote": "pass",
+          "full_claim_source_review": "pass"
+        }
+      ],
+      "targeted_criteria_met": true,
+      "direct_review": "The saved parent and original question are preserved. Selection revision 2 uses discharges 8/155 and operations 16/564. Source arithmetic, earlier measured denominator and separate 2.0 Ah rated/1.4 Ah threshold are correct. Both accepted claims have current retrieved IDs and supported literal quotes."
+    },
+    {
+      "case_id": "R27-protocol",
+      "run_id": "b74ee568923449829b86a2fd86a61d14",
+      "record_path": "outputs/agent-investigations/b74ee568923449829b86a2fd86a61d14.json",
+      "record_sha256": "034e7b2f5c134c086d9923467a8c86883216c3f824ab487110773cd27a84e2cb",
+      "report_sha256": "9e4d147fad6a227f50b222651e98b1c81147c6f7645f336baacb8eb028a420f3",
+      "process_exit": 0,
+      "cli_seconds": 4.422453000000132,
+      "graph_seconds": 3.2239236000004894,
+      "status": "partial",
+      "stop_reason": "selected_trace_check_pending",
+      "model_usage": {
+        "complete": true,
+        "requests_with_usage": 3,
+        "model_attempts": 3,
+        "input_tokens": 5579,
+        "output_tokens": 487,
+        "total_tokens": 6066
+      },
+      "execution_failures": [],
+      "previous_run_id": "19e54ad5609d4d9298752f36b86cf288",
+      "request": {
+        "question": "Which intended current and endpoint voltage belong specifically to B0005 in its source experiment? Quote the supporting experiment text and retain the battery mapping.",
+        "battery_id": "B0005",
+        "early": 61,
+        "late": 133
+      },
+      "resumed_from_run_id": null,
+      "configuration_schema_sha256": "457a780795fba6ca0e5b6d2d3263006992b9c5c7ff52e560b333a01f309c75cb",
+      "comparison": {
+        "selection": {
+          "battery_id": "B0005",
+          "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+          "early": 61,
+          "late": 133,
+          "early_operation_index": 202,
+          "late_operation_index": 481,
+          "revision": 1
+        },
+        "comparison": {
+          "earlier": {
+            "operation_index": 202,
+            "discharge_index": 61,
+            "sample_count": 343,
+            "recording_duration_s": 3212.469,
+            "reported_capacity_Ah": 1.6849029086609286,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.0121229489166246,
+            "maximum_temperature_C": 39.10487658009542
+          },
+          "later": {
+            "operation_index": 481,
+            "discharge_index": 133,
+            "sample_count": 308,
+            "recording_duration_s": 2891.656,
+            "reported_capacity_Ah": 1.375392016895762,
+            "ambient_temperature_C": 24.0,
+            "median_current_A": -2.011962577426471,
+            "maximum_temperature_C": 41.11793533148924
+          },
+          "capacity_change_Ah": -0.30951089176516655,
+          "capacity_change_percent": -18.369657395342106,
+          "percentage_reference": "earlier selected discharge's reported capacity",
+          "ambient_temperature_change_C": 0.0,
+          "median_current_change_A": 0.00016037149015346586,
+          "comparability": {
+            "status": "not_established",
+            "reason": "Protocol verification and detailed load-profile matching are not implemented. Ambient-temperature metadata and median current alone do not establish comparable conditions."
+          }
+        }
+      },
+      "follow_up": {
+        "action": "stop_with_partial",
+        "question_scope": "other",
+        "reason": "The question requests documented protocol details and text quotation, which are fully answered by existing source metadata without requiring trace inspection."
+      },
+      "protocol_status": "available",
+      "recommendation": "No further check is needed for the requested protocol facts; measured compliance remains unresolved.",
+      "limitations": [
+        "Documentation describes intended experiment conditions, not proof that each record followed them.",
+        "The percentage fade alone cannot decide end of life without verifying the recorded conditions against the documented criterion."
+      ],
+      "trace_source_checks": null,
+      "protocol_claims": [
+        {
+          "statement": "For battery B0005, charging used a constant current of 1.5A up to 4.2V then constant voltage until 20mA, and discharge used a constant current of 2A until 2.7V.",
+          "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+          "quote": "Charging was carried out in a constant current (CC) mode at 1.5A until the battery voltage reached 4.2V and then continued in a constant voltage (CV) mode until the charge current dropped to 20mA. Discharge was carried out at a constant current (CC) level of 2A until the battery voltage fell to 2.7V, 2.5V, 2.2V and 2.5V for batteries 5 6 7 and 18 respectively.",
+          "source_identity_applicability_and_literal_quote": "pass",
+          "full_claim_source_review": "pass"
+        }
+      ],
+      "targeted_criteria_met": true,
+      "direct_review": "The source mapping supports B0005 intended 2 A/2.7 V. Scope is other, the exact excerpt is supplied and the next step stops the answered protocol lookup without implying measured compliance."
+    }
+  ],
+  "remaining_limits": [
+    "Five known failure questions, one candidate observation each; this does not establish general reliability or a new 30-case result.",
+    "The original 26/30 execution and 25/30 provisional full-case acceptance scores remain unchanged. No replacement full-case score was calculated.",
+    "Generated limitations still contain redundant text: D07 repeats completion in its limitations, and D14 mentions requested windows although the request is broader. The recommendations address the intended gaps; these wording issues are retained.",
+    "Schema constraints limit IDs, not semantic truth. Full claim support still needs source review; unsafe or malformed output can still fail.",
+    "The shared workflow changed for both providers. Ollama quality was not remeasured and the full security suite was not rerun; current unit checks cover the strict rejection boundaries.",
+    "The interface remains a saved-run replay; a controlled live application and external user trial are still pending."
+  ],
+  "next_step": "Build a small controlled live interface around the existing CLI workflow with explicit input limits, server-side credentials and measured usage."
+}

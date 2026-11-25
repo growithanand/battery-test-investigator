@@ -13,6 +13,7 @@ pytest.importorskip("langgraph", reason="Install the optional agent dependency l
 
 from scripts import gemini_model, run_agent_investigation as runner, trace_inspection
 from scripts.fetch_sample import SOURCE_URL
+from scripts.investigation_findings import findings_schema
 from scripts.model_tools import make_protocol_tool
 from scripts.protocol_evidence import retrieve_protocol_evidence
 
@@ -96,6 +97,10 @@ def api(monkeypatch, project):
                           "trace_evidence_id": context["trace_evidence"]["evidence_id"] if context["trace_evidence"] else None,
                           "limitations": ["The documented conditions do not prove measured compliance."],
                           "next_check": context["recommendation_guidance"]["next_check_hint"]}
+                if state["failure"] == "citation_id":
+                    result["protocol_claims"][0]["evidence_id"] = "previous-investigation-passage"
+                elif state["failure"] == "quote":
+                    result["protocol_claims"][0]["quote"] = "This invented quote does not occur in the source."
             parts = [{"text": json.dumps(result)}]
         body = {"modelVersion": MODEL, "candidates": [{"content": {"role": "model", "parts": parts},
                                                        "finishReason": "MAX_TOKENS" if state["failure"] == "truncated" else "STOP"}]}
@@ -180,6 +185,38 @@ def test_cli_missing_usage_is_explicit_in_saved_record_and_report(project, api, 
     assert saved["status"] == "partial" and saved["model_usage"]["complete"] is False
     assert saved["model_usage"]["requests_with_usage"] == 0
     assert "Token usage is incomplete" in path.with_suffix(".md").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("failure", [None, "citation_id", "quote"])
+def test_gemini_uses_current_citation_choices_and_still_rejects_invalid_evidence(project, api, monkeypatch, failure):
+    root, catalog, passage = project
+    api["failure"] = failure
+    if failure:
+        with pytest.raises(SystemExit) as error:
+            command(monkeypatch, catalog, "--battery-id", "B0005", "--early", "1", "--late", "2")
+        assert error.value.code == 2
+    else:
+        command(monkeypatch, catalog, "--battery-id", "B0005", "--early", "1", "--late", "2")
+    schema = api["requests"][-1]["generationConfig"]["responseJsonSchema"]
+    reference = schema["$defs"]["RetrievedProtocolClaim"]["properties"]["evidence_id"]
+    saved = json.loads(next((root / "outputs/agent-investigations").glob("*.json")).read_bytes())
+    assert reference["enum"] == [item["evidence_id"] for item in saved["protocol"]["evidence"]]
+    assert passage["evidence_id"] in reference["enum"]
+    assert saved["configuration"]["findings_schema_sha256"] == hashlib.sha256(json.dumps(
+        findings_schema(saved["protocol"]).model_json_schema(), sort_keys=True,
+    ).encode("utf-8")).hexdigest()
+    assert schema["properties"]["protocol_claims"]["minItems"] == 1
+    assert schema["properties"]["protocol_claims"]["maxItems"] == 2
+    assert (saved["findings"] is None) == bool(failure)
+    assert saved["status"] == ("failed" if failure else "partial")
+    assert saved["comparison"]["comparison"]["capacity_change_Ah"] == -0.5
+    assert len(api["requests"]) == saved["model_attempts"] == 3
+    assert saved["tool_attempts"] == 2
+    assert all(client.is_closed for client in api["clients"])
+    if failure:
+        assert saved["stop_reason"] == "findings_error"
+        if failure == "quote":
+            assert saved["trace"][-1]["detail"] == "Citation quote is not an exact substring of its passage"
 
 
 @pytest.mark.parametrize("provider_flags", [[], ["--provider", "gemini"]])

@@ -70,7 +70,9 @@ Scope mismatches affected the protocol questions D06/R27 and corrupt-document qu
 
 The security result combines four live prompt attacks, seven forced API-response boundary checks and one no-model Markdown rendering check. Three live attacks are reused. The selection-override attack remains a failed investigation whose conflicting arguments were blocked before tools ran.
 
-New reported token cost was **$0.07028**, against the $0.11453 planning estimate. The intentional unavailable-model request returned no usage and is excluded from that known-cost subtotal; actual billing was not inspected. Median CLI time across the 22 investigation/resume cases was 4.59 s, including two reused timings. The next change should address the observed citation and recommendation failures before the live demo. [Acceptance cases, scores, source checks and costs](evaluations/experiments/gemini-acceptance-20261124.json)
+New reported token cost was **$0.07028**, against the $0.11453 planning estimate. The intentional unavailable-model request returned no usage and is excluded from that known-cost subtotal; actual billing was not inspected. Median CLI time across the 22 investigation/resume cases was 4.59 s, including two reused timings. [Acceptance cases, scores, source checks and costs](evaluations/experiments/gemini-acceptance-20261124.json)
+
+The v24 correction restricts generated citation IDs to the passages retrieved for the current run and clarifies the next step for protocol lookups, completed load-window requests and unverified documentation. All five previously failing questions met their targeted regression criteria on one new attempt each. Independent source checks covered five capacity comparisons, 24 extrema and locations, four final voltages, four load windows and five quotations. The 15 API requests used an estimated **$0.01637** in reported tokens. These checks leave the original acceptance scores unchanged; generated limitations still contain some redundant wording. [Correction and regression evidence](evaluations/experiments/gemini-findings-20261125.json)
 
 ## Run locally
 

@@ -10,14 +10,14 @@ import langsmith
 
 from scripts.investigation_findings import (
     ENDPOINT_NEXT_CHECK, IMPEDANCE_NEXT_CHECK, FollowUpDecision, InvestigationFindings,
-    finalize_findings, mentions_end_of_life, mentions_physical_mechanism, select_recommendation_guidance,
+    finalize_findings, findings_schema, mentions_end_of_life, mentions_physical_mechanism, select_recommendation_guidance,
     validate_citations, validate_next_check,
 )
 from scripts.investigation_state import DischargeSelectionOutOfRange, InvestigationRequest
 from scripts.protocol_evidence import documented_capacity_endpoint, documented_impedance_evidence_id
 
 
-WORKFLOW_VERSION = "trace-follow-up-v23"
+WORKFLOW_VERSION = "trace-follow-up-v24"
 TOOL_PROMPT = (
     "Investigate the explicit battery/discharge selection. Request both available "
     "evidence tools exactly once, together or in either order. Never change the "
@@ -28,8 +28,12 @@ FOLLOW_UP_PROMPT = (
     "Review the explicit question, completed capacity comparison and protocol evidence. "
     "Choose exactly one permitted action: inspect_discharge_traces or stop_with_partial. "
     "Set question_scope to reported_capacity for capacity-only arithmetic, recorded_extrema "
-    "for raw signal extrema and source locations only, test_conditions for conditions or "
-    "comparability questions, or other for requests outside those scopes. Use other "
+    "for raw signal extrema and source locations only, test_conditions for assessing "
+    "recorded test conditions, comparability, or the evidence limits of inspecting recordings "
+    "when protocol verification fails. Use other for requests outside those scopes. "
+    "A lookup of the documented intended current or endpoint voltage is other: the "
+    "question asks what the protocol says, not whether recorded conditions comply. "
+    "Choose stop_with_partial for that documentation-only question. Use other "
     "for interpreting whether a record meets a documented end-of-life criterion. Use other "
     "for requests limited to observed load windows, transition brackets or on-load span. "
     "Trace inspection supplies whole-record current, voltage and temperature statistics "
@@ -86,9 +90,14 @@ FINDINGS_PROMPT = (
     "accepted follow_up.question_scope, the question and executed evidence. The guidance "
     "uses that scope and known evidence state; a trace inspection alone does not mean "
     "the question asks about comparable conditions. Retain broader limits. "
-    "For a question limited to load windows, say the requested check is complete only "
-    "if both windows are observed. Otherwise recommend reviewing the unresolved recording "
-    "or running a suitable check if none ran. "
+    "For a question limited to load windows, when both windows have status observed, "
+    "say no further check is needed for the requested windows, brackets and spans. "
+    "Broader comparability remains unresolved. Recommend reviewing a recording only "
+    "when its window status is unresolved, or running a suitable check if none ran. "
+    "For a documentation-only lookup answered by the retrieved passage, say no further "
+    "check is needed for the requested protocol facts; measured compliance remains unresolved. "
+    "After inspecting recordings with missing or unverified protocol evidence, recommend "
+    "recovering and verifying that documentation before assessing compliance. "
     "For stopped capacity-only questions it explains the bounded answer even "
     "with missing documentation; for other stopped questions propose a justified "
     "unexecuted check addressing their gap. Do not output metadata, internal focus "
@@ -371,7 +380,7 @@ def build_investigation_graph(
             ]
             with langsmith.tracing_context(enabled=False):
                 response = model_factory().with_structured_output(
-                    InvestigationFindings, method="json_schema", include_raw=True,
+                    findings_schema(state["protocol"]), method="json_schema", include_raw=True,
                 ).invoke(messages)
             raw = response["raw"]
             findings = checked_structured_response(response, InvestigationFindings)

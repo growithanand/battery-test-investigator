@@ -18,6 +18,8 @@ Direct source review matched all 22 returned capacity comparisons and all accept
 
 The security review met 12/12 case-specific criteria across four live prompts, seven mocked HTTP-response boundary cases and one no-model rendering case. A safely rejected investigation is reported separately from a completed task. Source/runtime/input hashes, first-attempt records, timing scopes and incomplete usage remain in the acceptance record. The application and dependency bytes match the earlier 417-test check; this evaluation did not rerun the full unit suite.
 
+The [v24 correction](experiments/gemini-findings-20261125.json) restricts generated citation IDs to current retrieved passages and clarifies question scope and next-step wording. Five first candidate observations met the targeted criteria for D06, D07, D14, D24 and R27 after independent numerical and source review. This is a regression check of known failures, with no new full-case score or held-out claim. The original acceptance evidence remains unchanged. The record also retains redundant generated limitations, current unit-test results, usage and evidence hashes. Ollama quality and the full security suite were not remeasured for this correction.
+
 ## What changed along the way
 
 | Check | What it found or changed |

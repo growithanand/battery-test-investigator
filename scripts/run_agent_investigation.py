@@ -12,7 +12,7 @@ from uuid import uuid4
 
 import langsmith
 
-from scripts.investigation_findings import FollowUpDecision, InvestigationFindings
+from scripts.investigation_findings import FollowUpDecision, InvestigationFindings, findings_schema
 from scripts.investigation_graph import WORKFLOW_VERSION, build_investigation_graph, investigation_prompts
 from scripts.investigation_report import format_capacity_bases, render_investigation_report
 from scripts.investigation_resume import resume_investigation
@@ -129,7 +129,7 @@ def main():
                 FollowUpDecision.model_json_schema(), sort_keys=True,
             ).encode("utf-8")).hexdigest(),
             "findings_schema_sha256": hashlib.sha256(json.dumps(
-                InvestigationFindings.model_json_schema(),
+                (findings_schema(state["protocol"]) if state["protocol"] else InvestigationFindings).model_json_schema(),
                 sort_keys=True,
             ).encode("utf-8")).hexdigest(),
             "packages": {name: version(name) for name in ("langchain", "langgraph", "langchain-ollama", "pydantic", "httpx")},
