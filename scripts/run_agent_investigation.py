@@ -41,22 +41,15 @@ def _write_artifact(path: Path, content: str) -> None:
         pending.unlink(missing_ok=True)
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--provider", choices=["ollama", "gemini"], default="ollama",
-                        help="Model provider; Gemini sends investigation context to the Google API")
-    parser.add_argument("--model", required=True, help="Exact installed Ollama tag or Gemini model ID")
-    question = parser.add_mutually_exclusive_group()
-    question.add_argument("--question", help="Investigation question for a new run")
-    question.add_argument("--resume", metavar="RUN_ID", help="Complete a saved clarification or revise its discharge pair")
-    parser.add_argument("--battery-id", choices=["B0005"])
-    parser.add_argument("--early", type=int)
-    parser.add_argument("--late", type=int)
-    parser.add_argument("--protocol-catalog", type=Path, default=CATALOG_PATH,
-                        help="Trusted local source-catalog configuration, never a model argument")
-    args = parser.parse_args()
-    selection = {"battery_id": args.battery_id, "early": args.early, "late": args.late}
-    resuming = args.resume is not None
+def run_investigation(
+    request: dict, *, model: str, provider: str = "ollama",
+    protocol_catalog: Path = CATALOG_PATH, resume_id: str | None = None,
+) -> dict:
+    """Run the shared investigation engine without terminal output or artifact writes."""
+    if provider not in {"ollama", "gemini"}:
+        raise ValueError("Choose ollama or gemini as the model provider")
+    selection = {name: request.get(name) for name in ("battery_id", "early", "late")}
+    resuming = resume_id is not None
     resume_kind = None
     validated_selection = None
     directory = ROOT / "outputs/agent-investigations"
@@ -71,7 +64,7 @@ def main():
 
     if resuming:
         try:
-            completed, previous = resume_investigation(directory, args.resume, **selection)
+            completed, previous = resume_investigation(directory, resume_id, **selection)
             if completed.battery_id != source.stem:
                 raise ValueError("Only the registered B0005 source can be resumed")
             verify_source()
@@ -80,28 +73,25 @@ def main():
             if previous is not None and validated_selection.source_sha256 != previous.source_sha256:
                 raise ValueError("The registered source has changed since the saved investigation")
         except (OSError, ValueError) as error:
-            parser.error(str(error))
+            raise ValueError(str(error)) from None
         request = asdict(completed)
         resume_kind = "clarification" if previous is None else "selection_change"
-    else:
-        question_text = DEFAULT_QUESTION if args.question is None else args.question
-        request = {"question": question_text, **selection}
 
     def load_model():
         # A missing selection reaches clarification without file reads or model preflight.
         if not runtime:
             verify_source()
-            if args.provider == "gemini":
-                runtime.append(create_gemini_model(args.model))
+            if provider == "gemini":
+                runtime.append(create_gemini_model(model))
             else:
-                runtime.append(create_local_model(args.model, MODEL_SETTINGS))
+                runtime.append(create_local_model(model, MODEL_SETTINGS))
         return runtime[0][0]
 
     limits = {"model_limit": 4, "tool_limit": 3}
     sources = {"B0005": source}
     graph = build_investigation_graph(
         load_model, make_comparison_tool(sources, validated_selection=validated_selection),
-        make_protocol_tool(args.protocol_catalog),
+        make_protocol_tool(protocol_catalog),
         make_trace_tool(sources, include_active_load=True, validated_selection=validated_selection),
         resume_kind=resume_kind, **limits,
     )
@@ -111,7 +101,7 @@ def main():
         with langsmith.tracing_context(enabled=False):
             state = graph.invoke({"request": request}, {"recursion_limit": 12})
     finally:
-        if args.provider == "gemini" and runtime:
+        if provider == "gemini" and runtime:
             runtime[0][0].close()
     # Never serialize raw AI messages or private reasoning content.
     result = {key: value for key, value in state.items() if key != "messages"}
@@ -119,7 +109,7 @@ def main():
         "run_id": uuid4().hex, "created_at": datetime.now(timezone.utc).isoformat(),
         "elapsed_seconds": perf_counter() - started,
         "configuration": {
-            "workflow_version": WORKFLOW_VERSION, "provider": args.provider, "model_requested": args.model,
+            "workflow_version": WORKFLOW_VERSION, "provider": provider, "model_requested": model,
             "trace_analysis_version": ANALYSIS_VERSION,
             "active_load_analysis_version": ACTIVE_LOAD_ANALYSIS_VERSION,
             "model_used": runtime[0][1] if runtime else None, "limits": limits,
@@ -137,7 +127,7 @@ def main():
         "citation_check_scope": "Source ID, applicability and literal quote only; semantic support needs review.",
     })
     requests = None
-    if args.provider == "gemini":
+    if provider == "gemini":
         requests = runtime[0][0].calls if runtime else []
     result["model_requests"] = requests
     result["model_usage"] = summarize_model_usage(state, requests)
@@ -146,12 +136,37 @@ def main():
                 "catalog_sha256": result["protocol"]["catalog_sha256"] if result["protocol"] else None}
     result["input_configuration_sha256"] = hashlib.sha256(json.dumps(identity, sort_keys=True).encode("utf-8")).hexdigest()
     if resuming:
-        result["resumed_from_run_id"] = args.resume
+        result["resumed_from_run_id"] = resume_id
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--provider", choices=["ollama", "gemini"], default="ollama",
+                        help="Model provider; Gemini sends investigation context to the Google API")
+    parser.add_argument("--model", required=True, help="Exact installed Ollama tag or Gemini model ID")
+    question = parser.add_mutually_exclusive_group()
+    question.add_argument("--question", help="Investigation question for a new run")
+    question.add_argument("--resume", metavar="RUN_ID", help="Complete a saved clarification or revise its discharge pair")
+    parser.add_argument("--battery-id", choices=["B0005"])
+    parser.add_argument("--early", type=int)
+    parser.add_argument("--late", type=int)
+    parser.add_argument("--protocol-catalog", type=Path, default=CATALOG_PATH,
+                        help="Trusted local source-catalog configuration, never a model argument")
+    args = parser.parse_args()
+    request = {"question": DEFAULT_QUESTION if args.question is None else args.question,
+               "battery_id": args.battery_id, "early": args.early, "late": args.late}
+    try:
+        result = run_investigation(request, model=args.model, provider=args.provider,
+                                   protocol_catalog=args.protocol_catalog, resume_id=args.resume)
+    except ValueError as error:
+        parser.error(str(error))
+    directory = ROOT / "outputs/agent-investigations"
     output = directory / f"{result['run_id']}.json"
     directory.mkdir(parents=True, exist_ok=True)
     _write_artifact(output, json.dumps(result, indent=2) + "\n")
     print(f"Status: {result['status']} ({result['stop_reason']})")
-    if resuming:
+    if args.resume is not None:
         print(f"Resumed from run: {args.resume}")
     if result["clarification"]:
         print(result["clarification"])

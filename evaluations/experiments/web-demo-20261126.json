@@ -1,0 +1,246 @@
+{
+  "experiment_id": "local-web-demo-20261126",
+  "date": "2026-11-26",
+  "base_commit": "c5eecc253733a8041edb97ef6eea8e9cbe842949",
+  "uncommitted_candidate_at_collection": true,
+  "workflow_version": "trace-follow-up-v24",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "model_settings": {
+    "temperature": 0,
+    "maxOutputTokens": 1024,
+    "thinkingConfig": {
+      "thinkingLevel": "minimal"
+    }
+  },
+  "purpose": "Verify one actual browser submission through the shared investigation engine, its displayed result and report download.",
+  "collection": "One first browser investigation, no retry or changes during collection. No new broad quality/security score.",
+  "request": {
+    "question": "Compare the reported capacities for these discharges. Give the change in Ah and percent, with the earlier record as the reference.",
+    "battery_id": "B0005",
+    "early": 1,
+    "late": 168
+  },
+  "run_id": "d96a09b962e74de48e8df7e34a5cfcbd",
+  "status": "partial",
+  "stop_reason": "selected_trace_check_pending",
+  "comparison": {
+    "selection": {
+      "battery_id": "B0005",
+      "source_sha256": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+      "early": 1,
+      "late": 168,
+      "early_operation_index": 2,
+      "late_operation_index": 614,
+      "revision": 1
+    },
+    "comparison": {
+      "earlier": {
+        "operation_index": 2,
+        "discharge_index": 1,
+        "sample_count": 197,
+        "recording_duration_s": 3690.234,
+        "reported_capacity_Ah": 1.8564874208181574,
+        "ambient_temperature_C": 24.0,
+        "median_current_A": -2.012427484501588,
+        "maximum_temperature_C": 38.98218133148803
+      },
+      "later": {
+        "operation_index": 614,
+        "discharge_index": 168,
+        "sample_count": 300,
+        "recording_duration_s": 2820.39,
+        "reported_capacity_Ah": 1.3250793286429356,
+        "ambient_temperature_C": 24.0,
+        "median_current_A": -2.0129799362613565,
+        "maximum_temperature_C": 41.051007697556734
+      },
+      "capacity_change_Ah": -0.5314080921752218,
+      "capacity_change_percent": -28.624384211611257,
+      "percentage_reference": "earlier selected discharge's reported capacity",
+      "ambient_temperature_change_C": 0.0,
+      "median_current_change_A": -0.0005524517597685907,
+      "comparability": {
+        "status": "not_established",
+        "reason": "Protocol verification and detailed load-profile matching are not implemented. Ambient-temperature metadata and median current alone do not establish comparable conditions."
+      }
+    }
+  },
+  "follow_up": {
+    "action": "stop_with_partial",
+    "question_scope": "reported_capacity",
+    "reason": "Capacity comparison is fully completed in the provided data."
+  },
+  "findings": {
+    "protocol_claims": [
+      {
+        "statement": "Discharge for battery 5 was carried out at a constant current level of 2A until the battery voltage fell to 2.7V.",
+        "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2",
+        "quote": "Discharge was carried out at a constant current (CC) level of 2A until the battery voltage fell to 2.7V, 2.5V, 2.2V and 2.5V for batteries 5 6 7 and 18 respectively."
+      }
+    ],
+    "comparability": "not_established",
+    "physical_cause": "not_determined",
+    "trace_evidence_id": null,
+    "limitations": [
+      "Documentation describes intended experiment conditions, not proof that each record followed them.",
+      "The selected percentage fade alone cannot decide end of life without verifying the recorded conditions against the documented criterion."
+    ],
+    "next_check": "No further check is needed for the reported-capacity comparison; broader comparability and physical cause remain unresolved.",
+    "protocol_evidence_limitation": null,
+    "documented_capacity_endpoint": {
+      "battery_id": "B0005",
+      "rated_capacity_Ah": 2.0,
+      "end_of_life_threshold_Ah": 1.4,
+      "rated_capacity_fade_percent": 30.0,
+      "evidence_id": "nasa-b0005-b0018:2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90:L1-L2"
+    }
+  },
+  "usage": {
+    "complete": true,
+    "requests_with_usage": 3,
+    "model_attempts": 3,
+    "input_tokens": 5554,
+    "output_tokens": 417,
+    "total_tokens": 5971
+  },
+  "model_attempts": 3,
+  "tool_attempts": 2,
+  "engine_seconds": 2.744010800000069,
+  "timing_scope": "Existing engine timing, excluding browser/network overhead and artifact writing. One observation, not a latency distribution.",
+  "cost": {
+    "forecast_usd": "0.005",
+    "reported_token_estimate_usd": "0.0027087",
+    "input_usd_per_million": ".30",
+    "output_usd_per_million_including_thoughts": "2.50",
+    "prices_verified_date": "2026-11-26",
+    "source": "https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite",
+    "billing_note": "Actual billing, EUR exchange rates, tax and account usage were not inspected."
+  },
+  "verification": {
+    "unit_tests_passed": 461,
+    "new_web_boundary_tests": 36,
+    "new_callable_engine_test": 1,
+    "existing_package_versions_preserved": true,
+    "dependency_check": "pass",
+    "source_method": "Independent SciPy object readback and Decimal arithmetic; original document hashes, battery applicability, exact quote and direct full-claim/task/next-step review.",
+    "capacity_source_check": "pass",
+    "citation_source_support": "pass; the passage maps battery 5 to intended 2 A/2.7 V for this experiment.",
+    "narrow_question_and_remaining_limits": "pass; capacity comparison answered, no unexecuted trace inspection claimed, comparability/cause remain unresolved.",
+    "browser_observations": [
+      "Form submission and loading state observed; run control disabled while waiting.",
+      "Displayed capacities 1.856487421/1.325079329 Ah, original operations 2/614, change -0.531408092 Ah (-28.624384%).",
+      "Displayed recommendation and 5,554 input/417 output tokens match the saved record.",
+      "The full report was opened in the page; Download report produced a file byte-identical to the saved Markdown.",
+      "Remaining allowance changed from 5 to 4 and the cooldown was displayed.",
+      "No error or warning entries were returned by the browser console check."
+    ],
+    "layout_check": "Wide two-column and narrow single-column layouts inspected. Observed CSS viewport widths 985/300; document scroll widths 973/288. Browser screenshots were clipped by the preview surface; no horizontal document overflow was measured.",
+    "key_exclusion": "Current key absent from saved record, downloaded report and public evidence. Public field filtering, safe failures and no private file routes are also covered by synthetic HTTP tests."
+  },
+  "added_packages": {
+    "annotated-doc": "0.0.7",
+    "click": "8.5.1",
+    "fastapi": "0.165.0",
+    "opentelemetry-api": "1.45.2",
+    "starlette": "1.10.0",
+    "uvicorn": "0.54.0"
+  },
+  "local_controls": {
+    "host": "127.0.0.1",
+    "workers": 1,
+    "live_requests_require_startup_flag": true,
+    "server_session_attempt_limit": 5,
+    "cooldown_seconds": 15,
+    "concurrent_investigations": 1,
+    "maximum_body_bytes": 4096,
+    "maximum_question_characters": 600,
+    "explicit_selection": "B0005, 1 <= earlier < later <= 168",
+    "model_attempt_limit": 4,
+    "tool_attempt_limit": 3,
+    "browser_control_fields": [
+      "question",
+      "early",
+      "late"
+    ],
+    "arbitrary_models_sources_or_resume_ids_allowed": false
+  },
+  "artifact_hashes": {
+    "plan": "ec1d1ec14e31c7d73b1c2308aaf12c1ea4aaac3e6f00106d859877d8137a362c",
+    "record": "890c3e44b9ffe35a6cfbc6892551a5fee4e092f362565158a21b6a8cb0cfd066",
+    "report": "99f3100c9c9bd8a14371c1d82dc6b798ba2b51696c448f30daf47b1e09daf2fc",
+    "downloaded_report": "99f3100c9c9bd8a14371c1d82dc6b798ba2b51696c448f30daf47b1e09daf2fc",
+    "review_helper": "f8a21218c5788ebf511a7d3fe56c706a31176b083c4d6448b9cab35400b1a3ab"
+  },
+  "runtime_test_dependency_hashes": {
+    "requirements-agent-lock.txt": "7d8b8afd9d193dbc1292cb7f058fb043545bff8ee24b3c0aaec874901b931941",
+    "requirements-agent.txt": "c4e6f344117f4369e1c9f29ff2a61bba87a4bd25c65cbdbfb7ebc5fbf2667bc3",
+    "requirements-dev.txt": "8636f9ab1a075be9f3039e2a6471837259c4f36b625bcaf7a3d9a1edd2419c6d",
+    "requirements-lock.txt": "73c0eaa78a058b20c7584bf4931f583668d0cf6494fd36b760f2bd3fa280dd17",
+    "requirements-web-lock.txt": "85b1195ca23d41f002d34720b4de350dc19c48719aeecbec9bd6d09accd11b16",
+    "requirements-web.txt": "688dc27492832de35246df118a8881af8d9eda369908b96a5127732d900a71c9",
+    "requirements.txt": "76d69c9e6d52e5cce035699ac97aba5b53a9a72f1f645f522535235161ec1dd2",
+    "scripts/__init__.py": "7c2828b14562698ce32d9af0a7c68665376362b870acae7bfa5857e29c2f5509",
+    "scripts/check_model_connection.py": "a1ff78d3a9c7d1bf7faee4aac92633168519cf1ce0df2ef86d44e54dc977585f",
+    "scripts/collect_portfolio_baseline.py": "46169de19d7a3938ee4056e6150ee9cf7e457a65e4955c759dd614b4aa05462a",
+    "scripts/collect_portfolio_candidate.py": "ad50c116950bd8a0ade9f515b4b0f8983ee9350c8c913b585ca3163d5d6ff619",
+    "scripts/evaluate_follow_up.py": "56d4c9b879eca064e3b21ea19060808ae449d7315a75fc35f704e48c1640d54f",
+    "scripts/fetch_protocols.py": "eca06841fdc70343206ef8690ee30950ca92b7fba2c534dea9277369f282470c",
+    "scripts/fetch_sample.py": "2cdf90fb9419cf3ef499262bdbd28526f563d8aefab193054214e54c3a54ed6f",
+    "scripts/gemini_config.py": "23699a6a3c4bf5d9c402993233c35ad5609f3f921a16e957f04782ca25a8ac03",
+    "scripts/gemini_model.py": "1c8da63880fb44f76da2bc040817e713a632ce95f4af5ae0a63d4b50d3a90aeb",
+    "scripts/inspect_sample.py": "2cc2df0b52f1d1c9c2dd21b9173213c0098220981a4ae3991868941eeab3f135",
+    "scripts/inspect_selected_traces.py": "ac9cf9b697a296a9d3f0273b897bacaf3a7e7ac7f7a2b5a4b2f469e85c653238",
+    "scripts/investigation_findings.py": "b72715ee79feeba23a8a343a29c4900a6b7e8111bcaa800433aea7f301b85056",
+    "scripts/investigation_graph.py": "9fc70d59387d8787f1e2184ec74d0bf6633a04a476537a04f32f9218eb8e096e",
+    "scripts/investigation_report.py": "b4fcfb1e821840a6555e86ef3a753e02958b66c1d66e9bef97b2876bc9f3e34f",
+    "scripts/investigation_resume.py": "50580d1529fc5d127a376b7be07cb8645a179ec794b66bb73c38e061be63af89",
+    "scripts/investigation_state.py": "58f950954ca662aa5ebe6363f67fb29e6ea1f026caeaa3cf329c486495583c57",
+    "scripts/investigation_tools.py": "c32c77b177b56c85a0153bdbb247b4ec4d4dac9c81ee2a1967d2ca006b779514",
+    "scripts/local_model.py": "41f3a807fe23be62b65d4e41651cde343fbec66b4ca3987ead5f8fc01a490af2",
+    "scripts/model_tools.py": "4326681352b3cdf2a6e91456f2b2d8a3b2dd7cd3274954e4a51463cef7d6c41a",
+    "scripts/model_usage.py": "4a2b15011622615cb5dce1f4cc9002b885fc1f7f19c8531e39445fb5339929c5",
+    "scripts/protocol_evidence.py": "48d898bea2c084e0b28853a7c0a0c2f41abd873533b650e0dc219034f984ca67",
+    "scripts/run_agent_investigation.py": "5345ca5a75bf89d0f6335e3a5205323eccb9399928e90fb5aea663ac797a16b0",
+    "scripts/run_investigation.py": "f619a0b6b4a02e67fdb56a697163c0a0be9a938783166e243ed39191f9edc5e3",
+    "scripts/serve_demo.py": "47e712b3b6727601064c7403d0385d4ecc250dcc3aff27f49288846cb244daec",
+    "scripts/trace_inspection.py": "f8fe56e2fd81731be7a6fcda8d9dcf36badb60cc9f786c2ecfb94fa892c583f8",
+    "tests/test_follow_up_evaluation.py": "0405d4fd2a7af971b9fcdee7d1ec151916a9d15c75d33fec121bfd8497fe6d9c",
+    "tests/test_gemini_config.py": "1f3df2bf0622530c5f1845d6f65a8bb40afdd1aae20fd298094a7a335eba4b02",
+    "tests/test_gemini_model.py": "a5f142248f917cd671b09f579a09a502043feff48332992f1223cc5a7ec400aa",
+    "tests/test_inspection.py": "70508c6a449586cd4bc403a8ea84610218ec2228915203e214bf4dc3d435f197",
+    "tests/test_investigation.py": "a74797f90b50196d9fe8164a4d86b3c6ed67d54d94360467c2837bb5527413cd",
+    "tests/test_investigation_graph.py": "ae1b5a5514b5b0fd58b0457df67ae2d5aaac5b99d60bfa05defe523ebae56d71",
+    "tests/test_investigation_provider.py": "4e4abcd05bc16f8eb27a159961f4639a43d8a4cc765298ec4285f2425fee37f7",
+    "tests/test_investigation_resume.py": "50063c5aaaca03a095c03669f353b7fe8de66cdcb5d876817ac1583a0488f4cc",
+    "tests/test_investigation_state.py": "a3126bd6213fbff09ec13752a2d4417761208669f732528effc470a5133787c3",
+    "tests/test_investigation_tools.py": "9ac6d7b120e020de07fb333a999b3c82bc06a956a8e66dbe06722087dacc7f38",
+    "tests/test_local_model.py": "628b282c49c85b687904d1236d33cd4b4eff8eef59f409f42627209ddbbb77a8",
+    "tests/test_model_connection.py": "3aa508c9a2d8135c1b2339d141d15bcdddea115b34693bd673f0e3fa278562ef",
+    "tests/test_portfolio_candidate.py": "7a0756cf4d36c8f0a6fcb8f9c01d17414670d15e53a96c270fd143173f59bbf0",
+    "tests/test_portfolio_collection.py": "e5da6773b5840b0defc23e72036ecae26c7f3dcdda131a18d5644cc4d90b970b",
+    "tests/test_protocol_evidence.py": "b4380232db8756f6b042d564fe82e1766035cc23ac6194d6cd3479da33af0a60",
+    "tests/test_trace_inspection.py": "f162906a71887f3c6aeb921ec8cbeb136029b64e9876f3a994d82481208f551a",
+    "tests/test_web_demo.py": "475c94585bbbdc1ee695d866db34ea42418a8a82eee79ea639a1a84c088df2dd",
+    "web/app.js": "b27f83113e163b26f0321339da428e317c89bdc4b2231048f49f16e98be8e071",
+    "web/index.html": "619bd29ac7a1900ef9bbd263b87ff186d32d7aa72f026de8c5154a358651584d",
+    "web/styles.css": "7ec6cf0dfc58cb8b3c39b59cfcbadc793d76f6e57d814d1b47d2cbf03bbc60d1"
+  },
+  "source_and_prior_evidence_hashes": {
+    "data/manifests/B0005.json": "56735681d7699475aaeb7294bc7959ba36f9987a4f609976e576ca77f84aec2d",
+    "data/raw/nasa/package-1/B0005.mat": "0eae4585baf3f200c09fe24c5ab884f1889679fc75206ca1aa19da704104f0b0",
+    "data/manifests/protocol-sources.json": "08e0b028aa4291253706517a5a76d6c9bde70d4b216fdb46be7ef79b09474804",
+    "evaluations/experiments/gemini-findings-20261125.json": "fb2ddf3fa9b424605da565332f6609691a06fe6cae5fb5f34e5e3be0e2ad368f",
+    "data/raw/nasa/protocols/package-1/README.txt": "2b0614ccfdde3ca9c0466ad3e0c03903a1dbe98aec22dbe7ea410219cde51f90",
+    "data/raw/nasa/protocols/package-3/README_33_34_36.txt": "4a5e394c8ec0f4bd35bad27ee18183c22736439c979fc0997501c30290035f2c",
+    "data/raw/nasa/protocols/package-5/README_49_50_51_52.txt": "86e1f8102153708c5df4c568138b652866ee04d030314f3c41ad3b634a9440eb"
+  },
+  "remaining_limits": [
+    "Local single-process demonstration; no public deployment, authentication or external user trial yet.",
+    "The in-memory attempt allowance resets when the process restarts. It is not a monthly spending cap or durable public abuse control.",
+    "Only new complete selections are accepted in the browser. Clarification resume and selection revision remain available through the CLI.",
+    "The live browser check covered the capacity route only. Trace/failure browser presentations need further UI coverage; their engine/HTTP boundaries are tested separately.",
+    "Source/semantic labels are direct review, not blind owner scoring. Existing benchmark results remain unchanged."
+  ],
+  "next_step": "Review this local interface, then add deployment-appropriate access and durable usage controls before a public user trial."
+}

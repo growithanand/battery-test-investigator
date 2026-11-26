@@ -1,0 +1,8 @@
+# Local browser interface: Python 3.12.14. Preserves the existing agent pins.
+-r requirements-agent-lock.txt
+annotated-doc==0.0.7
+click==8.5.1
+fastapi==0.165.0
+opentelemetry-api==1.45.2
+starlette==1.10.0
+uvicorn==0.54.0

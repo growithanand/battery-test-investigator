@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Battery Test Investigator</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <div class="brand"><span class="battery" aria-hidden="true"></span> Battery Test Investigator</div>
+      <span class="badge">Local live demo</span>
+    </header>
+    <main>
+      <div class="intro">
+        <p class="eyebrow">NASA B0005 · 168 recorded discharges</p>
+        <h1>Follow the evidence<br>behind a capacity change.</h1>
+        <p>Compare two discharge records, check the experiment notes and inspect the measurements needed to answer your question.</p>
+      </div>
+      <div class="workspace">
+        <section class="panel input-panel" aria-labelledby="request-heading">
+          <div class="section-label"><span>01</span><h2 id="request-heading">Set up an investigation</h2></div>
+          <form id="investigation-form" method="post" action="/api/investigations">
+            <label for="battery">Battery</label>
+            <input id="battery" value="B0005 · NASA laboratory dataset" readonly>
+            <div class="pair">
+              <div><label for="early">Earlier discharge</label><input id="early" name="early" type="number" min="1" max="167" value="1" required></div>
+              <div><label for="late">Later discharge</label><input id="late" name="late" type="number" min="2" max="168" value="168" required></div>
+            </div>
+            <p class="field-note">Use discharge numbers, not the original MATLAB operation numbers.</p>
+            <label for="question">What would you like to investigate?</label>
+            <textarea id="question" name="question" rows="5" maxlength="600" required>Compare the reported capacities for these discharges. Give the change in Ah and percent, with the earlier record as the reference.</textarea>
+            <div class="presets" aria-label="Example questions">
+              <button type="button" data-preset="capacity">Capacity change</button>
+              <button type="button" data-preset="extrema">Recorded extrema</button>
+              <button type="button" data-preset="conditions">Test conditions</button>
+            </div>
+            <button id="run-button" type="submit" class="primary" disabled>Run investigation <span aria-hidden="true">↗</span></button>
+          </form>
+          <p id="availability" class="availability" role="status">Checking the local server…</p>
+          <p class="privacy-note">The question and evidence are sent to Gemini when you run an investigation. Reports are saved on this computer.</p>
+        </section>
+
+        <section class="panel output-panel" aria-labelledby="result-heading" aria-busy="false">
+          <div class="section-label"><span>02</span><h2 id="result-heading">Investigation report</h2></div>
+          <div id="message" role="status" aria-live="polite"></div>
+          <div id="empty-state" class="empty-state">
+            <div class="record-mark" aria-hidden="true">∿</div>
+            <h3>Start with a question.</h3>
+            <p>Your report will bring together the capacity calculation, source evidence, any trace inspection and the next justified check.</p>
+            <div class="evidence-types"><span>Capacity</span><span>Protocol</span><span>Measurements</span></div>
+          </div>
+          <div id="result" hidden>
+            <div class="result-heading"><span id="result-status" class="badge"></span><span id="run-time"></span></div>
+            <p id="result-question" class="result-question"></p>
+            <section id="capacity-result" class="result-section" hidden>
+              <h3>Reported capacity change</h3>
+              <p id="capacity-change" class="capacity-change"></p>
+              <p id="capacity-basis" class="field-note"></p>
+              <div id="capacity-table" class="table-scroll"></div>
+            </section>
+            <section id="follow-up-result" class="result-section" hidden><h3>Evidence check</h3><p id="follow-up"></p></section>
+            <section id="traces-result" class="result-section" hidden><h3>Recorded trace points</h3><p class="field-note">Whole-record extrema and final voltage. Times below are elapsed from the recording's first sample.</p><div id="trace-table" class="table-scroll"></div><div id="load-windows"></div></section>
+            <section class="result-section"><h3>Protocol evidence</h3><p id="protocol-status"></p><div id="claims"></div></section>
+            <section class="result-section"><h3>What remains unresolved</h3><ul id="limitations"></ul></section>
+            <section id="recommendation-result" class="recommendation" hidden><h3>Next step</h3><p id="recommendation"></p></section>
+            <div class="report-actions"><button id="download" class="secondary" type="button">Download report ↓</button><span id="usage"></span></div>
+            <details><summary>Read the full report</summary><pre id="full-report"></pre></details>
+          </div>
+        </section>
+      </div>
+      <footer>Measured differences do not establish matched test conditions, a physical cause or an end-of-life verdict. <a href="https://github.com/growithanand/battery-test-investigator" target="_blank" rel="noreferrer">Source and evaluation ↗</a></footer>
+    </main>
+  </div>
+</body>
+</html>

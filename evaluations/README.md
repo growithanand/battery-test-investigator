@@ -20,6 +20,12 @@ The security review met 12/12 case-specific criteria across four live prompts, s
 
 The [v24 correction](experiments/gemini-findings-20261125.json) restricts generated citation IDs to current retrieved passages and clarifies question scope and next-step wording. Five first candidate observations met the targeted criteria for D06, D07, D14, D24 and R27 after independent numerical and source review. This is a regression check of known failures, with no new full-case score or held-out claim. The original acceptance evidence remains unchanged. The record also retains redundant generated limitations, current unit-test results, usage and evidence hashes. Ollama quality and the full security suite were not remeasured for this correction.
 
+## Local browser verification
+
+The [first live browser check](experiments/web-demo-20261126.json) submitted the B0005 capacity question once through the local form, inspected the displayed result and downloaded a report byte-identical to the saved Markdown. Independent source review matched the selected capacities, original operations, arithmetic and applicable quotation. The three API requests used 5,554 input and 417 output tokens, estimated at $0.0027087; actual billing was not inspected. The displayed 2.74 s is engine timing rather than complete browser response time.
+
+The 461-test suite includes 36 new HTTP/control checks and one callable-engine check. The HTTP checks use synthetic engine responses, not paid inference. They cover invalid or extra inputs, byte limits, origin/token checks, private file routes, concurrent requests, cooldowns, failure handling and the shared attempt allowance. The single live browser check covers the capacity route; browser trace/failure presentations and a public user trial remain pending. Existing model benchmark scores are unchanged.
+
 ## What changed along the way
 
 | Check | What it found or changed |

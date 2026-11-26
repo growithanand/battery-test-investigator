@@ -235,6 +235,20 @@ def test_clarification_precedes_model_key_and_source_access(monkeypatch, tmp_pat
     assert saved["model_usage"]["complete"]
 
 
+def test_callable_engine_returns_clarification_without_printing_or_writing(monkeypatch, tmp_path, capsys):
+    monkeypatch.setattr(runner, "ROOT", tmp_path)
+    monkeypatch.setattr(runner, "create_gemini_model", lambda *args: pytest.fail("No key or client access"))
+    result = runner.run_investigation(
+        {"question": "Compare reported capacities.", "battery_id": "B0005", "early": None, "late": None},
+        model=MODEL, provider="gemini",
+    )
+    assert result["status"] == "needs_clarification"
+    assert result["model_attempts"] == result["tool_attempts"] == 0
+    assert "messages" not in result and not result["model_requests"]
+    assert not (tmp_path / "outputs").exists()
+    assert capsys.readouterr().out == ""
+
+
 def test_gemini_can_resume_a_saved_clarification_without_changing_the_parent(project, api, monkeypatch):
     root, catalog, _ = project
     command(monkeypatch, catalog, "--battery-id", "B0005", "--early", "1", "--question", "Report capacity change.")

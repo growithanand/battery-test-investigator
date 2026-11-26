@@ -170,11 +170,30 @@ The provider integration passed 417 tests with the optional model dependencies i
 
 ## Browser demo
 
+### Run an investigation locally
+
+Install the optional web layer in the existing Python 3.12 environment, prepare the sample and protocol files as above, and configure the local Gemini key. Then start the server:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-web-lock.txt
+.\.venv\Scripts\python.exe -m scripts.serve_demo --enable-live
+```
+
+Open [the local interface](http://127.0.0.1:8000/). Choose two B0005 discharge numbers and enter a question, or use one of the three example questions. The page shows the capacity comparison, protocol claims, any trace inspection, remaining limits and next step. It also displays reported token usage and investigation time, and downloads the same Markdown report saved by the workflow. The terminal command and browser share one investigation engine.
+
+The server uses Gemini 3.5 Flash-Lite and accepts questions up to 600 characters. It runs one investigation at a time, with a 15-second interval between starts and a five-attempt allowance shared by all tabs. Failed attempts count toward the allowance. Each investigation retains the four-model/three-tool limits. The key, model choice and source paths stay on the server. Omit `--enable-live` to inspect the page with API requests disabled; use Ctrl+C to stop the server.
+
+This version binds to `127.0.0.1` and creates new investigations. Saved-run clarification and selection revision remain available through the CLI. The attempt counter resets when the server restarts; it is a local demonstration control, not a monthly spending cap. Public hosting still needs access control and durable usage limits.
+
+One browser investigation and its download were verified against the original MATLAB data and experiment text. It used three model requests, 5,554 input and 417 output tokens, with an estimated token cost of **$0.00271**. Its 2.74 s investigation time excludes browser/network overhead and report writing. All 461 tests passed, including 36 web-boundary checks and one new callable-engine check. [Browser verification and source checks](evaluations/experiments/web-demo-20261126.json)
+
+### Replay saved investigations
+
 Open [the replay page](demo/index.html) from a local checkout in your browser. The capacity example shows the saved comparison for B0005 discharges 33 and 166 and explains why the workflow stopped. The [trace example](demo/traces.html) shows the other decision, with the minimum and maximum current, voltage and temperature for discharges 11 and 156, including each reading's source row and time. Both pages work offline. [Benchmark record](evaluations/experiments/portfolio-final-local-20261110.json)
 
 The [missing-selection example](demo/clarification.html) shows the investigator asking for the two discharge numbers before analysis. The saved run records zero model and tool attempts.
 
-The saved capacity and trace questions have also run through Gemini, as recorded above. Provider selection is available in the investigation command. Broader Gemini quality and security evaluation, followed by a live interface with usage limits, remain ahead.
+The replay pages use saved results and make no model requests. The local live interface runs the current workflow; the historical benchmark results above retain their original versions and scores.
 
 ## Data source
 
